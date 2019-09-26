@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.paladin.qos.dynamic.mapper.yiyuan.KeyOperationBrainSurgeryMapper">
+
+	<select id="getTotalNum" parameterType="Map" resultType="Long">
+		select
+		count(*) from outhospitalrecord a
+		left join
+		firstpagemedicalrecord b
+		on
+		a.HP_S_NO = b.HP_S_NO
+		left join
+		ed_cmedical_home_page_record c
+		on
+		a.HP_S_NO = c.HP_S_NO
+		<where>
+			<!-- a.OPERATION_CODE in (select major_code from classify_code_operation 
+				where major_code like '01.02%' or major_code like '01.03%' or major_code 
+				like '01.04%' or major_code like '01.05%' or major_code like '01.06%' or 
+				major_code like '02.1%' or major_code like '02.2%' or major_code like '02.3%' 
+				or major_code like '02.4%') and -->
+			a.OPERATION_CODE in ('02.2207',
+			'02.2211',
+			'02.2201',
+			'02.3201',
+			'02.1301',
+			'02.4101',
+			'02.3400',
+			'02.1404',
+			'02.3204',
+			'02.2206',
+			'02.3500',
+			'02.2210',
+			'02.3200',
+			'02.3203',
+			'02.2213',
+			'02.3300',
+			'02.2100',
+			'01.0200',
+			'02.3900',
+			'02.3301',
+			'02.2212',
+			'02.1204',
+			'02.2209',
+			'02.2216',
+			'02.3401',
+			'02.3103',
+			'02.1203',
+			'02.2208',
+			'02.1202',
+			'02.4100',
+			'02.3405',
+			'02.3101',
+			'02.3102',
+			'02.2205',
+			'02.2215',
+			'02.1209',
+			'02.1100',
+			'02.2101',
+			'02.2203',
+			'02.1402',
+			'02.3402',
+			'02.4201',
+			'02.4200',
+			'02.4301',
+			'02.3502',
+			'02.1300',
+			'02.2200',
+			'02.1208',
+			'02.2202',
+			'02.1210',
+			'02.4202',
+			'02.1207',
+			'02.1211',
+			'02.2102',
+			'02.3501',
+			'02.1403',
+			'02.4102',
+			'02.4204',
+			'02.1205',
+			'02.2204',
+			'02.1201',
+			'02.3100',
+			'02.4302',
+			'02.4203',
+			'02.1401',
+			'02.2214',
+			'02.1400',
+			'02.4300',
+			'02.3202',
+			'02.1200',
+			'02.1302',
+			'02.3404',
+			'02.3901',
+			'02.3403',
+			'02.1206',
+			'02.1212')
+			and
+			(b.AGE_YEAR <![CDATA[>=]]>18
+			or c.AGE_YEAR <![CDATA[>=]]>18)
+				and a.OUT_HP_DT <![CDATA[>=]]>
+				#{startTime}
+				and a.OUT_HP_DT <![CDATA[<]]>
+				#{endTime}
+				and a.ORGAN_CODE = #{unitId}
+		</where>
+	</select>
+
+	<select id="getEventNum" resultType="long">
+		select count(*) from outhospitalrecord a
+		left join
+		firstpagemedicalrecord b
+		on a.HP_S_NO = b.HP_S_NO
+		left join
+		ed_cmedical_home_page_record c
+		on a.HP_S_NO = c.HP_S_NO
+
+		<where>
+			a.OHREC_DREC = '2' and
+			a.OPERATION_CODE in ('02.2207',
+			'02.2211',
+			'02.2201',
+			'02.3201',
+			'02.1301',
+			'02.4101',
+			'02.3400',
+			'02.1404',
+			'02.3204',
+			'02.2206',
+			'02.3500',
+			'02.2210',
+			'02.3200',
+			'02.3203',
+			'02.2213',
+			'02.3300',
+			'02.2100',
+			'01.0200',
+			'02.3900',
+			'02.3301',
+			'02.2212',
+			'02.1204',
+			'02.2209',
+			'02.2216',
+			'02.3401',
+			'02.3103',
+			'02.1203',
+			'02.2208',
+			'02.1202',
+			'02.4100',
+			'02.3405',
+			'02.3101',
+			'02.3102',
+			'02.2205',
+			'02.2215',
+			'02.1209',
+			'02.1100',
+			'02.2101',
+			'02.2203',
+			'02.1402',
+			'02.3402',
+			'02.4201',
+			'02.4200',
+			'02.4301',
+			'02.3502',
+			'02.1300',
+			'02.2200',
+			'02.1208',
+			'02.2202',
+			'02.1210',
+			'02.4202',
+			'02.1207',
+			'02.1211',
+			'02.2102',
+			'02.3501',
+			'02.1403',
+			'02.4102',
+			'02.4204',
+			'02.1205',
+			'02.2204',
+			'02.1201',
+			'02.3100',
+			'02.4302',
+			'02.4203',
+			'02.1401',
+			'02.2214',
+			'02.1400',
+			'02.4300',
+			'02.3202',
+			'02.1200',
+			'02.1302',
+			'02.3404',
+			'02.3901',
+			'02.3403',
+			'02.1206',
+			'02.1212')
+			and (b.AGE_YEAR <![CDATA[>=]]>18
+			or c.AGE_YEAR <![CDATA[>=]]>18)
+				and a.OUT_HP_DT <![CDATA[>=]]>
+				#{startTime}
+				and a.OUT_HP_DT <![CDATA[<]]>
+				#{endTime}
+				and a.ORGAN_CODE = #{unitId}
+		</where>
+	</select>
+
+</mapper>

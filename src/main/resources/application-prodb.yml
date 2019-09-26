@@ -1,0 +1,86 @@
+paladin:
+  dynamic-datasource-enabled: 'true'
+  dynamic:
+    mybatis:
+      mapper-location: classpath:dynamic/mapper/**/*.xml
+      type-aliases-package: com.paladin.qos.dynamic.model
+    source[0]:
+      name: fuyou
+      url: jdbc:sqlserver://10.1.1.36:1044;database=wcdbsz
+      username: jswj
+      password: jswj2019
+    source[1]:
+      name: jcyl
+      url: jdbc:oracle:thin:@//10.9.0.165:1521/ksdaga
+      username: phis_wj
+      password: phis_wj
+    source[2]:
+      name: gongwei
+      url: jdbc:oracle:thin:@//10.9.0.12:1521/ksdaga
+      username: phis_wj
+      password: 123456
+    source[3]:
+      name: yiyuan-dyrmyy
+      url: jdbc:oracle:thin:@//10.9.1.34:1521/orcl
+      username: di_ehr467170249
+      password: neusoft
+    source[4]:
+      name: yiyuan-zyyy
+      url: jdbc:oracle:thin:@//10.9.1.34:1521/orcl
+      username: di_ehr467170257
+      password: neusoft
+    source[5]:
+      name: yiyuan-dermyy
+      url: jdbc:oracle:thin:@//10.9.1.34:1521/orcl
+      username: di_ehr467170513
+      password: neusoft
+    source[6]:
+      name: yiyuan-dsrmyy
+      url: jdbc:oracle:thin:@//10.9.1.34:1521/orcl
+      username: di_ehr467170265
+      password: neusoft
+    source[7]:
+      name: yiyuan-ljrmyy
+      url: jdbc:oracle:thin:@//10.9.1.34:1521/orcl
+      username: di_ehr467170361
+      password: neusoft
+    source[8]:
+      name: yiyuan-qdrmyy
+      url: jdbc:oracle:thin:@//10.9.1.34:1521/orcl
+      username: di_ehr467170345
+      password: neusoft
+    source[9]:
+      name: yiyuan-zprmyy
+      url: jdbc:oracle:thin:@//10.9.1.34:1521/orcl
+      username: di_ehr467170476
+      password: neusoft
+    source[10]:
+      name: yiyuan-zxyjhyy
+      url: jdbc:oracle:thin:@//10.9.1.34:1521/orcl
+      username: di_ehr467170441
+      password: neusoft
+    source[11]:
+      name: yiyuan-jswszx
+      url: jdbc:oracle:thin:@//10.9.1.34:1521/orcl
+      username: di_ehr467170353
+      password: neusoft
+    source[12]:
+      name: yiyuan-zsrmyy
+      url: jdbc:oracle:thin:@//10.9.1.34:1521/orcl
+      username: di_ehr467170417
+      password: neusoft
+    source[13]:
+      name: yiyuan-jxrmyy
+      url: jdbc:oracle:thin:@//10.9.1.34:1521/orcl
+      username: di_ehr467170337
+      password: neusoft
+    source[14]:
+      name: yiyuan-zzrmyy
+      url: jdbc:oracle:thin:@//10.9.1.34:1521/orcl
+      username: di_ehr467170505
+      password: neusoft
+    source[15]:
+      name: yiyuan-dshrmyy
+      url: jdbc:oracle:thin:@//10.9.1.34:1521/orcl
+      username: di_ehr467170468
+      password: neusoft

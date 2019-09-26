@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.paladin.qos.dynamic.mapper.familydoctor.DataFamilyDoctorMapper">
+    <!-- 签约健康管理服务包签约数 -->
+    <select id="signingNum" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_main WHERE lastflag
+        ='1' AND familynew='1'
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!--应签约居民数 -->
+    <select id="singingResidentNum" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_main 
+        where status='1'
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and MANAGEDCENTERCODE = #{unitId}
+    </select>
+    <!-- 签约个性化服务数 -->
+    <select id="singingServeNum" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_main 
+        WHERE guide3 IS NOT NULL
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- 签约总数 -->
+    <select id="singingTotal" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_main_org 
+        WHERE signcode='1'
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and MANAGEDCENTERCODE = #{unitId}
+    </select>
+
+    <!-- 签约居民中心就诊人次数 -->
+    <select id="singingAgencyOPDpersonNum" resultType="com.paladin.qos.dynamic.mapper.familydoctor.DataFamilyVO">
+        SELECT o.MANAGEDCENTERCODE unitId,o.IDNUMBER idCard FROM phis_chss.v_fha_person_sign_main_org o where o.signcode ='1'
+        and o.CREATEDTIME &gt;= #{startTime}
+        and o.CREATEDTIME &lt; #{endTime}
+        and o.MANAGEDCENTERCODE = #{unitId}
+    </select>
+
+    <select id="registerOPD" resultType="long">
+        select count(1) from phis_webhis.v_Opr_Register r 
+        where length(r.idcardno)=18
+        and o.CREATEDTIME &gt;= #{startTime}
+        and o.CREATEDTIME &lt; #{endTime}
+        and r.idcardno in     
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+            #{item.idCard}
+        </foreach>
+        and r.orgcode in
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+            #{item.unitId} 
+        </foreach>
+    </select>
+    <!-- 签约居民就诊总次数 -->
+    <select id="singingAgencyOPDTotal" resultType="String">
+        SELECT o.IDNUMBER idCard FROM phis_chss.v_fha_person_sign_main_org o
+        where o.signcode ='1'
+        and o.CREATEDTIME &gt;= #{startTime} 
+        and o.CREATEDTIME &lt; #{endTime}
+        and o.MANAGEDCENTERCODE = #{unitId}
+    </select>
+    <select id="registerOPDtotal" resultType="String">
+        select r.idcardno idCard from phis_webhis.v_Opr_Register r 
+        where length(r.idcardno)=18
+        and r.REGDATE &gt;= #{startTime}
+        and r.REGDATE &lt; #{endTime}
+        and r.orgcode = #{unitId}
+        and r.idcardno in
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+            #{item} 
+        </foreach>
+    </select>
+    
+    <select id="hospitalOPDTotal" resultType="long">
+    	select count(1) from RegisterRecord where length(cardno) = 18 
+    	and REC_DT &gt;= #{startTime} 
+    	and REC_DT &lt; #{endTime}
+    	and organ_code = #{unitId}
+    	and cardno in 
+    	<foreach collection="idCard" item="item" index="index" open="(" separator="," close=")">
+            #{item} 
+        </foreach>
+    </select>
+    
+    <!-- 签约居民家庭医生就诊总数 -->
+    <select id="singingDoctorOPDtotal" resultType="com.paladin.qos.dynamic.mapper.familydoctor.DataFamilyVO">
+        select m.CREATEDUNITCODE unitId,m.CENTERDOCTORNAME name from
+        phis_chss.v_fha_person_sign_main_org o left join phis_chss.v_fha_person_sign_main m on o.CODE=m.CODE
+        where m.CENTERDOCTORNAME is not null
+        and m.CREATEDTIME &gt;= #{startTime}
+        and m.CREATEDTIME &lt; #{endTime}
+        and m.CREATEDUNITCODE = #{unitId}
+    </select>
+    <select id="docnameOPDnum" resultType="long">
+        select count(1) from phis_webhis.v_Opr_Register r 
+        where r.REGDATE &gt;= #{startTime}
+        and r.REGDATE &lt; #{endTime}
+        and r.docname in
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+            #{item.name} 
+        </foreach>
+        and r.ORGCODE in
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+            #{item.unitId} 
+        </foreach>
+    </select>
+    <!-- 慢病签约人员管理数 -->
+    <select id="singingPersonManageNum" resultType="long">
+        select count(1) from phis_chss.v_fha_person_sign_main_org o
+        left join phis_chss.v_fha_person_main m on o.CODE = m.CODE
+        where o.SIGNCODE = '1'
+        and m.LINKB is not null 
+        and o.CREATEDTIME &gt;= #{startTime}
+        and o.CREATEDTIME &lt; #{endTime}
+        and o.MANAGEDCENTERCODE = #{unitId}
+    </select>
+    <!-- 慢病签约人员随访数 -->
+    <select id="singingPersonFollowNum" resultType="long">
+        select count(1) from phis_chss.v_fha_person_sign_main_org o
+        left join phis_chss.v_fha_person_main m on o.CODE = m.CODE
+        left join phis_chss.v_fha_person_sign_visit v on o.CODE = v.CODE
+        where o.SIGNCODE = '1' 
+        and m.LINKB is not null
+        and o.CREATEDTIME &gt;= #{startTime}
+        and o.CREATEDTIME &lt; #{endTime}
+        and o.MANAGEDCENTERCODE = #{unitId}
+    </select>
+    <!-- 上门服务人次数 -->
+    <select id="doorServicePersonNum" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_visit 
+        WHERE servercode='3'
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- 营养指导人次数 -->
+    <select id="nutritionGuidePersonNum" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_visit 
+        WHERE guide2 IS NOT NULL
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- 康复指导人次数 -->
+    <select id="recoveryGuidePersonNum" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_visit 
+        WHERE guide5 IS NOT NULL
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- 用药指导人次数 -->
+    <select id="medicationGuidePersonNum" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_visit 
+        WHERE guide1 IS NOT NULL
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- 慢病长处方服务数 -->
+    <select id="prescriptionServicNum" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_visit 
+        WHERE ccffw IS NOT NULL
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- 签约居民体检人数 -->
+    <select id="singingInspectNum" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_main 
+        WHERE linkcsum IS NOT NULL
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and MANAGEDCENTERCODE = #{unitId}
+    </select>
+    <!-- 心脑血管高危人群筛查人数 -->
+    <select id="cardiovascularSiftNum" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_visit_temp 
+        WHERE znxgjbsc IS NOT NULL
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- 肿瘤高危人群筛查数 -->
+    <select id="tumourSiftNum" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_visit_temp 
+        WHERE zlsc IS NOT NULL
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- 骨质疏松高危人群筛查数 -->
+    <select id="osteoporosisSiftNum" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_visit_temp 
+        WHERE gzsc IS NOT NULL
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- COPD高危人群筛查数 -->
+    <select id="copdSiftNum" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_visit_temp 
+        WHERE mzfsc IS NOT NULL
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- 儿童哮喘筛查数 -->
+    <select id="childhoodSsthmaSiftNum" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_visit_temp 
+        WHERE etxc IS NOT NULL
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- 健康自理检测评估数 -->
+    <select id="healthyselfcareSssessNum" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_visit_temp t 
+        WHERE t.JKZDPG IS NOT NULL
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- CDSS心脑血管风险评估数 -->
+    <select id="cdssSssessNum" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_visit_temp 
+        WHERE cdss IS NOT NULL
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!--个性化健康信息精准推送数 -->
+    <select id="personalizedHealthPushNum" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_visit_temp 
+        WHERE wx IS NOT NULL
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- 家庭医生签约服务协议表总数 -->
+    <select id="singingServiceTotal" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_main
+        where CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- 残疾人签约率 -->
+    <select id="disabledSigningRate" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_main 
+        WHERE signmemtype like '%B%'
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- 高血压患者签约率 -->
+    <select id="hypertensionSigningRate" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_main 
+        WHERE signmemtype like '%5%'
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- 糖尿病患者签约率 -->
+    <select id="diabetesSigningRate" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_main 
+        WHERE signmemtype like '%6%'
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- 孕产妇签约率 -->
+    <select id="maternalSigningRate" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_main 
+        WHERE signmemtype like '%E%'
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- 0-6周岁儿童签约率 -->
+    <select id="childrenSigningRate" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_main 
+        WHERE signmemtype like '%F%'
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- 65周岁及以上老年人签约率 -->
+    <select id="agedSigningRate" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_main 
+        WHERE signmemtype like '%7%'
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- 严重肺结核患者签约率 -->
+    <select id="tuberculosisSigningRate" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_main 
+        WHERE signmemtype like '%8%'
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- 重精神障碍患者签约率 -->
+    <select id="mentalDisorderSigningRate" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_main 
+        WHERE signmemtype like '%D%'
+        and CREATEDTIME &gt;= #{startTime}
+        and CREATEDTIME &lt; #{endTime}
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- 疾病筛查高危人员签约率 -->
+    <select id="diseaseSiftSigningRate" resultType="long">
+        select count(1) from phis_chss.v_fha_person_sign_main m
+        left join phis_chss.v_fha_pre_scale_assess a on m.CODE=a.CODE
+        where a.RISKDESC is not null
+        and m.CREATEDTIME &gt;= #{startTime}
+        and m.CREATEDTIME &lt; #{endTime}
+        and m.CREATEDUNITCODE = #{unitId}
+    </select>
+</mapper>

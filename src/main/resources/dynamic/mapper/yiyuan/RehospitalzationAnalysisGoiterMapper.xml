@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.paladin.qos.dynamic.mapper.yiyuan.RehospitalzationAnalysisGoiterMapper">
+
+	<select id="getTotalNum" parameterType="Map" resultType="Long">
+		select count(*) from outhospitalrecord a
+		<where>
+			<!-- OHREC_DREC = '1' and a.IHD_DIS_CODE in (select major_code from classify_code_disease 
+				where major_code like 'E04%') -->
+			OHREC_DREC = '1'
+			and a.IHD_DIS_CODE in ('E04.904',
+			'E04.000',
+			'E04.103',
+			'E04.903',
+			'E04.104',
+			'E04.800',
+			'E04.102',
+			'E04.900',
+			'E04.901',
+			'E04.201',
+			'E04.200',
+			'E04.100',
+			'E04.801',
+			'E04.902',
+			'E04.001',
+			'E04.101')
+				and OUT_HP_DT <![CDATA[>=]]>
+				#{startTime}
+				and OUT_HP_DT <![CDATA[<]]>
+				#{endTime}
+				and ORGAN_CODE = #{unitId}
+		</where>
+	</select>
+
+	<select id="getEventNum" parameterType="Map" resultType="Long">
+		SELECT count(*) FROM outhospitalrecord a
+		where a.OHREC_DREC = '1'
+		and
+		a.IHD_DIS_CODE in ('E04.904',
+		'E04.000',
+		'E04.103',
+		'E04.903',
+		'E04.104',
+		'E04.800',
+		'E04.102',
+		'E04.900',
+		'E04.901',
+		'E04.201',
+		'E04.200',
+		'E04.100',
+		'E04.801',
+		'E04.902',
+		'E04.001',
+		'E04.101')
+			and a.OUT_HP_DT <![CDATA[>=]]>
+			#{startTime}
+			and a.OUT_HP_DT <![CDATA[<]]>
+			#{endTime}
+			and ORGAN_CODE = #{unitId}
+		AND EXISTS (
+		SELECT * FROM outhospitalrecord b
+		WHERE
+		b.CARDNO = a.CARDNO
+		AND b.OUT_HP_DT <![CDATA[!=]]>a.OUT_HP_DT
+		and a.OUT_HP_DT <![CDATA[>=]]>(b.IN_HP_DT-31)
+		and a.OUT_HP_DT <![CDATA[<]]>b.IN_HP_DT
+
+		)
+	</select>
+</mapper>

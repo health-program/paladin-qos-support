@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.paladin.qos.dynamic.mapper.exhibition.FamilyPlanningManagementMapper">
+
+    <!--避孕套发放数量-->
+    <select id="getCondomDistributionTotal" resultType="long">
+        SELECT  COALESCE (SUM(iByt4) ,0) AS total FROM  JsQjffdjbRk  WHERE datediff( month, dindate, #{date} ) = 0
+    </select>
+
+    <!--避孕药发放数量-->
+    <select id="getBirthControlPillsTotal" resultType="long">
+        SELECT  COALESCE (SUM(iByy1) ,0) +COALESCE (SUM(iByy2) ,0)+COALESCE (SUM(iByy3) ,0)+COALESCE (SUM(iByy4) ,0)+COALESCE (SUM(iByy5) ,0)+COALESCE (SUM(iByy6) ,0)  AS total FROM  JsQjffdjbRk   WHERE datediff( month, dindate, #{date} ) = 0
+    </select>
+
+    <!--药物流产人数-->
+    <select id="getMedicalAbortionTotal" resultType="long">
+        SELECT   COUNT( 1 ) AS total FROM  JsYljlb  WHERE datediff( month, dindate, #{date}  ) = 0
+    </select>
+
+    <!--负压吸宫人数-->
+    <select id="getNegativePressureSuctionTotal" resultType="long">
+        SELECT   COUNT( 1 ) AS total FROM  JsFyxgQgsjlb  WHERE datediff( month, dindate, #{date} ) = 0
+    </select>
+
+
+    <!--宫内节育器放置-->
+    <select id="getIntrauterineDevicePlacementTotal" resultType="long">
+        SELECT   COUNT( 1 ) AS total FROM  JsGnjyqFzssjl  WHERE datediff( month, dindate, #{date}  ) = 0
+    </select>
+
+
+    <!--宫内节育器取出-->
+    <select id="getIntrauterineDeviceRemovalTotal" resultType="long">
+        SELECT   COUNT( 1 ) AS total FROM  JsGnjyqSsjl  WHERE datediff( month, dindate, #{date} ) = 0
+    </select>
+
+    <!--*********************************************************************************************************************************************-->
+
+    <!--避孕套发放数量-->
+    <select id="getCondomDistributionNumber" resultType="long">
+        SELECT COALESCE(SUM(iByt4), 0) AS total FROM JsQjffdjbRk WHERE dIndate &gt;= #{startTime} AND dIndate <![CDATA[< ]]> #{endTime} AND cJcdwbh LIKE #{code} + '%'
+    </select>
+
+    <!--避孕药发放数量-->
+    <select id="getBirthControlPillsNumber" resultType="long">
+        SELECT  COALESCE (SUM(iByy1) ,0) +COALESCE (SUM(iByy2) ,0)+COALESCE (SUM(iByy3) ,0)+COALESCE (SUM(iByy4) ,0)+COALESCE (SUM(iByy5) ,0)+COALESCE (SUM(iByy6) ,0)  AS total FROM  JsQjffdjbRk   
+        WHERE dIndate &gt;=  #{startTime}
+        AND  dIndate <![CDATA[< ]]> #{endTime}
+        AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <!--药物流产人数-->
+    <select id="getMedicalAbortionNumber" resultType="long">
+        SELECT   COUNT( 1 ) AS total FROM  JsYljlb  WHERE  dIndate &gt;=  #{startTime}  AND  dIndate <![CDATA[< ]]> #{endTime}  AND  cJcdwbh LIKE  #{code} + '%'
+
+    </select>
+
+    <!--负压吸宫人数-->
+    <select id="getNegativePressureSuctionNumber" resultType="long">
+        SELECT   COUNT( 1 ) AS total FROM  JsFyxgQgsjlb  WHERE  dIndate &gt;=  #{startTime} AND  dIndate <![CDATA[< ]]> #{endTime} AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+
+    <!--宫内节育器放置-->
+    <select id="getIntrauterineDevicePlacementNumber" resultType="long">
+        SELECT   COUNT( 1 ) AS total FROM  JsGnjyqFzssjl  WHERE  dIndate &gt;=  #{startTime} AND  dIndate <![CDATA[< ]]> #{endTime} AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <!--宫内节育器取出-->
+    <select id="getIntrauterineDeviceRemovalNumber" resultType="long">
+        SELECT   COUNT( 1 ) AS total FROM  JsGnjyqSsjl  WHERE  dIndate &gt;=  #{startTime} AND  dIndate <![CDATA[< ]]> #{endTime}  AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+</mapper>

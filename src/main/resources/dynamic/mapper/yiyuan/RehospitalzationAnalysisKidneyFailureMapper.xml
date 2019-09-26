@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.paladin.qos.dynamic.mapper.yiyuan.RehospitalzationAnalysisKidneyFailureMapper">
+
+	<select id="getTotalNum" parameterType="Map" resultType="Long">
+		select count(*) from outhospitalrecord a
+		<where>
+			<!-- OHREC_DREC = '1' and a.IHD_DIS_CODE in (select major_code from classify_code_disease 
+				where major_code like 'N17%' or major_code like 'N18%' or major_code like 
+				'N19%') -->
+			OHREC_DREC = '1'
+			and a.IHD_DIS_CODE in ('N17.100',
+			'N18.901',
+			'N17.001',
+			'N18.809†',
+			'N18.808†',
+			'N18.805†',
+			'N17.200',
+			'N17.002',
+			'N17.800',
+			'N18.803',
+			'N17.000',
+			'N18.804',
+			'N17.101',
+			'N19.x01',
+			'N18.810†',
+			'N18.806†',
+			'N18.002†',
+			'N18.801',
+			'N19.x02',
+			'N18.001',
+			'N18.807†',
+			'N18.800',
+			'N19.x00',
+			'N18.000',
+			'N18.900',
+			'N18.802',
+			'N17.900')
+				and OUT_HP_DT <![CDATA[>=]]>
+				#{startTime}
+				and OUT_HP_DT <![CDATA[<]]>
+				#{endTime}
+				and ORGAN_CODE = #{unitId}
+		</where>
+	</select>
+
+	<select id="getEventNum" parameterType="Map" resultType="Long">
+		SELECT count(*) FROM outhospitalrecord a
+		where a.OHREC_DREC = '1'
+		and
+		a.IHD_DIS_CODE in ('N17.100',
+		'N18.901',
+		'N17.001',
+		'N18.809†',
+		'N18.808†',
+		'N18.805†',
+		'N17.200',
+		'N17.002',
+		'N17.800',
+		'N18.803',
+		'N17.000',
+		'N18.804',
+		'N17.101',
+		'N19.x01',
+		'N18.810†',
+		'N18.806†',
+		'N18.002†',
+		'N18.801',
+		'N19.x02',
+		'N18.001',
+		'N18.807†',
+		'N18.800',
+		'N19.x00',
+		'N18.000',
+		'N18.900',
+		'N18.802',
+		'N17.900')
+			and a.OUT_HP_DT <![CDATA[>=]]>
+			#{startTime}
+			and a.OUT_HP_DT <![CDATA[<]]>
+			#{endTime}
+			and ORGAN_CODE = #{unitId}
+		AND EXISTS (
+		SELECT * FROM outhospitalrecord b
+		WHERE
+		b.CARDNO = a.CARDNO
+		AND b.OUT_HP_DT <![CDATA[!=]]>a.OUT_HP_DT
+		and a.OUT_HP_DT <![CDATA[>=]]>(b.IN_HP_DT-31)
+		and a.OUT_HP_DT <![CDATA[<]]>b.IN_HP_DT
+
+		)
+	</select>
+</mapper>

@@ -1,0 +1,19 @@
+paladin:
+  dynamic-datasource-enabled: 'true'
+  dynamic:
+    mybatis:
+      mapper-location: classpath:dynamic/mapper/**/*.xml
+      type-aliases-package: com.paladin.qos.dynamic.model
+    source[0]:
+      name: fuyou
+      url: jdbc:sqlserver://172.16.11.35:1433;database=wcdbsz
+      username: sa
+      password: 123456
+      type: HIKARI
+    source[1]:
+      name: yiyuan
+      url: jdbc:mysql://172.16.11.35:3306/qos?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
+      username: netin
+      password: 123456
+      
+  

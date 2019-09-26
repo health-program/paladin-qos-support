@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.paladin.qos.dynamic.mapper.yiyuan.RehospitalzationAnalysisBrainInjuryMapper">
+
+	<select id="getTotalNum" parameterType="Map" resultType="Long">
+		select count(*) from outhospitalrecord
+		<where>
+			<!-- OHREC_DREC = '1' and IHD_DIS_CODE in (select major_code from classify_code_disease 
+				where major_code like 'S06%') -->
+			OHREC_DREC = '1'
+			and IHD_DIS_CODE in ('S06.700',
+			'S06.501',
+			'S06.911',
+			'S06.300',
+			'S06.100',
+			'S06.912',
+			'S06.203',
+			'S06.204',
+			'S06.510',
+			'S06.400',
+			'S06.710',
+			'S06.302',
+			'S06.211',
+			'S06.600',
+			'S06.802',
+			'S06.804',
+			'S06.410',
+			'S06.310',
+			'S06.803',
+			'S06.812',
+			'S06.206',
+			'S06.900',
+			'S06.910',
+			'S06.200',
+			'S06.805',
+			'S06.401',
+			'S06.301',
+			'S06.813',
+			'S06.201',
+			'S06.202',
+			'S06.500',
+			'S06.000',
+			'S06.901',
+			'S06.502',
+			'S06.205',
+			'S06.610',
+			'S06.814',
+			'S06.801',
+			'S06.811',
+			'S06.800')
+				and OUT_HP_DT <![CDATA[>=]]>
+				#{startTime}
+				and OUT_HP_DT <![CDATA[<]]>
+				#{endTime}
+				and ORGAN_CODE = #{unitId}
+		</where>
+	</select>
+
+	<select id="getEventNum" parameterType="Map" resultType="Long">
+		SELECT count(*) FROM outhospitalrecord a
+		where a.OHREC_DREC = '1'
+		and
+		a.IHD_DIS_CODE in ('S06.700',
+		'S06.501',
+		'S06.911',
+		'S06.300',
+		'S06.100',
+		'S06.912',
+		'S06.203',
+		'S06.204',
+		'S06.510',
+		'S06.400',
+		'S06.710',
+		'S06.302',
+		'S06.211',
+		'S06.600',
+		'S06.802',
+		'S06.804',
+		'S06.410',
+		'S06.310',
+		'S06.803',
+		'S06.812',
+		'S06.206',
+		'S06.900',
+		'S06.910',
+		'S06.200',
+		'S06.805',
+		'S06.401',
+		'S06.301',
+		'S06.813',
+		'S06.201',
+		'S06.202',
+		'S06.500',
+		'S06.000',
+		'S06.901',
+		'S06.502',
+		'S06.205',
+		'S06.610',
+		'S06.814',
+		'S06.801',
+		'S06.811',
+		'S06.800')
+			and a.OUT_HP_DT <![CDATA[>=]]>
+			#{startTime}
+			and a.OUT_HP_DT <![CDATA[<]]>
+			#{endTime}
+			and ORGAN_CODE = #{unitId}
+		AND EXISTS (
+		SELECT * FROM outhospitalrecord b
+		WHERE
+		b.CARDNO = a.CARDNO
+		AND b.OUT_HP_DT <![CDATA[!=]]>a.OUT_HP_DT
+		and a.OUT_HP_DT <![CDATA[>=]]>(b.IN_HP_DT-31)
+		and a.OUT_HP_DT <![CDATA[<]]>b.IN_HP_DT
+
+		)
+	</select>
+</mapper>

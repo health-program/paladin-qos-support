@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.paladin.qos.dynamic.mapper.exhibition.MaternalManagementMapper">
+
+    <!--男性婚前检查-->
+    <select id="getMalePremaritalCheckTotal" resultType="long">
+        SELECT COUNT( 1 ) AS total
+        FROM hjM_Hqjc  WHERE ihjyj = 0 AND bvisible = 1  AND dInDate >= #{ startTime }       
+        AND dInDate <![CDATA[< ]]>#{ endTime }      
+    </select>
+
+    <select id="getMalePremaritalCheckNumber" resultType="long">
+        SELECT COUNT( 1 ) AS total FROM hjM_Hqjc  WHERE ihjyj = 0 AND bvisible = 1 AND dIndate >=  #{startTime} AND  dIndate <![CDATA[< ]]> #{endTime} AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+
+    <!--女性婚前检查-->
+    <select id="getFemalePremaritalCheckTotal" resultType="long">
+        SELECT COUNT( 1 ) AS total
+        FROM hjF_Hqjc  WHERE ihjyj = 0 AND bvisible = 1  AND dInDate >= #{ startTime }   
+        AND dInDate <![CDATA[< ]]>#{ endTime }        
+    </select>
+
+    <select id="getFemalePremaritalCheckNumber" resultType="long">
+        SELECT COUNT( 1 ) AS total FROM hjF_Hqjc  WHERE ihjyj = 0 AND bvisible = 1 AND dIndate >=  #{startTime}  AND  dIndate <![CDATA[< ]]> #{endTime} AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <!--孕前检查人次数-->
+    <select id="getPrepregnancyCheckTotal" resultType="long">
+         SELECT SUM
+        ( total )
+    FROM
+        (
+        SELECT COUNT
+            ( 1 ) AS total
+        FROM
+            hjM_Hqjc
+        WHERE
+            ihjyj IN ( 1, 2 ) AND bvisible = 1 AND dInDate >= #{ startTime }     
+            AND dInDate <![CDATA[< ]]>#{ endTime }        
+            UNION ALL
+        SELECT COUNT
+            ( 1 ) AS total
+        FROM
+            hjF_Hqjc
+        WHERE
+            ihjyj IN ( 1, 2 ) AND bvisible = 1 AND dInDate >= #{ startTime }       
+            AND dInDate <![CDATA[< ]]>#{ endTime }        
+        ) c
+    </select>
+
+    <select id="getPrepregnancyCheckNumber" resultType="long">
+        SELECT SUM
+        ( total )
+        FROM
+        (
+        SELECT COUNT
+        ( 1 ) AS total
+        FROM
+        hjM_Hqjc
+        WHERE
+        ihjyj IN ( 1, 2 ) AND bvisible = 1      
+            AND dIndate >=  #{startTime}     
+            AND  dIndate <![CDATA[< ]]> #{endTime}
+            AND  cJcdwbh LIKE  #{code} + '%'    
+        UNION ALL
+        SELECT COUNT
+        ( 1 ) AS total
+        FROM
+        hjF_Hqjc
+        WHERE
+        ihjyj IN ( 1, 2 ) AND bvisible = 1      
+            AND dIndate >=  #{startTime}
+            AND  dIndate <![CDATA[< ]]> #{endTime}
+            AND  cJcdwbh LIKE  #{code} + '%'     
+        ) c
+    </select>
+
+    <!--产妇筛查数-->
+    <select id="getMaternalScreeningTotal" resultType="long">
+        SELECT  COUNT (1) AS total  FROM  yfyzqcqscsqb  WHERE datediff( month, dkdrq, #{date} ) = 0
+    </select>
+
+    <select id="getMaternalScreeningNumber" resultType="long">
+        SELECT  COUNT (1) AS total  FROM  yfyzqcqscsqb  WHERE  dkdrq >=  #{startTime}  AND  dkdrq <![CDATA[< ]]> #{endTime}  AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <!--高危孕产妇人数-->
+    <select id="getHighriskMaternalTotal" resultType="long">
+        SELECT  COUNT (1) AS total  FROM  yfgwys  WHERE datediff( month, dindate, #{date} ) = 0
+    </select>
+
+    <select id="getHighriskMaternalNumber" resultType="long">
+        SELECT  COUNT (1) AS total  FROM  yfgwys  WHERE  dindate >=  #{startTime} AND  dindate <![CDATA[< ]]> #{endTime} AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <!--孕产妇死亡人数-->
+    <select id="getMaternalDeathTotal" resultType="long">
+        SELECT  COUNT (1) AS total  FROM   Yfsw  WHERE datediff( month, dSwsj, #{date} ) = 0
+    </select>
+
+    <select id="getMaternalDeathNumber" resultType="long">
+        SELECT  COUNT (1) AS total  FROM   Yfsw  WHERE  dSwsj >=  #{startTime} AND  dSwsj <![CDATA[< ]]> #{endTime}  AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <!--两癌筛查-宫颈癌筛查-->
+    <select id="getCervicalCancerScreeningTotal" resultType="long">
+        SELECT  COUNT (1) AS total  FROM   Gjajcga_2015  WHERE datediff( month, dindate, #{date} ) = 0
+    </select>
+
+    <select id="getCervicalCancerScreeningNumber" resultType="long">
+        SELECT  COUNT (1) AS total  FROM   Gjajcga_2015  WHERE  dindate >=  #{startTime}  AND  dindate <![CDATA[< ]]> #{endTime}  AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <!--两癌筛查-乳腺癌筛查-->
+    <select id="getBreastCancerScreeningTotal" resultType="long">
+        SELECT  COUNT (1) AS total  FROM   Rxascdjb_2015  WHERE datediff( month, dindate, #{date} ) = 0
+    </select>
+
+    <select id="getBreastCancerScreeningNumber" resultType="long">
+        SELECT  COUNT (1) AS total  FROM   Rxascdjb_2015  WHERE  dindate >=  #{startTime}  AND  dindate <![CDATA[< ]]> #{endTime}  AND  cJcdwbh2 LIKE  #{code} + '%'
+    </select>
+
+    <!--母婴阻断-梅毒检测人数-->
+    <select id="getSyphilisTestTotal" resultType="long">
+        SELECT COALESCE (SUM(E6),0)  +  COALESCE (SUM(E7),0) AS total FROM Yfmdygmycbgzybb WHERE  iYear = DATEPART(yyyy, #{date}) AND iMonth =  DATEPART(m, #{date})
+    </select>
+
+    <select id="getSyphilisTestNumber" resultType="long">
+        SELECT COALESCE (SUM(E6),0)  +  COALESCE (SUM(E7),0) AS total FROM Yfmdygmycbgzybb WHERE 1 = 1
+            AND  CAST(CAST(iYear AS VARCHAR(4)) + '-' + CAST(iMonth AS VARCHAR(4)) + '-01' AS datetime) >= #{startTime}
+             AND  CAST(CAST(iYear AS VARCHAR(4)) + '-' + CAST(iMonth AS VARCHAR(4)) + '-01' AS datetime) <![CDATA[< ]]> #{endTime}  AND  cjgdm LIKE  #{code} + '%'
+    </select>
+
+    <!--母婴阻断-梅毒感染人数-->
+    <select id="getSyphilisInfectionTotal" resultType="long">
+        SELECT COALESCE (SUM(E9) ,0)  AS total  FROM  Yfmdygmycbgzybb WHERE  iYear = DATEPART(yyyy, #{date}) AND iMonth =  DATEPART(m, #{date})
+    </select>
+
+
+    <select id="getSyphilisInfectionNumber" resultType="long">
+        SELECT COALESCE (SUM(E9) ,0)  AS total  FROM  Yfmdygmycbgzybb WHERE  1 = 1        
+            AND  CAST(CAST(iYear AS VARCHAR(4)) + '-' + CAST(iMonth AS VARCHAR(4)) + '-01' AS datetime) >= #{startTime} 
+            AND  CAST(CAST(iYear AS VARCHAR(4)) + '-' + CAST(iMonth AS VARCHAR(4)) + '-01' AS datetime) <![CDATA[< ]]> #{endTime}     
+            AND  cjgdm LIKE  #{code} + '%'        
+    </select>
+
+
+    <!--母婴阻断-乙肝检测人数-->
+    <select id="getHepatitisBtestTotal" resultType="long">
+        SELECT  COALESCE (SUM(E11) ,0) + COALESCE (SUM(E12),0) AS  total  FROM Yfmdygmycbgzybb WHERE  iYear = DATEPART(yyyy, #{date}) AND iMonth =  DATEPART(m, #{date})
+    </select>
+
+    <select id="getHepatitisBtestNumber" resultType="long">
+        SELECT  COALESCE (SUM(E11) ,0) + COALESCE (SUM(E12),0) AS  total  FROM Yfmdygmycbgzybb WHERE 1 = 1       
+            AND  CAST(CAST(iYear AS VARCHAR(4)) + '-' + CAST(iMonth AS VARCHAR(4)) + '-01' AS datetime) >= #{startTime} 
+            AND  CAST(CAST(iYear AS VARCHAR(4)) + '-' + CAST(iMonth AS VARCHAR(4)) + '-01' AS datetime) <![CDATA[< ]]> #{endTime}   
+            AND  cjgdm LIKE  #{code} + '%'       
+    </select>
+
+
+    <!--母婴阻断-乙肝确定感染人次数-->
+    <select id="getHepatitisBdeterminesInfectionTotal" resultType="long">
+        SELECT COALESCE (SUM(E14)  ,0)  AS total  FROM  Yfmdygmycbgzybb WHERE  iYear = DATEPART(yyyy, #{date}) AND iMonth =  DATEPART(m, #{date})
+    </select>
+
+    <select id="getHepatitisBdeterminesInfectionNumber" resultType="long">
+        SELECT COALESCE (SUM(E14)  ,0)  AS total  FROM  Yfmdygmycbgzybb WHERE  1 = 1        
+            AND  CAST(CAST(iYear AS VARCHAR(4)) + '-' + CAST(iMonth AS VARCHAR(4)) + '-01' AS datetime) >= #{startTime}     
+            AND  CAST(CAST(iYear AS VARCHAR(4)) + '-' + CAST(iMonth AS VARCHAR(4)) + '-01' AS datetime) <![CDATA[< ]]> #{endTime}    
+            AND  cjgdm LIKE  #{code} + '%'      
+    </select>
+
+
+    <!--妇女病筛查-->
+    <select id="getWomenDiseaseScreeningTotal" resultType="long">
+        SELECT   COUNT (1) AS total  FROM  Fnbjcxx   WHERE datediff( month, dindate, #{date} ) = 0
+    </select>
+
+    <select id="getWomenDiseaseScreeningNumber" resultType="long">
+        SELECT   COUNT (1) AS total  FROM  Fnbjcxx   WHERE  dindate >=  #{startTime}  AND  dindate <![CDATA[< ]]> #{endTime}  AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <!--产后访视-->
+    <select id="getPostpartumVisitTotal" resultType="long">
+        SELECT SUM(total) FROM(
+        SELECT  COUNT(1) AS total FROM yfchfs WHERE   datediff( month, dFsrq, #{date} ) = 0
+        UNION ALL
+        SELECT  COUNT(1) AS total FROM yfxsefs WHERE   datediff( month, dFsrq, #{date} ) = 0
+        ) c
+    </select>
+
+    <select id="getMaternalVisitNumber" resultType="long">
+        SELECT COUNT(1) AS total FROM yfchfs WHERE  dFsrq >= #{startTime} AND dFsrq <![CDATA[< ]]> #{endTime} AND cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <select id="getNewbornVisitNumber" resultType="long">
+        SELECT COUNT(1) AS total FROM yfxsefs WHERE  dFsrq >= #{startTime}  AND dFsrq <![CDATA[< ]]> #{endTime} AND cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <!--孕产妇体检初检-->
+    <select id="getFirstExaminationTimesNumber" resultType="long">
+        SELECT  COUNT(1) AS total  FROM Yfcz WHERE  dCzrq >=  #{startTime}  AND  dCzrq <![CDATA[< ]]> #{endTime}  AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+
+    <!--孕产妇体检复检-->
+    <select id="getCycleExaminationTimesNumber" resultType="long">
+        SELECT COUNT(1) AS total FROM yffz WHERE  dFzrq >=  #{startTime} AND  dFzrq <![CDATA[< ]]> #{endTime}  AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <!--叶酸发放人次数-->
+    <select id="getNumberOfFolates" resultType="long">
+        SELECT COUNT( 1 ) AS total
+        FROM Csqyslqffdjb  WHERE  dDyclfsj >= #{ startTime }       
+        AND dDyclfsj <![CDATA[< ]]>#{ endTime }       
+    </select>
+
+    <select id="getNumberOfFolatesNumber" resultType="long">
+        SELECT COUNT( 1 ) AS total FROM Csqyslqffdjb  WHERE  dDyclfsj >=  #{startTime}  AND  dDyclfsj <![CDATA[< ]]> #{endTime}  AND  cFfdwdm LIKE  #{code} + '%'
+    </select>
+
+    <!--叶酸发放瓶数-->
+    <select id="getFolicAcidDispensingBottle" resultType="long">
+        SELECT  COALESCE (SUM(iDycffsl ),0) AS total
+        FROM Csqyslqffdjb  WHERE  dDyclfsj >= #{ startTime }  AND dDyclfsj <![CDATA[< ]]>#{ endTime }
+    </select>
+
+    <select id="getFolicAcidDispensingBottleNumber" resultType="long">
+        SELECT  COALESCE (SUM(iDycffsl ),0) AS total
+        FROM Csqyslqffdjb  WHERE   dDyclfsj >=  #{startTime} AND  dDyclfsj <![CDATA[< ]]> #{endTime} AND  cFfdwdm LIKE  #{code} + '%'
+    </select>
+
+    <!--孕妇建卡数-->
+    <select id="getPregnantWomenBuildCardTotal" resultType="long">
+        SELECT COUNT(1) AS total FROM YfMain WHERE  datediff(month,dJcrq,#{date})=0
+    </select>
+
+    <select id="getPregnantWomenBuildCardNumber" resultType="long">
+        SELECT COUNT(1) AS total FROM YfMain WHERE  dJcrq >=  #{startTime}  AND  dJcrq <![CDATA[< ]]> #{endTime}  AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <!--早孕建卡数-->
+    <select id="getEarlyPregnancyCardTotal" resultType="long">
+        SELECT COUNT(1) AS total FROM YfMain WHERE iJcyz <![CDATA[< ]]>13  AND   datediff(month,dJcrq,#{date})=0
+    </select>
+
+    <select id="getEarlyPregnancyCardNumber" resultType="long">
+        SELECT COUNT(1) AS total FROM YfMain WHERE iJcyz <![CDATA[< ]]>13  AND dJcrq >=  #{startTime}  AND  dJcrq <![CDATA[< ]]> #{endTime}  AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+</mapper>

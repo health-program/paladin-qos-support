@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.paladin.qos.dynamic.mapper.exhibition.ChildCareManagementMapper">
+
+    <!--婴幼儿死亡人数-->
+    <select id="getInfantDeathTotal" resultType="long">
+         SELECT  COUNT (1) AS total FROM   Etsw  WHERE datediff( month, dswrq, #{date} ) = 0
+    </select>
+
+    <select id="getInfantDeathNumber" resultType="long">
+        SELECT  COUNT (1) AS total FROM   Etsw  WHERE  dswrq >=  #{startTime} AND  dswrq <![CDATA[< ]]> #{endTime} AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <!--新生儿出生缺陷人数-->
+    <select id="getNeonatalBirthDefectsTotal" resultType="long">
+        SELECT  COUNT (1) AS total FROM   Yfxsecsqx  WHERE datediff( month, dcsrq, #{date} ) = 0
+    </select>
+
+    <select id="getNeonatalBirthDefectsNumber" resultType="long">
+        SELECT  COUNT (1) AS total FROM   Yfxsecsqx  WHERE   dcsrq >=  #{startTime} AND  dcsrq <![CDATA[< ]]> #{endTime} AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <!--新生儿疾病筛查人数-->
+    <select id="getNeonatalDiseaseScreeningTotal" resultType="long">
+        SELECT  COUNT (1) AS total FROM   Jbsc  WHERE datediff( month, dCxrq, #{date} ) = 0
+    </select>
+
+    <select id="getNeonatalDiseaseScreeningNumber" resultType="long">
+        SELECT  COUNT (1) AS total FROM   Jbsc  WHERE  dCxrq >=  #{startTime} AND  dCxrq <![CDATA[< ]]> #{endTime}  AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <!--儿童建卡人数-->
+    <select id="getChildCardTotal" resultType="long">
+        SELECT  COUNT (1) AS total   FROM  Etmain  WHERE datediff( month, dJcrq, #{date} ) = 0
+    </select>
+
+    <select id="getChildCardNumber" resultType="long">
+        SELECT  COUNT (1) AS total   FROM  Etmain  WHERE  dJcrq >=  #{startTime} AND  dJcrq <![CDATA[< ]]> #{endTime} AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <!--女性新生儿分娩数-->
+    <select id="getFemaleNewbornChildbirthTotal" resultType="long">
+        SELECT  COUNT (1) AS total FROM   Yfxseqk  WHERE datediff( month, dCsrq, #{date} ) = 0 AND cXb = '女'
+    </select>
+
+    <select id="getFemaleNewbornChildbirthNumber" resultType="long">
+        SELECT  COUNT (1) AS total FROM   Yfxseqk  WHERE cXb = '女' AND dCsrq >=  #{startTime}  AND  dCsrq <![CDATA[< ]]> #{endTime} AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <!--男性新生儿分娩数-->
+    <select id="getMaleNewbornChildbirthTotal" resultType="long">
+        SELECT  COUNT (1) AS total FROM   Yfxseqk  WHERE datediff( month, dCsrq, #{date} ) = 0 AND cXb = '男'
+    </select>
+
+    <select id="getMaleNewbornChildbirthNumber" resultType="long">
+        SELECT  COUNT (1) AS total FROM   Yfxseqk  WHERE  cXb = '男' AND dCsrq >=  #{startTime}  AND  dCsrq <![CDATA[< ]]> #{endTime}  AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <!--儿童入园健康检查数-->
+    <select id="getChildHealthCheckTotal" resultType="long">
+        SELECT  COUNT(1)   AS total FROM  etry  WHERE datediff( month, ddate, #{date}) = 0
+    </select>
+
+    <select id="getChildHealthCheckNumber" resultType="long">
+        SELECT  COUNT(1)   AS total FROM  etry  WHERE  ddate >=  #{startTime} AND  ddate <![CDATA[< ]]> #{endTime}  AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <select id="getInfantCongenitalHeartDiseaseNumber"  resultType="long">
+        SELECT  COUNT ( 1 ) AS heartDiseaseTotal FROM  KsXtxxtb  WHERE  dindate >=  #{startTime} AND  dindate <![CDATA[< ]]> #{endTime} AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <select id="getChildHealthCheckupNumber"  resultType="long">
+        SELECT  COUNT ( 1 ) AS childHealthCheckup FROM etperson WHERE  ddate >=  #{startTime} AND  ddate <![CDATA[< ]]> #{endTime} AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <select id="getInfantVisionNumber" resultType="long">
+        SELECT COUNT ( 1 ) AS infantVisionTotal   FROM  slsc WHERE   dJcrq >=  #{startTime} AND  dJcrq <![CDATA[< ]]> #{endTime} AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+
+    <!--新生儿听力人数-->
+    <select id="getNewbornHearingTotal" resultType="long">
+        SELECT COUNT(1) AS total FROM  Tlsc  WHERE datediff( month, dJcrq, #{date} ) = 0
+    </select>
+
+    <select id="getNewbornHearingNumber" resultType="long">
+        SELECT
+        COUNT( cXsebh ) AS total
+        FROM
+        Yfxseqk a
+        LEFT JOIN ( SELECT DISTINCT ( cXsebh ) AS cXsebh FROM Tlsc ) b ON a.cXm = b.cXsebh
+        WHERE  a.dCsrq >= #{startTime}  AND a.dCsrq <![CDATA[< ]]> #{endTime}  AND  cJcdwbh LIKE  #{code} + '%'
+    </select>
+    
+</mapper>

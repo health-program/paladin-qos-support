@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.paladin.qos.dynamic.mapper.yiyuan.MortalityAnalysisMapper">
+	
+	<select id="getFatalitiesInHospital" resultType="long">
+		SELECT COUNT(1)
+		FROM outhospitalrecord
+		WHERE OHREC_DREC='2'
+		  AND ORGAN_CODE=#{unitId}
+		  AND OUT_HP_DT>=#{startTime}
+		  AND OUT_HP_DT&lt;#{endTime}
+	</select>
+	
+	<select id="getNumberOutHospital" resultType="long">
+		SELECT COUNT(1)
+		FROM outhospitalrecord
+		WHERE ORGAN_CODE=#{unitId}
+		  AND OUT_HP_DT>=#{startTime}
+		  AND OUT_HP_DT&lt;#{endTime}
+	</select>
+	
+</mapper>

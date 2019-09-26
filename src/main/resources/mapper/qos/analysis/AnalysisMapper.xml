@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.paladin.qos.mapper.analysis.AnalysisMapper">
+	
+	<select id="getDataPointOfDay" resultType="com.paladin.qos.service.analysis.data.DataPointDay">
+		SELECT year, 
+		   month,
+		   day,
+		   rate,
+	       event_num AS eventNum,
+	       total_num AS totalNum
+		FROM data_processed_day
+		WHERE event_id=#{eventId}
+		  AND unit_id=#{unitId}
+		  AND serial_number>=#{start}
+		  AND serial_number&lt;=#{end}
+	</select>
+	
+	<select id="getDataPointOfMonth" resultType="com.paladin.qos.service.analysis.data.DataPointMonth">
+		SELECT year, 
+		   month,
+	       SUM(event_num) AS eventNum,
+	       SUM(total_num) AS totalNum
+		FROM data_processed_day
+		WHERE event_id=#{eventId}
+		  AND unit_id=#{unitId}
+		  AND serial_number>=#{start}
+		  AND serial_number&lt;=#{end}
+		GROUP BY `year`, `month`
+	</select>
+	
+	<select id="getDataPointOfYear" resultType="com.paladin.qos.service.analysis.data.DataPointYear">
+		SELECT year, 
+	       SUM(event_num) AS eventNum,
+	       SUM(total_num) AS totalNum
+		FROM data_processed_day
+		WHERE event_id=#{eventId}
+		  AND unit_id=#{unitId}
+		  AND year>=#{start}
+		  AND year&lt;=#{end}
+		GROUP BY `year`
+	</select>
+	
+	<select id="getDataPointOfWeekYear" resultType="com.paladin.qos.service.analysis.data.DataPointWeekYear">
+		SELECT year, 
+		   week_year AS weekYear,
+	       SUM(event_num) AS eventNum,
+	       SUM(total_num) AS totalNum
+		FROM data_processed_day
+		WHERE event_id=#{eventId}
+		  AND unit_id=#{unitId}
+		  AND year>=#{start}
+		  AND year&lt;=#{end}
+		GROUP BY `year`, `week_year`
+	</select>
+	
+	<select id="getDataPointOfWeekMonth" resultType="com.paladin.qos.service.analysis.data.DataPointWeekMonth">
+		SELECT year, 
+		   month,
+		   week_month AS weekMonth,
+	       SUM(event_num) AS eventNum,
+	       SUM(total_num) AS totalNum
+		FROM data_processed_day
+		WHERE event_id=#{eventId}
+		  AND unit_id=#{unitId}
+		  AND serial_number>=#{start}
+		  AND serial_number&lt;=#{end}
+		GROUP BY `year`, `month`, `week_month`
+	</select>
+	
+	<select id="getAnalysisResultGroupByUnit" resultType="com.paladin.qos.service.analysis.data.AnalysisUnit">
+		SELECT unit_id AS unitId,
+	       SUM(event_num) AS eventNum,
+	       SUM(total_num) AS totalNum
+		FROM data_processed_day
+		WHERE event_id=#{eventId}
+		  AND serial_number>=#{start}
+		  AND serial_number&lt;=#{end}
+		<if test="unitType != 0">
+		  AND unit_type=#{unitType}
+        </if>
+		GROUP BY `unit_id`
+	</select>
+	
+	<select id="getAnalysisResultGroupByMonth" resultType="com.paladin.qos.service.analysis.data.AnalysisMonth">
+		SELECT year, 
+		   month,
+	       SUM(event_num) AS eventNum,
+	       SUM(total_num) AS totalNum
+		FROM data_processed_day
+		WHERE event_id=#{eventId}
+		  AND serial_number>=#{start}
+		  AND serial_number&lt;=#{end}
+		<if test="unitType != 0">
+		  AND unit_type=#{unitType}
+        </if>
+		GROUP BY `year`, `month`
+	</select>
+	
+	<select id="getAnalysisResultOfUnitGroupByMonth" resultType="com.paladin.qos.service.analysis.data.AnalysisMonth">
+		SELECT year, 
+		   month,
+	       SUM(event_num) AS eventNum,
+	       SUM(total_num) AS totalNum
+		FROM data_processed_day
+		WHERE event_id=#{eventId}
+		  AND unit_id=#{unitId}
+		  AND serial_number>=#{start}
+		  AND serial_number&lt;=#{end}
+		GROUP BY `year`, `month`
+	</select>
+	
+	<select id="countTotalNumByUnit" resultType="com.paladin.qos.service.analysis.data.DataCountUnit">
+		SELECT unit_id AS unitId,
+		       sum(total_num) AS count
+		FROM data_processed_day
+		WHERE event_id=#{eventId}
+		  AND serial_number>=#{start}
+		  AND serial_number&lt;=#{end}
+		 <if test="unitType != 0">
+		  AND unit_type=#{unitType}
+         </if>
+		GROUP BY unit_id
+	</select>
+	
+	<select id="countEventNumByUnit" resultType="com.paladin.qos.service.analysis.data.DataCountUnit">
+		SELECT unit_id AS unitId,
+		       sum(event_num) AS count
+		FROM data_processed_day
+		WHERE event_id=#{eventId}
+		  AND serial_number>=#{start}
+		  AND serial_number&lt;=#{end}
+		<if test="unitType != 0">
+		  AND unit_type=#{unitType}
+        </if>
+		GROUP BY unit_id
+	</select>
+	
+	<select id="getTotalNumOfEvent" resultType="Long">
+		SELECT sum(total_num) AS count
+		FROM data_processed_day
+		WHERE event_id=#{eventId}
+		  AND serial_number>=#{start}
+		  AND serial_number&lt;=#{end}
+	</select>
+			
+	<select id="getSerialNumbers" resultType="Integer">
+		SELECT serial_number
+		FROM data_processed_day
+		WHERE unit_id=#{unitId}
+		AND event_id=#{eventId}
+	</select>
+
+	<select id="getMaxSerialNumByEventAndUnit" resultType="Integer">
+		SELECT MAX(serial_number)
+		FROM data_processed_day
+		WHERE unit_id=#{unitId}
+		AND event_id=#{eventId}
+	</select>
+
+	<delete id="removeDataOfDay">
+		DELETE FROM data_processed_day
+		WHERE serial_number=#{serialNumber}
+		AND event_id=#{eventId}
+	</delete>
+
+</mapper>

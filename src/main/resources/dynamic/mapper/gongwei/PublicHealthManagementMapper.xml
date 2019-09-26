@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.paladin.qos.dynamic.mapper.gongwei.PublicHealthManagementMapper">
+    <!--活动档案数-->
+    <select id="getActiveArchives" resultType="java.lang.Long">
+        select count(1)
+        from phis_chss.v_fha_person_main
+        where stateid=1
+        AND managedcentercode = #{unitId}
+        AND createdtime
+        <![CDATA[>= ]]> #{startDate}
+        AND createdtime
+        <![CDATA[< ]]> #{endDate}
+    </select>
+    <!--审核公开的健康档案数-->
+    <select id="getPublicArchives" resultType="java.lang.Long">
+        select count(1)
+        from phis_chss.v_fha_person_main
+        where stateid=1 and verify=1
+        AND managedcentercode = #{unitId}
+        AND createdtime
+        <![CDATA[>= ]]> #{startDate}
+        AND createdtime
+        <![CDATA[< ]]> #{endDate}
+    </select>
+    <!--老年人体检数-->
+    <select id="getPhysicalNumber" resultType="java.lang.Long">
+        select count(1)
+        from phis_chss.v_fha_person_main
+        where code in(
+        select p.code
+        from phis_chss.v_fha_person_main p
+        join phis_chss.v_fhc_check_main c
+        on p.code=c.code where p.birthday
+        <![CDATA[<= ]]> add_months(sysdate,-12*65)
+        group by p.code)
+        AND managedcentercode = #{unitId}
+        AND createdtime
+        <![CDATA[>= ]]> #{startDate}
+        AND createdtime
+        <![CDATA[< ]]> #{endDate}
+    </select>
+    <!--同辖区老人人数-->
+    <select id="getOldPeopleNumber" resultType="java.lang.Long">
+        select count(managedcentercode)
+        from phis_chss.v_fha_person_main
+        where birthday
+        <![CDATA[<= ]]> add_months(sysdate,-12*65)
+        AND managedcentercode = #{unitId}
+        AND createdtime
+        <![CDATA[>= ]]> #{startDate}
+        AND createdtime
+        <![CDATA[< ]]> #{endDate}
+    </select>
+    <!--最近一次血压达标人数-->
+    <select id="getRecentPressureReachNumber" resultType="java.lang.Long">
+        select count(1)
+        from phis_chss.v_fha_person_main
+        where code in(
+        select code from (select * from ( select row_number()over(partition by c.code order by c.examdate desc)num,c.*
+        from phis_chss.v_fhc_check_main c left join phis_chss.v_fha_person_main p on c.code=p.code where p.LINKB is not null and p.birthday
+        <![CDATA[<= ]]>add_months(sysdate,-12*65)) s
+        where num=1 ) where (
+        ((rsbp =0 or rsbp is null) and (RDBP =0 or RDBP is null) and lsbp
+        <![CDATA[<> ]]> 0 and ldbp
+        <![CDATA[<> ]]>0 and lsbp
+        <![CDATA[<]]> 150 and LDBP
+        <![CDATA[<]]>90)
+        or ((lsbp =0 or lsbp is null) and (ldbp =0 or ldbp is null) and rsbp
+        <![CDATA[<> ]]>0 and rdbp
+        <![CDATA[<> ]]>0 and RSBP
+        <![CDATA[<]]>150 and RDBP
+        <![CDATA[<]]>90 )
+        or (
+        lsbp
+        <![CDATA[<> ]]> 0 and ldbp
+        <![CDATA[<> ]]>0 and lsbp
+        <![CDATA[<]]> 150 and LDBP
+        <![CDATA[<]]>90
+        and rsbp
+        <![CDATA[<> ]]>0 and rdbp
+        <![CDATA[<> ]]>0 and RSBP
+        <![CDATA[<]]>150 and RDBP
+        <![CDATA[<]]>90
+        )
+        )
+        AND examdate
+        <![CDATA[>= ]]> #{startDate}
+        AND examdate
+        <![CDATA[< ]]> #{endDate}
+        union all
+        select code from (select * from ( select row_number()over(partition by c.code order by c.examdate desc)num,c.*
+        from phis_chss.v_fhc_check_main c left join phis_chss.v_fha_person_main p on c.code=p.code where p.LINKB is not null and p.birthday
+        <![CDATA[>]]>add_months(sysdate,-12*65)) s
+        where num=1 )
+        where
+        (
+        ((rsbp =0 or rsbp is null) and (RDBP =0 or RDBP is null) and lsbp
+        <![CDATA[<> ]]> 0 and ldbp
+        <![CDATA[<> ]]>0 and lsbp
+        <![CDATA[<]]> 140 and LDBP
+        <![CDATA[<]]>90)
+        or ((lsbp =0 or lsbp is null) and (ldbp =0 or ldbp is null) and rsbp
+        <![CDATA[<> ]]>0 and rdbp
+        <![CDATA[<> ]]>0 and RSBP
+        <![CDATA[<]]>140 and RDBP
+        <![CDATA[<]]>90 )
+        or (
+        lsbp
+        <![CDATA[<> ]]> 0 and ldbp
+        <![CDATA[<> ]]>0 and lsbp
+        <![CDATA[<]]> 140 and LDBP
+        <![CDATA[<]]>90
+        and rsbp
+        <![CDATA[<> ]]>0 and rdbp
+        <![CDATA[<> ]]>0 and RSBP
+        <![CDATA[<]]>140 and RDBP
+        <![CDATA[<]]>90
+        )
+        )
+        AND examdate
+        <![CDATA[>= ]]> #{startDate}
+        AND examdate
+        <![CDATA[< ]]> #{endDate}
+        )
+        AND managedcentercode = #{unitId}
+    </select>
+    <!--高血压人数-->
+    <select id="getPressureNumber" resultType="java.lang.Long">
+        select count(1)
+        from phis_chss.v_fha_person_main
+        where linkb is not null
+        and code in (
+        select code from phis_chss.v_fhc_check_main where
+        examdate
+        <![CDATA[>= ]]> #{startDate}
+        AND examdate
+        <![CDATA[< ]]> #{endDate}
+        group by code
+        )
+        AND managedcentercode = #{unitId}
+    </select>
+    <!--高血压管理规范管理数-->
+    <select id="getPressureManageNumber" resultType="java.lang.Long">
+        select COALESCE (SUM(gf) ,0) from phis_chss.v_report_year_blood where
+        1=1
+        and reportyear in
+        <foreach collection="yearList" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and porgcode= #{unitId}
+    </select>
+    <!--高血压管理随访数-->
+    <select id="getPressureFollowNumber" resultType="java.lang.Long">
+        select COALESCE (SUM(sf) ,0) from phis_chss.v_report_year_blood where
+        1=1
+        and reportyear in
+        <foreach collection="yearList" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and porgcode=#{unitId}
+    </select>
+    <!--糖尿病患病数-->
+    <select id="getSugarNumber" resultType="java.lang.Long">
+        select count(1)
+        from phis_chss.v_fha_person_main
+        where linkd is not null
+        and code in (
+        select c.code from phis_chss.v_fhc_check_main c
+        JOIN phis_chss.v_fhc_check_attach1 ca on c.chid=ca.linkid
+        where
+        ca.createdtime
+        <![CDATA[>= ]]> #{startDate}
+        AND ca.createdtime
+        <![CDATA[< ]]> #{endDate}
+        group by c.code
+        )
+        AND managedcentercode = #{unitId}
+    </select>
+    <!--最近一次血糖达标人数-->
+    <select id="getRecentSugarReachNumber" resultType="java.lang.Long">
+        select count(1)
+        from phis_chss.v_fha_person_main pm
+        join phis_chss.v_fhc_check_main pc on pm.CODE=pc.CODE
+        where pc.CHID in (
+        select linkid from (select * from ( select row_number()over(partition by c.code order by c.examdate desc)num,ca.*
+        from phis_chss.v_fhc_check_attach1 ca join phis_chss.v_fhc_check_main c on ca.LINKID=c.CHID left join phis_chss.v_fha_person_main p on c.code=p.code where p.LINKd is not null) s
+        where num=1 )
+        where fbgdl1
+        <![CDATA[<]]>7
+        and fbgdl1
+        <![CDATA[<>]]>0
+        AND createdtime
+        <![CDATA[>= ]]> #{startDate}
+        AND createdtime
+        <![CDATA[< ]]> #{endDate}
+        )
+        AND managedcentercode = #{unitId}
+    </select>
+    <!--高血糖管理规范管理数-->
+    <select id="getSugarManageNumber" resultType="java.lang.Long">
+        select COALESCE (SUM(gf) ,0) from phis_chss.v_report_year_diabetes where
+        1=1
+        <if test="yearList !=null and yearList.size >0">
+            and reportyear in
+            <foreach collection="yearList" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        and porgcode= #{unitId}
+    </select>
+    <!--高血糖管理随访数-->
+    <select id="getSugarFollowNumber" resultType="java.lang.Long">
+        select COALESCE (SUM(sf) ,0) from phis_chss.v_report_year_diabetes where
+        1=1
+        <if test="yearList !=null and yearList.size >0">
+            and reportyear in
+            <foreach collection="yearList" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        and porgcode=#{unitId}
+    </select>
+    <!--有效转诊的可疑症状的患者数-->
+    <select id="getReferralNumber" resultType="java.lang.Long">
+        select count(1) from phis_chss.v_fha_person_main where code in (
+        select code from phis_chss.v_fhd_diabetes_visit where sftransorg=0
+        AND visitdate
+        <![CDATA[>= ]]> #{startDate}
+        AND visitdate
+        <![CDATA[< ]]> #{endDate}
+        group by code)
+        AND managedcentercode = #{unitId}
+    </select>
+    <!--糖尿病患者和老年人可疑症状患者数-->
+    <select id="getPatientNumber" resultType="java.lang.Long">
+        select count(1) from phis_chss.v_fha_person_main where code in (
+        select code from phis_chss.v_fhd_diabetes_visit where 1=1
+        AND visitdate
+        <![CDATA[>= ]]> #{startDate}
+        AND visitdate
+        <![CDATA[< ]]> #{endDate}
+        group by code)
+        AND managedcentercode = #{unitId}
+    </select>
+    <!--辖区内对65岁以上老年人规范进行中医体质辨识和中医保健指导人数-->
+    <select id="getGuideNumber" resultType="java.lang.Long">
+        select count(1) from phis_chss.v_fha_person_main where code in (
+        select code from phis_chss.v_fhd_diabetes_visit where 1=1
+        AND visitdate
+        <![CDATA[>= ]]> #{startDate}
+        AND visitdate
+        <![CDATA[< ]]> #{endDate}
+        group by code)
+        AND managedcentercode = #{unitId}
+    </select>
+</mapper>

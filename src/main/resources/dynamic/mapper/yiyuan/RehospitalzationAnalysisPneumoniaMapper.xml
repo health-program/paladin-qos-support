@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.paladin.qos.dynamic.mapper.yiyuan.RehospitalzationAnalysisPneumoniaMapper">
+
+	<select id="getTotalNum" parameterType="Map" resultType="Long">
+		select count(*) from outhospitalrecord a
+		<where>
+			<!-- OHREC_DREC = '1' and a.IHD_DIS_CODE in (select major_code from classify_code_disease 
+				where major_code like 'J10.0%' or major_code like 'J11.0%' or major_code 
+				like 'J12%' or major_code like 'J13%' or major_code like 'J14%' or major_code 
+				like 'J15%' or major_code like 'J16%' or major_code like 'J18%') -->
+			OHREC_DREC = '1'
+			and a.IHD_DIS_CODE in ('J10.001',
+			'J18.800',
+			'J15.700',
+			'J15.100',
+			'J15.602',
+			'J12.900',
+			'J15.402',
+			'J15.600',
+			'J13.x00',
+			'J15.200',
+			'J15.400',
+			'J12.800',
+			'J11.000',
+			'J15.903',
+			'J18.002',
+			'J15.800',
+			'J15.500',
+			'J15.300',
+			'J15.901',
+			'J15.101',
+			'J15.900',
+			'J15.601',
+			'J18.000',
+			'J14.x00',
+			'J18.900',
+			'J18.902',
+			'J10.000',
+			'J12.100',
+			'J15.902',
+			'J18.801',
+			'J16.800',
+			'J18.903',
+			'J18.100',
+			'J15.000',
+			'J16.000',
+			'J18.200',
+			'J12.000',
+			'J18.901',
+			'J12.200',
+			'J18.001')
+				and OUT_HP_DT <![CDATA[>=]]>
+				#{startTime}
+				and OUT_HP_DT <![CDATA[<]]>
+				#{endTime}
+				and ORGAN_CODE = #{unitId}
+		</where>
+	</select>
+
+	<select id="getEventNum" parameterType="Map" resultType="Long">
+		SELECT count(*) FROM outhospitalrecord a
+		where a.OHREC_DREC = '1'
+		and
+		a.IHD_DIS_CODE in ('J10.001',
+		'J18.800',
+		'J15.700',
+		'J15.100',
+		'J15.602',
+		'J12.900',
+		'J15.402',
+		'J15.600',
+		'J13.x00',
+		'J15.200',
+		'J15.400',
+		'J12.800',
+		'J11.000',
+		'J15.903',
+		'J18.002',
+		'J15.800',
+		'J15.500',
+		'J15.300',
+		'J15.901',
+		'J15.101',
+		'J15.900',
+		'J15.601',
+		'J18.000',
+		'J14.x00',
+		'J18.900',
+		'J18.902',
+		'J10.000',
+		'J12.100',
+		'J15.902',
+		'J18.801',
+		'J16.800',
+		'J18.903',
+		'J18.100',
+		'J15.000',
+		'J16.000',
+		'J18.200',
+		'J12.000',
+		'J18.901',
+		'J12.200',
+		'J18.001')
+			and a.OUT_HP_DT <![CDATA[>=]]>
+			#{startTime}
+			and a.OUT_HP_DT <![CDATA[<]]>
+			#{endTime}
+			and ORGAN_CODE = #{unitId}
+		AND EXISTS (
+		SELECT * FROM outhospitalrecord b
+		WHERE
+		b.CARDNO = a.CARDNO
+		AND b.OUT_HP_DT <![CDATA[!=]]>a.OUT_HP_DT
+		and a.OUT_HP_DT <![CDATA[>=]]>(b.IN_HP_DT-31)
+		and a.OUT_HP_DT <![CDATA[<]]>b.IN_HP_DT
+
+		)
+	</select>
+</mapper>

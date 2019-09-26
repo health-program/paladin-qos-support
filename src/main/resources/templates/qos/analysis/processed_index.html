@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="/qos/header" />
+
+<body>
+    <tt:constant enumcode="data-event-type,data-unit-type" />
+    <section class="content">
+        <div class="box box-solid" style="height: 45px;margin-bottom: 10px">
+            <div class="box-body no-pad-top">
+                <form id="searchbar" class="form-horizontal form-search" style="margin-top: 5px;margin-left: 0;margin-right: 0">
+                    <div class="form-group">
+                        <div class="col-md-2">
+                            <div class="input-group"><input name="startTime" id="startTime" placeholder="请输入开始时间" autocomplete="off" type="text" class="form-control tonto-datepicker-date"></div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="input-group"><input name="endTime" id="endTime" placeholder="请输入结束时间" autocomplete="off" type="text" class="form-control tonto-datepicker-date"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <input name="eventIds" id="eventIds" placeholder="请输入事件ID" autocomplete="off" type="text" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <div class="pull-right">
+                                <button type="button" style="width:100px" class="btn btn-primary tonto-btn-search" onclick="show()"><i class="fa fa-search"></i>查看</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="box box-solid">
+                    <div class="box-body" style="min-height: 900px">
+                        <table id="tableGrid"></table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="box box-solid">
+                    <div id="monthChartGrid" class="box-body" style="height: 450px">
+                    </div>
+                </div>
+                <div class="box box-solid">
+                    <div id="unitChartGrid" class="box-body" style="height: 450px">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" id="infoBoxRow">
+        </div>
+    </section>
+    <div th:include="/qos/footer" />
+    <script type="text/javascript">
+    var eventMap = {},
+        selectEvents,
+        requestParam;
+
+    $(function() {
+        $.getAjax("/qos/analysis/constant/event", function(res) {
+            res.forEach(function(event) {
+                eventMap[event.id] = event;
+            });
+
+        })
+    });
+
+    function show() {
+        readRequestParam();
+        showMonthChart();
+        showUnitChart();
+        showTable();
+        showTotalInfoBox();
+    }
+
+    function readRequestParam() {
+        requestParam = {};
+
+        var eventIds = $("#eventIds").val();
+        var startTime = $("#startTime").val();
+        var endTime = $("#endTime").val();
+
+        if (startTime) {
+            requestParam.startTime = startTime;
+        }
+
+        if (endTime) {
+            requestParam.endTime = endTime;
+        }
+
+        requestParam.eventIds = eventIds;
+
+        selectEvents = [];
+
+        eventIds.split(',').forEach(function(id) {
+            selectEvents.push(eventMap[id]);
+        });
+    }
+
+    function getRateNum(item, fixed) {
+        var a = item.eventNum,
+            b = item.totalNum,
+            c = 0;
+        if (a && b) {
+            c = a / b * 100;
+        }
+        return c.toFixed(fixed || 2);
+    }
+
+    // -----------------------
+    // 月报表示例
+    // -----------------------
+
+    var monthChart;
+
+    function showMonthChart(rawData, selectUnit) {
+        if (!rawData) {
+            $.postAjax('/qos/analysis/data/get/month/instalments', requestParam, showMonthChart);
+            return;
+        }
+
+        var monthDataMap = {};
+
+        selectEvents.forEach(function(event) {
+            monthDataMap[event.id] = convertMonthChartData(rawData, event.id, event.eventType == 1);
+        });
+
+        var selectUnit = selectUnit || 'total';
+
+        if (!monthChart) {
+            monthChart = echarts.init(document.getElementById('monthChartGrid'));
+        }
+
+        var legendData = [];
+        var xAxisData = [];
+        var series = [];
+
+        selectEvents.forEach(function(event) {
+            legendData.push(event.name);
+            xAxisData = monthDataMap[event.id].month;
+            series.push({
+                type: 'line',
+                name: event.name,
+                data: monthDataMap[event.id].valuesMap[selectUnit]
+            });
+        });
+
+        var option = {
+            //加载数据图表
+            title: {
+                text: '按月数据图'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            legend: {
+                type: "scroll",
+                data: legendData,
+                bottom: 0
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                axisLabel: {
+                    interval: 0,
+                    rotate: 40 //角度顺时针计算的
+                },
+                data: xAxisData
+            },
+            grid: {
+                left: 45,
+                right: 20,
+                bottom: 40,
+                containLabel: true
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: series
+        }
+
+        monthChart.setOption(option, true);
+    }
+
+    function convertMonthChartData(data, eventId, isRate) {
+        var eventData = data[eventId],
+            unitPoints = eventData.unitPoints,
+            month = [],
+            valuesMap = {},
+            totalValues = [];
+
+        var first = true;
+
+        unitPoints && unitPoints.forEach(function(unitPoint) {
+            var points = unitPoint.points,
+                unitId = unitPoint.unitId;
+
+            var values = valuesMap[unitId];
+            if (!values) {
+                values = [];
+                valuesMap[unitId] = values;
+            }
+
+            for (var i = 0; i < points.length; i++) {
+                var point = points[i];
+                if (first) {
+                    month.push(point.year + '-' + point.month);
+                }
+
+                values.push(isRate ? getRateNum(point) : point.totalNum);
+
+                var totalVal = totalValues[i];
+                if (!totalVal) {
+                    totalVal = {
+                        totalNum: point.totalNum,
+                        eventNum: point.eventNum
+                    }
+                    totalValues[i] = totalVal;
+                } else {
+                    totalVal.totalNum += point.totalNum;
+                    totalVal.eventNum += point.eventNum;
+                }
+            }
+
+            first = false;
+        });
+
+        var totalVals = [];
+        for (var j = 0; j < totalValues.length; j++) {
+            var tv = totalValues[j];
+            totalVals.push(isRate ? getRateNum(tv) : tv.totalNum);
+        }
+
+        valuesMap.total = totalVals;
+        return {
+            month: month,
+            valuesMap: valuesMap
+        }
+    }
+
+
+    // -----------------------
+    // 机构单位报表示例
+    // -----------------------
+
+    var unitChart;
+
+    function showUnitChart(rawData) {
+        if (!rawData) {
+            $.postAjax('/qos/analysis/data/get/unit', requestParam, showUnitChart);
+            return;
+        }
+
+        var unitDataMap = {};
+
+        selectEvents.forEach(function(event) {
+            unitDataMap[event.id] = convertUnitChartData(rawData, event.id, event.eventType == 1);
+        });
+
+
+        if (!unitChart) {
+            unitChart = echarts.init(document.getElementById('unitChartGrid'));
+        }
+
+        var legendData = [];
+        var xAxisData = [];
+        var series = [];
+
+        selectEvents.forEach(function(event) {
+            legendData.push(event.name);
+            xAxisData = unitDataMap[event.id].unit;
+            series.push({
+                type: 'bar',
+                barWidth: 5,
+                itemStyle: {
+                    normal: {
+                        barBorderRadius: 3,
+                    }
+                },
+                name: event.name,
+                data: unitDataMap[event.id].values
+            });
+        });
+
+        var option = {
+            title: {
+                text: '医院社区柱状图'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            grid: {
+                left: 45,
+                right: 20,
+                bottom: 50,
+                containLabel: true
+            },
+            legend: {
+                type: "scroll",
+                data: legendData,
+                bottom: 0,
+            },
+            xAxis: {
+                type: 'category',
+                axisLabel: {
+                    interval: 0,
+                    rotate: 40 //角度顺时针计算的
+                },
+                axisTick: {
+                    alignWithLabel: true
+                },
+                data: xAxisData,
+            },
+            yAxis: {
+                type: 'value',
+            },
+            series: series
+        }
+
+        unitChart.setOption(option, true);
+    }
+
+    function convertUnitChartData(data, eventId, isRate) {
+        var edata = data[eventId],
+            max = 0,
+            unit = [],
+            values = [];
+        edata && edata.forEach(function(item) {
+            var r = isRate ? getRateNum(item) : item.count;
+            max = Math.max(r, max);
+            values.push(r);
+            unit.push(item.unitName);
+        });
+        return {
+            max: max,
+            unit: unit,
+            values: values
+        }
+    }
+
+    // -----------------------
+    // 机构单位报表示例
+    // -----------------------
+
+    function showTable(rawData) {
+        if (!rawData) {
+            $.postAjax('/qos/analysis/data/get/unit', requestParam, showTable);
+            return;
+        }
+
+        var data = {};
+
+        selectEvents.forEach(function(event) {
+            convertTableData(rawData, event.id, data, event.eventType == 1);
+        });
+
+        var tableData = []
+        for (var o in data) {
+            tableData.push(data[o]);
+        }
+
+        var columns = [{
+            title: '单位',
+            align: 'center',
+            field: 'unitName'
+        }];
+
+        selectEvents.forEach(function(event) {
+            columns.push({
+                title: event.name,
+                align: 'center',
+                field: 'ev' + event.id
+            });
+        });
+
+        $("#tableGrid").bootstrapTable({ columns: columns, data: tableData })
+    }
+
+    function convertTableData(rawData, eventId, data, isRate) {
+        var eventData = rawData[eventId],
+            fieldName = 'ev' + eventId,
+            total = 0,
+            event = 0;
+
+        eventData && eventData.forEach(function(item) {
+            var id = item.unitId;
+            unitData = data[id];
+            if (!unitData) {
+                unitData = {
+                    unitId: id,
+                    unitName: item.unitName
+                };
+                data[id] = unitData;
+            }
+
+            if (isRate) {
+                unitData[fieldName] = getRateNum(item);
+                total += item.totalNum;
+                event += item.eventNum;
+            } else {
+                unitData[fieldName] = item.count;
+                total += item.count;
+            }
+        });
+
+        var totalData = data['total'];
+        if (!totalData) {
+            totalData = {
+                unitId: 'total',
+                unitName: '合计',
+            }
+            data['total'] = totalData;
+        }
+
+        totalData[fieldName] = isRate ? getRateNum({
+            totalNum: total,
+            eventNum: event
+        }) : total;
+    }
+
+    // -----------------------
+    // 显示总数信息BOX
+    // -----------------------
+
+    function showTotalInfoBox() {
+        $.postAjax('/qos/analysis/data/get/total', requestParam, function(rawData) {
+            var html = "";
+            selectEvents.forEach(function(event) {
+                html += '<div class="col-md-3 col-sm-6 col-xs-12">' +
+                    '    <div class="info-box">' +
+                    '        <span class="info-box-icon bg-green"><i class="fa fa-flag-o"></i></span>' +
+                    '        <div class="info-box-content">' +
+                    '            <span class="info-box-text">' + event.name + '</span>' +
+                    '            <span class="info-box-number">' + rawData[event.id] + '</span>' +
+                    '        </div>' +
+                    '    </div>' +
+                    '</div>';
+            });
+            $("#infoBoxRow").html(html);
+        });
+    }
+    </script>
+</body>
+
+</html>
