@@ -28,6 +28,11 @@ public interface OpdStatisticsMapper {
     
     /**住院药品总费用(元)*/
     public long HospitalizationMoneyTotal(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
-    
+
+    /**实际开放床日数*/
+    public long publicBedDayTotal(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
+    /**实际占用床日数*/
+    public long useBedDayTotal(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
 }

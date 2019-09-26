@@ -41,5 +41,21 @@
 		select coalesce(sum(cost_02),0) from ED_Outpa_Inpa_Charge_Stat 
 		where stat_date &gt;= #{startTime} and stat_date &lt; #{endTime} and organ_code =#{unitId}
 	</select>
-	
+
+	<!-- 实际开放床日数 -->
+	<select id="publicBedDayTotal" resultType="long">
+		select coalesce(sum(p_o_bed),0)
+		from in_workload
+		where rcd_dt <![CDATA[>= ]]> #{startTime}
+		and rcd_dt <![CDATA[< ]]> #{endTime}
+	</select>
+
+	<!-- 实际占用床日数 -->
+	<select id="useBedDayTotal" resultType="long">
+		select coalesce(sum(p_oc_bed),0)
+		from in_workload
+		where rcd_dt <![CDATA[>= ]]> #{startTime}
+		and rcd_dt <![CDATA[< ]]> #{endTime}
+	</select>
+
 </mapper>
