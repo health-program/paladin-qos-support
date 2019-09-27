@@ -9,8 +9,14 @@ import org.apache.ibatis.annotations.Param;
  * @version 2019年9月17日 上午10:03:43 
  */
 public interface OpdStatisticsMapper {
+    
+    /**急诊人次*/
+    public long emergencyNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    
+    /**门诊人次*/
+    public long outpatientNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
-    /**门诊总人次*/
+    /**门急诊总人次*/
     public long OPDTotal(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
     
     /**门急诊使用药品数*/
@@ -34,5 +40,20 @@ public interface OpdStatisticsMapper {
 
     /**实际占用床日数*/
     public long useBedDayTotal(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    
+    /**支付方式-医保 */
+    public long paymentMethodMedical(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    
+    /**支付方式-自费 */
+    public long paymentMethodOwn(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    
+    /**药品收入 */
+    public long drugIncome(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    
+    /**其他收入 */
+    public long otherIncome(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    
+    /**医疗收入 */
+    public long medicalIncome(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
 }
