@@ -375,4 +375,28 @@
         and info.PRESSTATUS = '2'
         and info.CHARSTATUS = '2'
     </select>
+    
+    <select id="getEventShuyeLv" resultType="long">
+		WITH ta AS
+		  (SELECT to_char(wm_concat(a.usagelist)) str
+		   FROM phis_webhis.v_INR_TRANSFUSION a
+		   WHERE a.usagescope = 2
+		     AND a.status = 1)
+		SELECT count(DISTINCT x.recipeid) sy
+		FROM phis_webhis.v_opb_feedetail x
+		WHERE x.recipeid IN (
+		  SELECT t.recipeid
+		  FROM phis_webhis.v_opm_recipe_info t WHERE 1=1
+		  AND t.DRAWTIME &gt;= #{startTime}
+		AND t.DRAWTIME &lt; #{endTime}
+		AND t.ORGCODE = #{unitId}
+		AND t.CHARSTATUS = '2'
+		AND t.busitype = '1')
+		AND x.usagecode IN (
+		SELECT REGEXP_SUBSTR((SELECT str FROM ta), '[^,]+', 1, rownum)
+		FROM dual CONNECT BY rownum &lt;= LENGTH(
+		           (SELECT str
+		            FROM ta)) - LENGTH(regexp_replace((SELECT str FROM ta), ',', '')) + 1)
+		AND x.orgcode = #{unitId}
+	</select>
 </mapper>

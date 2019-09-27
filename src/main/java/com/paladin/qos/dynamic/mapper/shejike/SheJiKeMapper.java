@@ -92,6 +92,9 @@ public interface SheJiKeMapper {
 	// 一联抗生素使用率
 	long getTotalRecipe(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
 
+	//静脉输液率
+	long getEventShuyeLv(Date startTime, Date endTime, String unitId);
+	
 	long getEventOneAntiDrug(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
 
 	// 二联抗生素使用率
