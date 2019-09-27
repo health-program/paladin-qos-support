@@ -45,8 +45,8 @@
     <select id="registerOPD" resultType="long">
         select count(1) from phis_webhis.v_Opr_Register r 
         where length(r.idcardno)=18
-        and o.CREATEDTIME &gt;= #{startTime}
-        and o.CREATEDTIME &lt; #{endTime}
+        and r.REGDATE &gt;= #{startTime}
+        and r.REGDATE &lt; #{endTime}
         and r.idcardno in     
         <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
             #{item.idCard}

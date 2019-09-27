@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.github.pagehelper.util.StringUtil;
 import com.paladin.data.dynamic.SqlSessionContainer;
 import com.paladin.qos.analysis.impl.gongwei.GongWeiDataProcessor;
 import com.paladin.qos.dynamic.DSConstant;
@@ -33,28 +34,20 @@ public class FamilySingingDoctorOPDTotal extends GongWeiDataProcessor {
 
 	@Override
 	public long getTotalNum(Date startTime, Date endTime, String unitId) {
-		long tatal = 0;
-		sqlSessionContainer.setCurrentDataSource(DSConstant.DS_GONGWEI);
-		List<DataFamilyVO> vo = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).singingDoctorOPDtotal(startTime, endTime,
-				unitId);
-		if (vo != null && vo.size() > 0) {
-			for (DataFamilyVO d : vo) {
-				String unit = getMappingUnitId(d.getUnitId());
-				if (unit != null) {
-					d.setUnitId(getMappingUnitId(d.getUnitId()));
-				}
-			}
-			sqlSessionContainer.setCurrentDataSource(DSConstant.DS_JCYL);
-			tatal += sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).docnameOPDnum(startTime, endTime, vo);
+	    sqlSessionContainer.setCurrentDataSource(DSConstant.DS_GONGWEI);
+		String unit1 = getMappingUnitId(unitId);
+		if (StringUtil.isEmpty(unit1)) {
+			return 0;
 		}
-		return tatal;
-	}
-
-	@Override
-	public long getEventNum(Date startTime, Date endTime, String unitId) {
-		sqlSessionContainer.setCurrentDataSource(DSConstant.DS_GONGWEI);
 		List<DataFamilyVO> vo = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).singingAgencyOPDpersonNum(startTime,
-				endTime, unitId);
+				endTime, unit1);
+		
+		for (DataFamilyVO v : vo) {
+		    if(unit1.equals(v.getUnitId())){
+			v.setUnitId(unitId);
+		    }
+		}
+		
 		long tatal = 0;
 		if (vo != null && vo.size() > 0) {
 			int listSize = vo.size();
@@ -64,15 +57,40 @@ public class FamilySingingDoctorOPDTotal extends GongWeiDataProcessor {
 					toIndex = listSize - i;
 				}
 				List<DataFamilyVO> newList = vo.subList(i, i + toIndex);
-				for (DataFamilyVO d : newList) {
-					String unit = getMappingUnitId(d.getUnitId());
-					if (unit != null) {
-						d.setUnitId(unit);
-					}
-				}
-				sqlSessionContainer.setCurrentDataSource(DSConstant.DS_JCYL);
+				sqlSessionContainer.setCurrentDataSource(DSConstant.DS_YIYUAN);
 				tatal += sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).registerOPD(startTime, endTime, newList);
 			}
+		}
+		return tatal;
+	}
+
+	@Override
+	public long getEventNum(Date startTime, Date endTime, String unitId) {
+	    long tatal = 0;
+		sqlSessionContainer.setCurrentDataSource(DSConstant.DS_GONGWEI);
+		List<DataFamilyVO> vo = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).singingDoctorOPDtotal(startTime, endTime,
+				unitId);
+		
+		String unit1 = getMappingUnitId(unitId);
+		if (StringUtil.isEmpty(unit1)) {
+			return 0;
+		}
+		
+		for (DataFamilyVO v : vo) {
+		    if(unit1.equals(v.getUnitId())){
+			v.setUnitId(unitId);
+		    }
+		}
+		
+		if (vo != null && vo.size() > 0) {
+			for (DataFamilyVO d : vo) {
+				String unit = getMappingUnitId(d.getUnitId());
+				if (unit != null) {
+					d.setUnitId(getMappingUnitId(d.getUnitId()));
+				}
+			}
+			sqlSessionContainer.setCurrentDataSource(DSConstant.DS_JCYL);
+			tatal += sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).docnameOPDnum(startTime, endTime, vo);
 		}
 		return tatal;
 	}

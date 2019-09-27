@@ -2,7 +2,19 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.paladin.qos.dynamic.mapper.yiyuan.opd.OpdStatisticsMapper">
 
-	<!-- 门诊人次 -->
+	<!-- 门诊人次数 -->
+	<select id="outpatientNum" resultType="long">
+		select count(1) from RegisterRecord 
+		where OP_EM_MARK='1' and REC_DT &gt;= #{startTime} and REC_DT &lt; #{endTime} 
+	</select>
+
+	<!-- 急诊人次数 -->
+	<select id="emergencyNum" resultType="long">
+		select count(1) from RegisterRecord 
+		where OP_EM_MARK='2' and REC_DT &gt;= #{startTime} and REC_DT &lt; #{endTime} 
+	</select>
+
+	<!-- 门急诊人次数 -->
 	<select id="OPDTotal" resultType="long">
 		select count(1) from RegisterRecord 
 		where REC_DT &gt;= #{startTime} and REC_DT &lt; #{endTime} and organ_code =#{unitId}
@@ -57,5 +69,41 @@
 		where rcd_dt <![CDATA[>= ]]> #{startTime}
 		and rcd_dt <![CDATA[< ]]> #{endTime}
 	</select>
-
+	
+	<!-- 支付方式-医保  -->
+	<select id="paymentMethodMedical" resultType="long">
+		select count(1) from PersonalInformation where PAYMENT_MODE in('01','02','03') 
+		and update_date &gt;= #{startTime} and update_date &lt; #{endTime} 
+	</select>
+	
+	<!-- 支付方式-自费  -->
+	<select id="paymentMethodOwn" resultType="long">
+		select count(1) from PersonalInformation where PAYMENT_MODE in('04','05','06','07','08','99') 
+		and update_date &gt;= #{startTime} and update_date &lt; #{endTime} 
+	</select>
+	
+	<!-- 药品收入 -->
+	<select id="drugIncome" resultType="long">
+	 select  COALESCE (SUM(COST_01_10) ,0)+COALESCE (SUM(COST_02_10) ,0)from ED_Outpa_Inpa_Charge_Stat 
+     where STAT_DATE  &gt;= #{startTime} and STAT_DATE &lt; #{endTime}
+	</select>
+	
+	<!-- 其他收入 -->
+	<select id="otherIncome" resultType="long">
+	 select  COALESCE (SUM(COST_99) ,0)+COALESCE (SUM(COST_02_99) ,0)from ED_Outpa_Inpa_Charge_Stat 
+     where STAT_DATE  &gt;= #{startTime} and STAT_DATE &lt; #{endTime} 
+	</select>
+	
+	<!-- 医疗收入 -->
+	<select id="medicalIncome" resultType="long">
+	  select sum(TOTAL_COST)-((COALESCE (SUM(COST_99) ,0)+COALESCE (SUM(COST_02_99) ,0))+(COALESCE (SUM(COST_01_10) ,0)+COALESCE (SUM(COST_02_10) ,0))) 
+	  from ED_Outpa_Inpa_Charge_Stat where STAT_DATE  &gt;= #{startTime} and STAT_DATE &lt; #{endTime}  
+	</select>
+	
+	<!-- 患者列表（查询当前时间前2天的数据） -->
+	<!-- <select id="patientList" resultType="">
+	 select m.organ_code,m.organ_name,m.Dpt_Code,m.dpt_name,m.name,m.sex,m.See_Doc_Dt,m.Md_Dis_Code,m.md_dis_name from MedicalRecord m 
+     where m.see_doc_dt >=trunc(sysdate-2) and  m.see_doc_dt < trunc(sysdate-1)
+	</select> -->
+	
 </mapper>
