@@ -20,8 +20,8 @@
 			year,
 			month,
 			day,
-	       	sum(event_num) AS eventNum,
-	       	sum(total_num) AS totalNum
+	       	IFNULL(sum(event_num),0) AS eventNum,
+	       	IFNULL(sum(total_num),0) AS totalNum
 		FROM data_processed_day
 		WHERE event_id=#{eventId}
 		<if test="unitType != 0">
@@ -170,7 +170,7 @@
 	
 	<select id="countTotalNumByUnit" resultType="com.paladin.qos.service.analysis.data.DataCountUnit">
 		SELECT unit_id AS unitId,
-		       sum(total_num) AS count
+		       IFNULL(sum(total_num),0) AS count
 		FROM data_processed_day
 		WHERE event_id=#{eventId}
 		  AND serial_number>=#{start}
@@ -183,7 +183,7 @@
 	
 	<select id="countEventNumByUnit" resultType="com.paladin.qos.service.analysis.data.DataCountUnit">
 		SELECT unit_id AS unitId,
-		       sum(event_num) AS count
+		       IFNULL(sum(event_num),0) AS count
 		FROM data_processed_day
 		WHERE event_id=#{eventId}
 		  AND serial_number>=#{start}
@@ -199,7 +199,7 @@
 			year,
 			month,
 			day,
-		    sum(total_num) AS count
+		    IFNULL(sum(total_num),0) AS count
 		FROM data_processed_day
 		WHERE event_id=#{eventId}
 		  AND serial_number>=#{start}
@@ -215,7 +215,7 @@
 			year,
 			month,
 			day,
-		    sum(event_num) AS count
+		    IFNULL(sum(event_num),0) AS count
 		FROM data_processed_day
 		WHERE event_id=#{eventId}
 		  AND serial_number>=#{start}
@@ -230,7 +230,7 @@
 		SELECT 
 			year,
 			month,
-		    sum(total_num) AS count
+		    IFNULL(sum(total_num),0) AS count
 		FROM data_processed_day
 		WHERE event_id=#{eventId}
 		  AND serial_number>=#{start}
@@ -245,7 +245,7 @@
 		SELECT 
 			year,
 			month,
-		    sum(event_num) AS count
+		    IFNULL(sum(event_num),0) AS count
 		FROM data_processed_day
 		WHERE event_id=#{eventId}
 		  AND serial_number>=#{start}
@@ -259,7 +259,7 @@
 	<select id="countTotalNumByYear" resultType="com.paladin.qos.service.analysis.data.DataCountYear">
 		SELECT 
 			year,
-		    sum(total_num) AS count
+		    IFNULL(sum(total_num),0) AS count
 		FROM data_processed_day
 		WHERE event_id=#{eventId}
 		  AND year>=#{start}
@@ -273,7 +273,7 @@
 	<select id="countEventNumByYear" resultType="com.paladin.qos.service.analysis.data.DataCountYear">
 		SELECT 
 			year,
-		    sum(event_num) AS count
+		    IFNULL(sum(event_num),0) AS count
 		FROM data_processed_day
 		WHERE event_id=#{eventId}
 		  AND year>=#{start}
@@ -285,7 +285,7 @@
 	</select>
 	
 	<select id="getTotalNumOfEvent" resultType="Long">
-		SELECT sum(total_num) AS count
+		SELECT IFNULL(sum(total_num),0) AS count
 		FROM data_processed_day
 		WHERE event_id=#{eventId}
 		  AND serial_number>=#{start}

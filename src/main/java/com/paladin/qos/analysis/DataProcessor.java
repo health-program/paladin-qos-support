@@ -2,11 +2,7 @@ package com.paladin.qos.analysis;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import com.paladin.qos.analysis.DataConstantContainer.Unit;
 
 /**
  * 数据处理器，对数据进行时间维度和机构维度的数据预处理，提高统计效率
@@ -102,44 +98,5 @@ public abstract class DataProcessor {
 	 */
 	public abstract long getEventNum(Date startTime, Date endTime, String unitId);
 
-	/**
-	 * 返回实时数据时间区间
-	 * 
-	 * @param endTime
-	 * @return
-	 */
-	public Date[] getDataRealTimeInterval() {
-		Date today = TimeUtil.toDayTime(new Date());
-		Date endTime = new Date(today.getTime() + TimeUtil.MILLIS_IN_DAY);
-		return new Date[] { today, endTime };
-	}
-
-	/**
-	 * 获取实时数据
-	 * 
-	 * @param unitIds
-	 * @return
-	 */
-	public Map<String, DataRealTime> getDataRealTime(List<Unit> units) {
-		if (units == null || units.size() == 0) {
-			return null;
-		}
-
-		Date[] dates = getDataRealTimeInterval();
-		Date startTime = dates[0];
-		Date endTime = dates[1];
-
-		HashMap<String, DataRealTime> datas = new HashMap<>();
-
-		for (Unit unit : units) {
-			String unitId = unit.getId();
-			long totalNum = getTotalNum(startTime, endTime, unitId);
-			long eventNum = getEventNum(startTime, endTime, unitId);
-			DataRealTime data = new DataRealTime(unitId, totalNum, eventNum);
-			datas.put(unitId, data);
-		}
-
-		return datas;
-	}
 
 }
