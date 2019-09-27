@@ -249,8 +249,13 @@ public class DataProcessManager {
 
 					for (Unit unit : units) {
 						String unitId = unit.getId();
-						long startTime = lastProcessedDayMap.get(eventId).get(unitId) + TimeUtil.MILLIS_IN_DAY;
-
+						long startTime = lastProcessedDayMap.get(eventId).get(unitId);
+						if(startTime > filingTime) {
+							startTime = filingTime;
+						} 
+						
+						startTime += TimeUtil.MILLIS_IN_DAY;
+						
 						int count = 0;
 						while (startTime <= endTime) {
 							Date start = new Date(startTime);

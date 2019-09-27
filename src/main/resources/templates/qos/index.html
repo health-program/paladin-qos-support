@@ -31,8 +31,8 @@
     <div class="wrapper">
         <header class="main-header">
             <a href="javascript:void(0)" class="logo">
-                <span class="logo-mini"><b>QOS</b></span>
-                <span class="logo-lg">卫生<b>服务质量</b>展示系统</span>
+                <span class="logo-mini"><b>QOSS</b></span>
+                <span class="logo-lg">卫生<b>服务质量</b>数据支撑系统</span>
             </a>
             <nav class="navbar navbar-static-top">
                 <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
@@ -42,13 +42,13 @@
                     <ul class="nav navbar-nav">
                         <li class="dropdown user user-menu">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <img src="/static/img/user1-128x128.jpg" class="user-image" alt="User Image" />
+                                <img src="/static/image/user1-128x128.jpg" class="user-image" alt="User Image" />
                                 <span class="hidden-xs" th:text="${name}"></span>
-                                </a>
+                            </a>
                             <ul class="dropdown-menu">
                                 <!-- The user image in the menu -->
                                 <li class="user-header">
-                                    <img src="/static/img/user1-128x128.jpg" style="background: #fff" class="img-circle" alt="User Image" />
+                                    <img src="/static/image/user1-128x128.jpg" style="background: #fff" class="img-circle" alt="User Image" />
                                     <p th:text="${name}"></p>
                                 </li>
                                 <li class="user-footer">
@@ -62,9 +62,6 @@
                             </ul>
                         </li>
                         <li>
-		                    <a href="http://localhost:8010/index?system=sjzlzsxt" target="_blank" title="常见问题解答" style="font-size: 20px;"><i class="fa fa-question"></i></a>
-		                    </li>
-                        <li>
                             <a href="javascript:goHome()" alt="主页"><i class="glyphicon glyphicon-home"></i></a> </li>
                         <li>
                             <a href="/qos/logout" alt="登出"><i class="fa fa-sign-out"></i></a>
@@ -76,7 +73,10 @@
         <aside class="main-sidebar">
             <section class="sidebar">
                 <!-- Sidebar Menu -->
-                <ul class="sidebar-menu" th:utext="${menuHtml}"></ul>
+                <ul class="sidebar-menu">
+                    <li><a href="javascript:goto('001','/qos/analysis/process/index')"><i class="fa fa-book"></i> <span>数据处理管理</span></a></li>
+                    <li><a href="javascript:goto('002','/qos/analysis/processed/index')"><i class="fa fa-book"></i> <span>数据展示</span></a></li>
+                </ul>
             </section>
         </aside>
         <div class="content-wrapper" id="content-wrapper" style="min-height: 421px;">
@@ -153,13 +153,17 @@
     <script src="/static/assets/jquery-asidenav/js/asidenav.js"></script>
     <script src="/static/assets/layer/layer.js"></script>
     <script type="text/javascript">
-    function goto(target){
-        target.close = true;
-        target.urlType = "absolute";
-        addTabs(target);
+    function goto(id, url) {
+        addTabs({
+            id: id,
+            url: url,
+            title: id,
+            close: true,
+            urlType: "absolute"
+        });
     }
 
-    function goHome(){
+    function goHome() {
         // goto({
         //     id:"0000",
         //     url:"",

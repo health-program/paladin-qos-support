@@ -6,14 +6,9 @@
 		UPDATE data_processed_day
 		SET total_num=#{totalNum},
 		    event_num=#{eventNum},
-		    rate=#{rate},
+		    confirmed=#{confirmed},
 		    update_time=#{updateTime}
 		WHERE id=#{id}
 	</update>
-	
-	<select id="">
-		
-	
-	</select>
 	
 </mapper>
