@@ -245,13 +245,16 @@
     </select>
     <!--辖区内对65岁以上老年人规范进行中医体质辨识和中医保健指导人数-->
     <select id="getGuideNumber" resultType="java.lang.Long">
-        select count(1) from phis_chss.v_fha_person_main where code in (
-        select code from phis_chss.v_fhd_diabetes_visit where 1=1
-        AND visitdate
-        <![CDATA[>= ]]> #{startDate}
-        AND visitdate
-        <![CDATA[< ]]> #{endDate}
-        group by code)
-        AND managedcentercode = #{unitId}
+        select count(1) from (
+        select pm.code
+        from phis_chss.v_fha_person_main pm
+        join phis_chss.v_fhr_elder_tcm_item pt on pm.CODE=pt.CODE
+        join phis_chss.v_fhr_elder_tcm_physique pp on pt.CHID=pp.LINKID
+        where pm.birthday <![CDATA[<=]]> add_months(sysdate,-12*65)
+        AND  pm.createdtime <![CDATA[>= ]]> #{startDate}
+        AND  pm.createdtime <![CDATA[< ]]> #{endDate}
+        AND  pm.managedcentercode = #{unitId}
+        group by pm.code
+        )
     </select>
 </mapper>
