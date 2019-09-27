@@ -16,6 +16,7 @@ public class AnalysisRequest {
 	private List<String> eventIds;
 
 	private int dataType;
+	private int byUnit = 1;
 
 	public Date getStartTime() {
 		return startTime;
@@ -71,6 +72,14 @@ public class AnalysisRequest {
 
 	public void setEventId(String eventId) {
 		this.eventId = eventId;
+	}
+
+	public int getByUnit() {
+		return byUnit;
+	}
+
+	public void setByUnit(int byUnit) {
+		this.byUnit = byUnit;
 	}
 
 }
