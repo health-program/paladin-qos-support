@@ -126,147 +126,18 @@ public class DataProcessManager {
 		// 根据定时时间修改，例如晚上10点到明天凌晨5点，则加7个小时时间
 		long threadEndTime = System.currentTimeMillis() + 11 * 60 * 60 * 1000;
 
-		executorService.execute(new RepairThread(DataConstantContainer.getEventListByDataSource(DSConstant.DS_FUYOU), null, threadEndTime, 0, 0, 0));
-		executorService.execute(new RepairThread(DataConstantContainer.getEventListByDataSource(DSConstant.DS_GONGWEI), null, threadEndTime, 0, 0, 0));
-		executorService.execute(new RepairThread(DataConstantContainer.getEventListByDataSource(DSConstant.DS_JCYL), null, threadEndTime, 0, 0, 0));
-		executorService.execute(new RepairThread(DataConstantContainer.getEventListByDataSource(DSConstant.DS_YIYUAN), null, threadEndTime, 0, 0, 0));
-	}
-
-	private class RepairThread implements Runnable {
-
-		// 修复事件
-		private List<Event> events;
-		// 线程结束时间
-		private long threadEndTime;
-		// 修复到最大时间点
-		private long maxRepairTime;
-		// 修复最新时间点
-		private long minRepairTime;
-		// 事件-修复数 map
-		private Map<String, Integer> repairCountMap;
-		// 最大修复次数
-		private int maxRepairCount;
-
-		private List<Unit> units = null;
-		private boolean judgeUnit = false;
-
-		private boolean finished;
-
-		private RepairThread(List<Event> events, List<Unit> units, long threadEndTime, long minRepairTime, long maxRepairTime, int maxRepairCount) {
-			this.events = events;
-
-			if (units != null && units.size() > 0) {
-				this.judgeUnit = true;
-				this.units = units;
-			}
-
-			this.threadEndTime = threadEndTime;
-			this.maxRepairTime = maxRepairTime;
-			this.minRepairTime = minRepairTime;
-			this.maxRepairCount = maxRepairCount > 0 ? maxRepairCount : 365;
-
-			this.repairCountMap = new HashMap<>();
-		}
-
-		@Override
-		public void run() {
-			try {
-				logger.info("--------->开始修复数据任务<---------");
-				for (Event event : events) {
-					String eventId = event.getId();
-					int targetType = event.getTargetType();
-					int eventCount = 0;
-
-					DataProcessor dataProcessor = dataProcessContainer.getDataProcessor(eventId);
-
-					List<Unit> units = this.units == null ? DataConstantContainer.getUnitListByType(targetType) : this.units;
-
-					Date lastDate = TimeUtil.getTodayBefore(event.getProcessBefore());
-					long endTime = maxRepairTime > 0 ? maxRepairTime : lastDate.getTime();
-
-					for (Unit unit : units) {
-						int unitType = unit.getType();
-
-						if (judgeUnit) {
-							if ((targetType == DataEvent.TARGET_TYPE_HOSPITAL && unitType != DataUnit.TYPE_HOSPITAL)
-									|| (targetType == DataEvent.TARGET_TYPE_COMMUNITY && unitType != DataUnit.TYPE_COMMUNITY)) {
-								continue;
-							}
-						}
-
-						String unitId = unit.getId();
-						long startTime = minRepairTime > 0 ? minRepairTime : lastProcessedDayMap.get(eventId).get(unitId) + TimeUtil.MILLIS_IN_DAY;
-
-						int count = 0;
-						while (startTime <= endTime) {
-
-							Date start = new Date(startTime);
-							startTime += TimeUtil.MILLIS_IN_DAY;
-							Date end = new Date(startTime);
-							boolean success = processDataForOneDay(start, end, unitId, dataProcessor);
-
-							if (!success) {
-								break;
-							}
-
-							if (++count >= maxRepairCount) {
-								break;
-							}
-
-							if (threadEndTime > 0 && threadEndTime < System.currentTimeMillis()) {
-								break;
-							}
-						}
-
-						eventCount += count;
-
-						if (threadEndTime > 0 && threadEndTime < System.currentTimeMillis()) {
-							break;
-						}
-					}
-
-					repairCountMap.put(eventId, eventCount);
-
-					if (threadEndTime > 0 && threadEndTime < System.currentTimeMillis()) {
-						break;
-					}
-				}
-
-				// 打印次数
-				for (Entry<String, Integer> entry : repairCountMap.entrySet()) {
-					logger.info("共处理事件[" + entry.getKey() + "]数据次数：" + entry.getValue() + "次");
-				}
-			} finally {
-				finished = true;
-				logger.info("--------->修复数据任务结束<---------");
-				readLastProcessedDay(events);
-			}
-		}
-
-		public boolean isFinished() {
-			return finished;
-		}
-
-		public int getRepairCount() {
-			int count = 0;
-			for (Entry<String, Integer> entry : repairCountMap.entrySet()) {
-				count += entry.getValue();
-			}
-			return count;
-		}
-
-		public void shutdown() {
-			this.threadEndTime = 1;
-		}
-
+		executorService.execute(new RepairThread(DataConstantContainer.getEventListByDataSource(DSConstant.DS_FUYOU), threadEndTime, 0));
+		executorService.execute(new RepairThread(DataConstantContainer.getEventListByDataSource(DSConstant.DS_GONGWEI), threadEndTime, 0));
+		executorService.execute(new RepairThread(DataConstantContainer.getEventListByDataSource(DSConstant.DS_JCYL), threadEndTime, 0));
+		executorService.execute(new RepairThread(DataConstantContainer.getEventListByDataSource(DSConstant.DS_YIYUAN), threadEndTime, 0));
 	}
 
 	// 处理一天的数据
-	private boolean processDataForOneDay(Date start, Date end, String unitId, DataProcessor processor) {
+	private boolean processDataForOneDay(Date start, Date end, String unitId, DataProcessor processor, boolean confirmed) {
 		try {
 			RateMetadata rateMetadata = processor.processByDay(start, end, unitId);
 			if (rateMetadata != null) {
-				saveProcessedDataForDay(rateMetadata);
+				saveProcessedDataForDay(rateMetadata, confirmed);
 				return true;
 			}
 		} catch (Exception ex) {
@@ -288,7 +159,7 @@ public class DataProcessManager {
 	}
 
 	// 保存按天处理的数据
-	private void saveProcessedDataForDay(RateMetadata rateMetadata) {
+	private void saveProcessedDataForDay(RateMetadata rateMetadata, boolean confirmed) {
 
 		// 根据日期与事件创建唯一ID
 		int year = rateMetadata.getYear();
@@ -333,7 +204,7 @@ public class DataProcessManager {
 
 		model.setTotalNum(totalNum);
 		model.setEventNum(eventNum);
-		model.setRate(getRate(totalNum, eventNum));
+		model.setConfirmed(confirmed ? 1 : 0);
 		model.setUpdateTime(new Date());
 
 		if (!dataProcessedDayService.updateOrSave(model)) {
@@ -341,17 +212,89 @@ public class DataProcessManager {
 		}
 	}
 
-	// 获取概率
-	private int getRate(long totalNum, long eventNum) {
-		if (totalNum == 0 || eventNum == 0) {
-			return 0;
+	private class RepairThread implements Runnable {
+
+		// 修复事件
+		private List<Event> events;
+		// 线程结束时间
+		private long threadEndTime;
+		// 事件-修复数 map
+		private Map<String, Integer> repairCountMap;
+		// 最大修复次数
+		private int maxRepairCount;
+
+		private RepairThread(List<Event> events, long threadEndTime, int maxRepairCount) {
+			this.events = events;
+			this.threadEndTime = threadEndTime;
+			this.maxRepairCount = maxRepairCount > 0 ? maxRepairCount : 365;
+			this.repairCountMap = new HashMap<>();
 		}
-		long r = eventNum * 100000 / totalNum;
-		if (r < 5) {
-			return 0;
+
+		@Override
+		public void run() {
+			try {
+				logger.info("--------->开始修复数据任务<---------");
+				for (Event event : events) {
+					String eventId = event.getId();
+					int targetType = event.getTargetType();
+					int eventCount = 0;
+
+					DataProcessor dataProcessor = dataProcessContainer.getDataProcessor(eventId);
+					List<Unit> units = DataConstantContainer.getUnitListByType(targetType);
+
+					// 归档日期，该日期之后的数据都是很可能会变的，所以标识未未确认
+					long filingTime = TimeUtil.getFilingDate(event).getTime();
+					// 截止日期不能超过今天
+					long endTime = TimeUtil.toDayTime(new Date()).getTime();
+
+					for (Unit unit : units) {
+						String unitId = unit.getId();
+						long startTime = lastProcessedDayMap.get(eventId).get(unitId) + TimeUtil.MILLIS_IN_DAY;
+
+						int count = 0;
+						while (startTime <= endTime) {
+							Date start = new Date(startTime);
+							startTime += TimeUtil.MILLIS_IN_DAY;
+							Date end = new Date(startTime);
+							boolean confirmed = start.getTime() <= filingTime;
+							boolean success = processDataForOneDay(start, end, unitId, dataProcessor, confirmed);
+
+							if (!success) {
+								break;
+							}
+
+							if (++count >= maxRepairCount) {
+								break;
+							}
+
+							if (threadEndTime > 0 && threadEndTime < System.currentTimeMillis()) {
+								break;
+							}
+						}
+
+						eventCount += count;
+
+						if (threadEndTime > 0 && threadEndTime < System.currentTimeMillis()) {
+							break;
+						}
+					}
+
+					repairCountMap.put(eventId, eventCount);
+
+					if (threadEndTime > 0 && threadEndTime < System.currentTimeMillis()) {
+						break;
+					}
+				}
+
+				// 打印次数
+				for (Entry<String, Integer> entry : repairCountMap.entrySet()) {
+					logger.info("共处理事件[" + entry.getKey() + "]数据次数：" + entry.getValue() + "次");
+				}
+			} finally {
+				logger.info("--------->修复数据任务结束<---------");
+				readLastProcessedDay(events);
+			}
 		}
-		r += 5;
-		return (int) (r / 10);
 	}
 
 	// ---------------------------------------------------------------------
@@ -360,8 +303,7 @@ public class DataProcessManager {
 	//
 	// ---------------------------------------------------------------------
 
-	private Thread processThread;
-	private RepairThread repairThread;
+	private ProcessThread processThread;
 	private int total;
 
 	public synchronized boolean processDataByThread(Date startTime, Date endTime, List<Unit> units, List<Event> events) {
@@ -376,26 +318,121 @@ public class DataProcessManager {
 				total = days * DataConstantContainer.getUnitList().size() * events.size();
 			}
 
-			repairThread = new RepairThread(events, units, 0, startTime.getTime(), endTime.getTime(), 0);
-			processThread = new Thread(repairThread);
+			processThread = new ProcessThread(events, units, startTime, endTime);
 			processThread.start();
 			return true;
 		}
 	}
 
 	public ProcessStatus getProcessDataStatus() {
-		if (processThread == null || repairThread == null) {
+		if (processThread == null) {
 			return new ProcessStatus(0, 0, ProcessStatus.STATUS_NON);
 		} else {
-			return new ProcessStatus(total, repairThread.getRepairCount(),
-					repairThread.isFinished() ? ProcessStatus.STATUS_PROCESSED : ProcessStatus.STATUS_PROCESSING);
+			return new ProcessStatus(total, processThread.getProcessedCount(),
+					processThread.isFinished() ? ProcessStatus.STATUS_PROCESSED : ProcessStatus.STATUS_PROCESSING);
 		}
 	}
 
 	public void shutdownProcessThread() {
-		if (repairThread != null) {
-			repairThread.shutdown();
+		if (processThread != null) {
+			processThread.shutdown();
 		}
+	}
+
+	private class ProcessThread extends Thread {
+
+		private List<Event> events;
+		private List<Unit> units;
+		private Date startTime;
+		private Date endTime;
+		private boolean finished;
+		private boolean shutdown = false;
+		private int count = 0;
+
+		private ProcessThread(List<Event> events, List<Unit> units, Date startTime, Date endTime) {
+			this.events = events;
+			this.units = units;
+			this.startTime = TimeUtil.toDayTime(startTime);
+			this.endTime = TimeUtil.toDayTime(endTime);
+		}
+
+		@Override
+		public void run() {
+			try {
+				logger.info("--------->开始处理数据任务<---------");
+
+				for (Event event : events) {
+					String eventId = event.getId();
+					int targetType = event.getTargetType();
+
+					DataProcessor dataProcessor = dataProcessContainer.getDataProcessor(eventId);
+
+					List<Unit> units = this.units == null ? DataConstantContainer.getUnitListByType(targetType) : this.units;
+
+					// 归档日期，该日期之后的数据都是很可能会变的，所以标识未未确认
+					long filingTime = TimeUtil.getFilingDate(event).getTime();
+					// 不能超过今天
+					long end = endTime.getTime() > System.currentTimeMillis() ? TimeUtil.toDayTime(new Date()).getTime() : endTime.getTime();
+
+					for (Unit unit : units) {
+						int unitType = unit.getType();
+
+						if ((targetType == DataEvent.TARGET_TYPE_HOSPITAL && unitType != DataUnit.TYPE_HOSPITAL)
+								|| (targetType == DataEvent.TARGET_TYPE_COMMUNITY && unitType != DataUnit.TYPE_COMMUNITY)) {
+							continue;
+						}
+
+						String unitId = unit.getId();
+						long start = startTime.getTime();
+
+						int count = 0;
+						while (start <= end) {
+							Date startD = new Date(start);
+							start += TimeUtil.MILLIS_IN_DAY;
+							Date endD = new Date(start);
+							
+							boolean confirmed = startD.getTime() <= filingTime;
+							boolean success = processDataForOneDay(startD, endD, unitId, dataProcessor,confirmed);
+
+							if (!success) {
+								break;
+							}
+
+							if (shutdown) {
+								break;
+							}
+						}
+
+						this.count += count;
+
+						if (shutdown) {
+							break;
+						}
+					}
+
+					if (shutdown) {
+						break;
+					}
+				}
+			} finally {
+				finished = true;
+				logger.info("--------->处理数据任务结束<---------");
+				readLastProcessedDay(events);
+			}
+		}
+
+		public int getProcessedCount() {
+			return count;
+		}
+
+		public boolean isFinished() {
+			return finished;
+		}
+
+		public void shutdown() {
+			this.shutdown = true;
+		}
+
 	}
 
 	public static class ProcessStatus {

@@ -6,36 +6,39 @@ public class DataEvent {
 
 	public static final int EVENT_TYPE_RATE = 1;
 	public static final int EVENT_TYPE_COUNT = 2;
-	
+
 	public static final int TARGET_TYPE_ALL = 1;
 	public static final int TARGET_TYPE_HOSPITAL = 2;
 	public static final int TARGET_TYPE_COMMUNITY = 3;
-	
-	// 
+
+	//
 	@Id
 	private String id;
 
 	// 事件名称
 	private String name;
-	
+
 	// 事件类型，概率 or 总数
 	private Integer eventType;
-	
+
 	// 数据目标类型， 医院 or 社区 or 所有
 	private Integer targetType;
 
 	// 数据源
 	private String dataSource;
-	
-	// 
+
+	//
 	private String content;
-	
-	// 处理前多少天数据
+
+	// 处理前多少天/月/年数据
 	private Integer processBefore;
-	
+
+	// 处理前天？月？年类型
+	private Integer processBeforeType;
+
 	// 是否需要实时
 	private Integer realTimeEnabled;
-	
+
 	// 实时间隔时间，分钟
 	private Integer realTimeInterval;
 
@@ -89,7 +92,7 @@ public class DataEvent {
 	public void setEventType(Integer eventType) {
 		this.eventType = eventType;
 	}
-	
+
 	public Integer getRealTimeInterval() {
 		return realTimeInterval;
 	}
@@ -120,6 +123,14 @@ public class DataEvent {
 
 	public void setProcessBefore(Integer processBefore) {
 		this.processBefore = processBefore;
+	}
+
+	public Integer getProcessBeforeType() {
+		return processBeforeType;
+	}
+
+	public void setProcessBeforeType(Integer processBeforeType) {
+		this.processBeforeType = processBeforeType;
 	}
 
 }

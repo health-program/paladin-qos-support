@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import com.paladin.qos.analysis.DataConstantContainer.Event;
+
 public class TimeUtil {
 
 	public static final int SECONDS_IN_DAY = 60 * 60 * 24;
@@ -218,6 +220,37 @@ public class TimeUtil {
 	}
 
 	/**
+	 * 获取今天过去某个月
+	 * 
+	 * @param pastMonths
+	 * @return
+	 */
+	public static Date getTodayBeforeMonth(int pastMonths) {
+		Calendar ca = Calendar.getInstance();
+		ca.add(Calendar.MONTH, -pastMonths);
+		ca.set(Calendar.DAY_OF_MONTH, ca.getActualMaximum(Calendar.DAY_OF_MONTH));
+		long millis = ca.getTimeInMillis();
+		millis = millis - ((millis + timeZone.getOffset(millis)) % MILLIS_IN_DAY);
+		return new Date(millis);
+	}
+
+	/**
+	 * 获取今天过去某年
+	 * 
+	 * @param pastYears
+	 * @return
+	 */
+	public static Date getTodayBeforeYear(int pastYears) {
+		Calendar ca = Calendar.getInstance();
+		ca.add(Calendar.YEAR, -pastYears);
+		ca.set(Calendar.MONTH, 11);
+		ca.set(Calendar.DAY_OF_MONTH, 31);
+		long millis = ca.getTimeInMillis();
+		millis = millis - ((millis + timeZone.getOffset(millis)) % MILLIS_IN_DAY);
+		return new Date(millis);
+	}
+
+	/**
 	 * 获取某天的过去几天
 	 * 
 	 * @param millis
@@ -229,10 +262,38 @@ public class TimeUtil {
 		return new Date(millis - MILLIS_IN_DAY * pastDays);
 	}
 
+	/**
+	 * 获取统计处理截止归档时间
+	 * 
+	 * @param event
+	 * @return
+	 */
+	public static Date getFilingDate(Event event) {
+		int num = event.getProcessBefore();
+		int type = event.getProcessBeforeType();
+
+		if (type == DataConstantContainer.PROCESS_BEFORE_TYPE_DAY) {
+			return getTodayBefore(num);
+		} else if (type == DataConstantContainer.PROCESS_BEFORE_TYPE_MONTH) {
+			return getTodayBeforeMonth(num);
+		} else if (type == DataConstantContainer.PROCESS_BEFORE_TYPE_YEAR) {
+			return getTodayBeforeYear(num);
+		} else if (type == DataConstantContainer.PROCESS_BEFORE_TYPE_SPECIAL_ONE) {
+			Calendar ca = Calendar.getInstance();
+			int day = ca.get(Calendar.DAY_OF_MONTH);
+			if (day < num) {
+				return getTodayBeforeMonth(1);
+			} else {
+				return getTodayBeforeMonth(2);
+			}
+		}
+		return null;
+	}
+
 	private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public static void main(String[] args) throws Exception {
-		System.out.println(format.format(getTodayBefore(1)));
+		System.out.println(format.format(getTodayBeforeMonth(1)));
 	}
 
 }

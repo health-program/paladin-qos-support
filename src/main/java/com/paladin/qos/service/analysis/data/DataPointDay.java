@@ -5,9 +5,7 @@ public class DataPointDay {
 	private int year;
 	private int month;
 	private int day;
-	
-	private int rate;
-	
+		
 	private long eventNum;
 	private long totalNum;
 	
@@ -41,13 +39,7 @@ public class DataPointDay {
 	public void setTotalNum(long totalNum) {
 		this.totalNum = totalNum;
 	}
-	public int getRate() {
-		return rate;
-	}
-	public void setRate(int rate) {
-		this.rate = rate;
-	}
-	
+
 	
 	
 	

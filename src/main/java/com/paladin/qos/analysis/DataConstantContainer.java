@@ -27,6 +27,18 @@ public class DataConstantContainer implements VersionContainer {
 
 	private final static int DEFAULT_REAL_TIME_INTERVAL = 5;
 
+	/**前多少天*/
+	public final static int PROCESS_BEFORE_TYPE_DAY = 1;
+	/**前多少月*/
+	public final static int PROCESS_BEFORE_TYPE_MONTH= 2;
+	/**前多少年*/
+	public final static int PROCESS_BEFORE_TYPE_YEAR = 3;
+	
+	/**过了某日，则读取到上一个月，如果没过，则读取到上上个月*/
+	public final static int PROCESS_BEFORE_TYPE_SPECIAL_ONE = 4;
+	
+	
+	
 	@Override
 	public String getId() {
 		return container_id;
@@ -85,6 +97,7 @@ public class DataConstantContainer implements VersionContainer {
 			event.setRealTimeEnabled(realTimeEnabled != null && realTimeEnabled.intValue() == 1);
 			event.setRealTimeInterval(realTimeInterval == null ? DEFAULT_REAL_TIME_INTERVAL : realTimeInterval);
 			event.setProcessBefore(dataEvent.getProcessBefore());
+			event.setProcessBeforeType(dataEvent.getProcessBeforeType());
 
 			events.add(event);
 			eventMap.put(id, event);
@@ -223,13 +236,14 @@ public class DataConstantContainer implements VersionContainer {
 	}
 
 	public static class Event {
-
+		
 		private String id;
 		private String name;
 		private int eventType;
 		private int targetType;
 		private String dataSource;
 		private int processBefore;
+		private int processBeforeType;
 		private boolean realTimeEnabled;
 		private int realTimeInterval;
 		private boolean enabled;
@@ -304,6 +318,14 @@ public class DataConstantContainer implements VersionContainer {
 
 		public void setProcessBefore(int processBefore) {
 			this.processBefore = processBefore;
+		}
+
+		public int getProcessBeforeType() {
+			return processBeforeType;
+		}
+
+		public void setProcessBeforeType(int processBeforeType) {
+			this.processBeforeType = processBeforeType;
 		}
 	}
 

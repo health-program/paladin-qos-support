@@ -6,7 +6,6 @@
 		SELECT year, 
 		   month,
 		   day,
-		   rate,
 	       event_num AS eventNum,
 	       total_num AS totalNum
 		FROM data_processed_day

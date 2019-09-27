@@ -53,6 +53,11 @@ public class CommonUserRealm extends AuthorizingRealm {
 		if (sysUser.getState() != SysUser.STATE_ENABLED) {
 			throw new LockedAccountException(); // 帐号锁定
 		}
+		
+		// 必须系统管理员
+		if(sysUser.getType() != SysUser.TYPE_ADMIN) {
+			throw new UnknownAccountException();
+		}
 
 		/*
 		 * 获取权限信息:这里没有进行实现， 请自行根据UserInfo,Role,Permission进行实现； 获取之后可以在前端for循环显示所有链接;
