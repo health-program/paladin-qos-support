@@ -71,7 +71,7 @@
         and r.REGDATE &lt; #{endTime}
         and r.orgcode = #{unitId}
         and r.idcardno in
-        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+        <foreach collection="idCard" item="item" index="index" open="(" separator="," close=")">
             #{item} 
         </foreach>
     </select>
