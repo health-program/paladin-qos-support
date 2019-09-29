@@ -1,15 +1,10 @@
 package com.paladin.qos.model.data;
 
+import java.util.Date;
+
 import javax.persistence.Id;
 
 public class DataEvent {
-
-	public static final int EVENT_TYPE_RATE = 1;
-	public static final int EVENT_TYPE_COUNT = 2;
-
-	public static final int TARGET_TYPE_ALL = 1;
-	public static final int TARGET_TYPE_HOSPITAL = 2;
-	public static final int TARGET_TYPE_COMMUNITY = 3;
 
 	//
 	@Id
@@ -27,8 +22,11 @@ public class DataEvent {
 	// 数据源
 	private String dataSource;
 
-	//
+	// 内容说明
 	private String content;
+	
+	// 处理开始时间
+	private Date processStartDate;
 
 	// 处理前多少天/月/年数据
 	private Integer processBefore;
@@ -42,8 +40,15 @@ public class DataEvent {
 	// 实时间隔时间，分钟
 	private Integer realTimeInterval;
 
+	// sql 执行速度
+	private Integer sqlSpeed;
+	
+	// 是否单独处理线程
+	private Integer separateProcessThread;
+	
 	// 是否启用
 	private Integer enabled;
+	
 
 	public String getId() {
 		return id;
@@ -131,6 +136,30 @@ public class DataEvent {
 
 	public void setProcessBeforeType(Integer processBeforeType) {
 		this.processBeforeType = processBeforeType;
+	}
+
+	public Integer getSqlSpeed() {
+		return sqlSpeed;
+	}
+
+	public void setSqlSpeed(Integer sqlSpeed) {
+		this.sqlSpeed = sqlSpeed;
+	}
+
+	public Integer getSeparateProcessThread() {
+		return separateProcessThread;
+	}
+
+	public void setSeparateProcessThread(Integer separateProcessThread) {
+		this.separateProcessThread = separateProcessThread;
+	}
+
+	public Date getProcessStartDate() {
+		return processStartDate;
+	}
+
+	public void setProcessStartDate(Date processStartDate) {
+		this.processStartDate = processStartDate;
 	}
 
 }

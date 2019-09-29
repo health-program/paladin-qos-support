@@ -9,8 +9,6 @@ public class DataUnit {
 	/** 社区 */
 	public final static int TYPE_COMMUNITY = 2;
 	
-	
-	
 	// 
 	@Id
 	private String id;

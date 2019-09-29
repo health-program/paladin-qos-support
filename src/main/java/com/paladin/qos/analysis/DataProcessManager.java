@@ -3,9 +3,7 @@ package com.paladin.qos.analysis;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -19,7 +17,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.paladin.framework.utils.uuid.UUIDUtil;
-import com.paladin.qos.analysis.DataConstantContainer.Event;
 import com.paladin.qos.analysis.DataConstantContainer.Unit;
 import com.paladin.qos.dynamic.DSConstant;
 import com.paladin.qos.model.data.DataProcessException;
@@ -32,17 +29,6 @@ import com.paladin.qos.service.data.DataProcessedDayService;
 public class DataProcessManager {
 
 	private static Logger logger = LoggerFactory.getLogger(DataProcessManager.class);
-
-	/** 默认开始处理时间 */
-	public static Date DEFAULT_START_TIME;
-
-	static {
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		try {
-			DEFAULT_START_TIME = format.parse("2019-01-01");
-		} catch (ParseException e) {
-		}
-	}
 
 	@Autowired
 	private DataProcessContainer dataProcessContainer;
@@ -59,16 +45,14 @@ public class DataProcessManager {
 	// 线程池
 	private ExecutorService executorService;
 
-	// 最近处理时间map
-	protected Map<String, Map<String, Long>> lastProcessedDayMap = new HashMap<>();
-
 	@Value("${qos.simple-mode}")
 	private boolean simpleMode = false;
 
 	/**
 	 * 读取最近一次处理的时间
 	 */
-	public synchronized void readLastProcessedDay(List<Event> events) {
+	public synchronized void readLastProcessedDay(List<DataProcessEvent> events) {
+		
 		if (simpleMode) {
 			return;
 		}
@@ -79,30 +63,22 @@ public class DataProcessManager {
 		}
 
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-		for (Event event : events) {
+		for (DataProcessEvent event : events) {
 			String eventId = event.getId();
-			Map<String, Long> unitProcessedDayMap = lastProcessedDayMap.get(eventId);
-			if (unitProcessedDayMap == null) {
-				unitProcessedDayMap = new HashMap<>();
-				lastProcessedDayMap.put(eventId, unitProcessedDayMap);
-			}
-
-			List<Unit> units = DataConstantContainer.getUnitListByType(event.getTargetType());
-			for (Unit unit : units) {
+			for (Unit unit : event.getTargetUnits()) {
 				String unitId = unit.getId();
 				Integer dayNum = analysisService.getCurrentDayOfEventAndUnit(eventId, unitId);
-
 				if (dayNum != null) {
 					Date date;
 					try {
 						date = format.parse(String.valueOf(dayNum));
-						unitProcessedDayMap.put(unitId, date.getTime());
+						event.updateLastProcessedDay(unitId, date.getTime());
 					} catch (ParseException e) {
 						e.printStackTrace();
 					}
 				} else {
 					// 如果一个数据都没，则从默认时间开始
-					unitProcessedDayMap.put(unitId, DEFAULT_START_TIME.getTime() - TimeUtil.MILLIS_IN_DAY);
+					event.updateLastProcessedDay(unitId, event.getProcessStartDate().getTime() - TimeUtil.MILLIS_IN_DAY);
 				}
 			}
 		}
@@ -114,7 +90,11 @@ public class DataProcessManager {
 	 * 每天22点开始修复数据，修复到凌晨5点，等到数据修复差不多时需要调整时间为每天凌晨后，避免处理时间截止到前天而不是昨天
 	 */
 	@Scheduled(cron = "0 0 18 * * ?")
-	public void processSchedule() {
+	public void processUpdate() {
+		if (simpleMode) {
+			return;
+		}
+
 		if (executorService == null) {
 			executorService = new ThreadPoolExecutor(5, 5, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(256), // 使用有界队列，避免OOM
 					new ThreadPoolExecutor.DiscardPolicy());
@@ -131,6 +111,14 @@ public class DataProcessManager {
 				new DataRepairThread(this, dataProcessContainer, DataConstantContainer.getEventListByDataSource(DSConstant.DS_JCYL), threadEndTime, 0));
 		executorService.execute(
 				new DataRepairThread(this, dataProcessContainer, DataConstantContainer.getEventListByDataSource(DSConstant.DS_YIYUAN), threadEndTime, 0));
+	}
+
+	@Scheduled(cron = "0 */1 * * * ?")
+	public void processRealTime() {
+		if (simpleMode) {
+			return;
+		}
+
 	}
 
 	// 处理一天的数据
@@ -222,7 +210,7 @@ public class DataProcessManager {
 	private DataProcessThread processThread;
 	private int total;
 
-	public synchronized boolean processDataByThread(Date startTime, Date endTime, List<Unit> units, List<Event> events) {
+	public synchronized boolean processDataByThread(Date startTime, Date endTime, List<Unit> units, List<DataProcessEvent> events) {
 		if (processThread != null && processThread.isAlive()) {
 			return false;
 		} else {

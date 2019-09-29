@@ -7,8 +7,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import com.paladin.qos.analysis.DataConstantContainer.Event;
-
 public class TimeUtil {
 
 	public static final int SECONDS_IN_DAY = 60 * 60 * 24;
@@ -268,17 +266,17 @@ public class TimeUtil {
 	 * @param event
 	 * @return
 	 */
-	public static Date getFilingDate(Event event) {
+	public static Date getFilingDate(DataProcessEvent event) {
 		int num = event.getProcessBefore();
 		int type = event.getProcessBeforeType();
 
-		if (type == DataConstantContainer.PROCESS_BEFORE_TYPE_DAY) {
+		if (type == DataProcessEvent.PROCESS_BEFORE_TYPE_DAY) {
 			return getTodayBefore(num);
-		} else if (type == DataConstantContainer.PROCESS_BEFORE_TYPE_MONTH) {
+		} else if (type == DataProcessEvent.PROCESS_BEFORE_TYPE_MONTH) {
 			return getTodayBeforeMonth(num);
-		} else if (type == DataConstantContainer.PROCESS_BEFORE_TYPE_YEAR) {
+		} else if (type == DataProcessEvent.PROCESS_BEFORE_TYPE_YEAR) {
 			return getTodayBeforeYear(num);
-		} else if (type == DataConstantContainer.PROCESS_BEFORE_TYPE_SPECIAL_ONE) {
+		} else if (type == DataProcessEvent.PROCESS_BEFORE_TYPE_SPECIAL_ONE) {
 			Calendar ca = Calendar.getInstance();
 			int day = ca.get(Calendar.DAY_OF_MONTH);
 			if (day < num) {

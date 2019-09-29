@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 import com.paladin.framework.core.exception.BusinessException;
 import com.paladin.qos.analysis.DataByUnit;
 import com.paladin.qos.analysis.DataConstantContainer;
-import com.paladin.qos.analysis.DataConstantContainer.Event;
 import com.paladin.qos.analysis.DataConstantContainer.Unit;
 import com.paladin.qos.analysis.DataProcessContainer;
+import com.paladin.qos.analysis.DataProcessEvent;
 import com.paladin.qos.analysis.DataProcessor;
 import com.paladin.qos.analysis.TimeUtil;
 import com.paladin.qos.mapper.analysis.AnalysisMapper;
@@ -637,14 +637,13 @@ public class AnalysisService {
 			throw new BusinessException("请传入正确时间段");
 		}
 
-		List<Event> events = DataConstantContainer.getEventList();
+		List<DataProcessEvent> events = DataConstantContainer.getEventList();
 		List<ValidateEventResult> results = new ArrayList<>(events.size());
 
-		for (Event event : events) {
+		for (DataProcessEvent event : events) {
 			String eventId = event.getId();
-			int targetType = event.getTargetType();
 
-			List<Unit> units = DataConstantContainer.getUnitListByType(targetType);
+			List<Unit> units = event.getTargetUnits();
 			if (units == null) {
 				return null;
 			}
@@ -708,7 +707,7 @@ public class AnalysisService {
 	 * @param event
 	 * @return
 	 */
-	public TestResult testProcessor(Event event) {
+	public TestResult testProcessor(DataProcessEvent event) {
 		if (event != null) {
 			String eventId = event.getId();
 
@@ -718,8 +717,7 @@ public class AnalysisService {
 			DataProcessor processor = dataProcessContainer.getDataProcessor(eventId);
 			if (processor != null) {
 
-				int targetType = event.getTargetType();
-				List<Unit> units = DataConstantContainer.getUnitListByType(targetType);
+				List<Unit> units = event.getTargetUnits();
 				if (units == null) {
 					return null;
 				}
@@ -762,9 +760,9 @@ public class AnalysisService {
 	 * @return
 	 */
 	public List<TestResult> testProcessors() {
-		List<Event> events = DataConstantContainer.getEventList();
+		List<DataProcessEvent> events = DataConstantContainer.getEventList();
 		List<TestResult> results = new ArrayList<>(events.size());
-		for (Event event : events) {
+		for (DataProcessEvent event : events) {
 
 			TestResult result = testProcessor(event);
 			if (result != null) {

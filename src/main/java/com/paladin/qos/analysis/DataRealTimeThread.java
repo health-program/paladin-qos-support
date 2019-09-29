@@ -6,7 +6,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.paladin.qos.analysis.DataConstantContainer.Event;
 import com.paladin.qos.analysis.DataConstantContainer.Unit;
 
 /**
@@ -23,9 +22,9 @@ public class DataRealTimeThread implements Runnable {
 	private DataProcessContainer processContainer;
 
 	// 修复事件
-	private List<Event> events;
+	private List<DataProcessEvent> events;
 
-	public DataRealTimeThread(DataProcessManager processManager, DataProcessContainer processContainer, List<Event> events) {
+	public DataRealTimeThread(DataProcessManager processManager, DataProcessContainer processContainer, List<DataProcessEvent> events) {
 		this.processManager = processManager;
 		this.processContainer = processContainer;
 		this.events = events;
@@ -36,12 +35,11 @@ public class DataRealTimeThread implements Runnable {
 
 		logger.debug("----------开始处理实时部分数据---------");
 
-		for (Event event : events) {
+		for (DataProcessEvent event : events) {
 			String eventId = event.getId();
-			int targetType = event.getTargetType();
 
 			DataProcessor dataProcessor = processContainer.getDataProcessor(eventId);
-			List<Unit> units = DataConstantContainer.getUnitListByType(targetType);
+			List<Unit> units = event.getTargetUnits();
 
 			// 归档日期，该日期之后的数据都是很可能会变的，所以标识未未确认
 			long filingTime = TimeUtil.getFilingDate(event).getTime();
@@ -51,7 +49,7 @@ public class DataRealTimeThread implements Runnable {
 			for (Unit unit : units) {
 				String unitId = unit.getId();
 
-				if (processManager.lastProcessedDayMap.get(eventId).get(unitId) < filingTime) {
+				if (event.getLastProcessedDay(unitId) < filingTime) {
 					// 如果数据预处理还未达到归档日期，则不作实时处理
 					break;
 				}

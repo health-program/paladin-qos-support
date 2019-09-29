@@ -6,10 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.paladin.qos.analysis.DataConstantContainer.Event;
 import com.paladin.qos.analysis.DataConstantContainer.Unit;
-import com.paladin.qos.model.data.DataEvent;
-import com.paladin.qos.model.data.DataUnit;
 
 /**
  * 数据处理线程，处理时间段内，某些事件，某些单位的数据
@@ -24,7 +21,7 @@ public class DataProcessThread extends Thread {
 	private DataProcessManager processManager;
 	private DataProcessContainer processContainer;
 
-	private List<Event> events;
+	private List<DataProcessEvent> events;
 	private List<Unit> units;
 	private Date startTime;
 	private Date endTime;
@@ -32,8 +29,8 @@ public class DataProcessThread extends Thread {
 	private boolean shutdown = false;
 	private int count = 0;
 
-	public DataProcessThread(DataProcessManager processManager, DataProcessContainer processContainer, List<Event> events, List<Unit> units, Date startTime,
-			Date endTime) {
+	public DataProcessThread(DataProcessManager processManager, DataProcessContainer processContainer, List<DataProcessEvent> events, List<Unit> units,
+			Date startTime, Date endTime) {
 		this.events = events;
 		this.units = units;
 		this.startTime = TimeUtil.toDayTime(startTime);
@@ -45,13 +42,15 @@ public class DataProcessThread extends Thread {
 		try {
 			logger.info("--------->开始处理数据任务<---------");
 
-			for (Event event : events) {
-				String eventId = event.getId();
-				int targetType = event.getTargetType();
+			for (DataProcessEvent event : events) {
+				if (!event.isEnabled()) {
+					continue;
+				}
 
+				String eventId = event.getId();
 				DataProcessor dataProcessor = processContainer.getDataProcessor(eventId);
 
-				List<Unit> units = this.units == null ? DataConstantContainer.getUnitListByType(targetType) : this.units;
+				List<Unit> units = this.units == null ? event.getTargetUnits() : this.units;
 
 				// 归档日期，该日期之后的数据都是很可能会变的，所以标识未未确认
 				long filingTime = TimeUtil.getFilingDate(event).getTime();
@@ -59,14 +58,12 @@ public class DataProcessThread extends Thread {
 				long end = endTime.getTime() > System.currentTimeMillis() ? TimeUtil.toDayTime(new Date()).getTime() : endTime.getTime();
 
 				for (Unit unit : units) {
-					int unitType = unit.getType();
+					String unitId = unit.getId();
 
-					if ((targetType == DataEvent.TARGET_TYPE_HOSPITAL && unitType != DataUnit.TYPE_HOSPITAL)
-							|| (targetType == DataEvent.TARGET_TYPE_COMMUNITY && unitType != DataUnit.TYPE_COMMUNITY)) {
+					if (!event.isTargetUnit(unitId)) {
 						continue;
 					}
 
-					String unitId = unit.getId();
 					long start = startTime.getTime();
 
 					int count = 0;

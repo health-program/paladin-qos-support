@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.paladin.qos.analysis.DataConstantContainer.Event;
 import com.paladin.qos.analysis.DataConstantContainer.Unit;
 
 /**
@@ -26,7 +25,7 @@ public class DataRepairThread implements Runnable {
 	private DataProcessContainer processContainer;
 
 	// 修复事件
-	private List<Event> events;
+	private List<DataProcessEvent> events;
 	// 线程结束时间
 	private long threadEndTime;
 	// 事件-修复数 map
@@ -34,7 +33,7 @@ public class DataRepairThread implements Runnable {
 	// 最大修复次数
 	private int maxRepairCount;
 
-	public DataRepairThread(DataProcessManager processManager, DataProcessContainer processContainer, List<Event> events, long threadEndTime,
+	public DataRepairThread(DataProcessManager processManager, DataProcessContainer processContainer, List<DataProcessEvent> events, long threadEndTime,
 			int maxRepairCount) {
 		this.processManager = processManager;
 		this.processContainer = processContainer;
@@ -48,13 +47,17 @@ public class DataRepairThread implements Runnable {
 	public void run() {
 		try {
 			logger.info("--------->开始修复数据任务<---------");
-			for (Event event : events) {
+			for (DataProcessEvent event : events) {
+				
+				if (!event.isEnabled()) {
+					continue;
+				}
+
 				String eventId = event.getId();
-				int targetType = event.getTargetType();
 				int eventCount = 0;
 
 				DataProcessor dataProcessor = processContainer.getDataProcessor(eventId);
-				List<Unit> units = DataConstantContainer.getUnitListByType(targetType);
+				List<Unit> units = event.getTargetUnits();
 
 				// 归档日期，该日期之后的数据都是很可能会变的，所以标识未未确认
 				long filingTime = TimeUtil.getFilingDate(event).getTime();
@@ -63,7 +66,7 @@ public class DataRepairThread implements Runnable {
 
 				for (Unit unit : units) {
 					String unitId = unit.getId();
-					long startTime = processManager.lastProcessedDayMap.get(eventId).get(unitId);
+					long startTime = event.getLastProcessedDay(unitId);
 					if (startTime > filingTime) {
 						startTime = filingTime;
 					}

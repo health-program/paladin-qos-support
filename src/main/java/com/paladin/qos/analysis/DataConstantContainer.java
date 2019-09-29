@@ -27,21 +27,20 @@ public class DataConstantContainer implements VersionContainer {
 
 	private final static int DEFAULT_REAL_TIME_INTERVAL = 5;
 
-	/**前多少天*/
-	public final static int PROCESS_BEFORE_TYPE_DAY = 1;
-	/**前多少月*/
-	public final static int PROCESS_BEFORE_TYPE_MONTH= 2;
-	/**前多少年*/
-	public final static int PROCESS_BEFORE_TYPE_YEAR = 3;
-	
-	/**过了某日，则读取到上一个月，如果没过，则读取到上上个月*/
-	public final static int PROCESS_BEFORE_TYPE_SPECIAL_ONE = 4;
-	
-	
-	
 	@Override
 	public String getId() {
 		return container_id;
+	}
+
+	public int order() {
+		// 需要在常量容器后执行
+		return 10;
+	};
+
+	@Override
+	public boolean versionChangedHandle(long version) {
+		initialize();
+		return false;
 	}
 
 	private final static String TYPE_EVENT = "data-event-type";
@@ -58,23 +57,22 @@ public class DataConstantContainer implements VersionContainer {
 	@Autowired
 	private DataProcessManager dataProcessManager;
 
-	private static Map<String, Event> eventMap;
+	private static Map<String, DataProcessEvent> eventMap;
 	private static Map<String, Unit> unitMap;
 
-	private static List<Event> events;
+	private static List<DataProcessEvent> events;
 	private static List<Unit> units;
 	private static List<Unit> hospitals;
 	private static List<Unit> communities;
 
 	public boolean initialize() {
-
 		List<DataEvent> dataEvents = dataEventService.findAll();
 		List<DataUnit> dataUnits = dataUnitService.findAll();
 
-		List<Event> events = new ArrayList<>();
+		List<DataProcessEvent> events = new ArrayList<>();
 		List<Unit> units = new ArrayList<>();
 
-		Map<String, Event> eventMap = new HashMap<>();
+		Map<String, DataProcessEvent> eventMap = new HashMap<>();
 		Map<String, Unit> unitMap = new HashMap<>();
 
 		List<KeyValue> eventKeyValues = new ArrayList<>();
@@ -85,9 +83,9 @@ public class DataConstantContainer implements VersionContainer {
 			Integer enabled = dataEvent.getEnabled();
 			Integer realTimeEnabled = dataEvent.getRealTimeEnabled();
 			Integer realTimeInterval = dataEvent.getRealTimeInterval();
+			Integer separateProcessThread = dataEvent.getSeparateProcessThread();
 
-			eventKeyValues.add(new KeyValue(id, name));
-			Event event = new Event();
+			DataProcessEvent event = new DataProcessEvent();
 			event.setId(id);
 			event.setName(name);
 			event.setEnabled(enabled != null && enabled.intValue() == 1);
@@ -98,8 +96,12 @@ public class DataConstantContainer implements VersionContainer {
 			event.setRealTimeInterval(realTimeInterval == null ? DEFAULT_REAL_TIME_INTERVAL : realTimeInterval);
 			event.setProcessBefore(dataEvent.getProcessBefore());
 			event.setProcessBeforeType(dataEvent.getProcessBeforeType());
+			event.setSqlSpeed(dataEvent.getSqlSpeed());
+			event.setSeparateProcessThread(separateProcessThread != null && separateProcessThread.intValue() == 1);
 
 			events.add(event);
+
+			eventKeyValues.add(new KeyValue(id, name));
 			eventMap.put(id, event);
 		}
 
@@ -149,7 +151,6 @@ public class DataConstantContainer implements VersionContainer {
 				communities.add(unit);
 				communityKeyValues.add(new KeyValue(id, name));
 			}
-
 		}
 
 		constantsContainer.putConstant(TYPE_EVENT, eventKeyValues);
@@ -166,27 +167,32 @@ public class DataConstantContainer implements VersionContainer {
 		DataConstantContainer.hospitals = Collections.unmodifiableList(hospitals);
 		DataConstantContainer.communities = Collections.unmodifiableList(communities);
 
-		dataProcessManager.readLastProcessedDay(null);		
-		return true;
-	}
+		for (DataProcessEvent event : events) {
+			int targetType = event.getTargetType();
+			if (targetType == DataProcessEvent.TARGET_TYPE_ALL) {
+				event.setTargetUnits(DataConstantContainer.units);
+			} else if (targetType == DataProcessEvent.TARGET_TYPE_HOSPITAL) {
+				event.setTargetUnits(DataConstantContainer.hospitals);
+			} else if (targetType == DataProcessEvent.TARGET_TYPE_COMMUNITY) {
+				event.setTargetUnits(DataConstantContainer.communities);
+			}
+		}
 
-	@Override
-	public boolean versionChangedHandle(long version) {
-		initialize();
-		return false;
+		dataProcessManager.readLastProcessedDay(null);
+		return true;
 	}
 
 	public static void updateData() {
 		VersionContainerManager.versionChanged(container_id);
 	}
 
-	public static List<Event> getEventList() {
+	public static List<DataProcessEvent> getEventList() {
 		return events;
 	}
 
-	public static List<Event> getEventListByDataSource(String dataSouce) {
-		List<Event> events = new ArrayList<>();
-		for (Event event : DataConstantContainer.events) {
+	public static List<DataProcessEvent> getEventListByDataSource(String dataSouce) {
+		List<DataProcessEvent> events = new ArrayList<>();
+		for (DataProcessEvent event : DataConstantContainer.events) {
 			if (event.getDataSource().equals(dataSouce)) {
 				events.add(event);
 			}
@@ -206,22 +212,11 @@ public class DataConstantContainer implements VersionContainer {
 		return communities;
 	}
 
-	public static List<Unit> getUnitListByType(int targetType) {
-		if (targetType == DataEvent.TARGET_TYPE_ALL) {
-			return DataConstantContainer.getUnitList();
-		} else if (targetType == DataEvent.TARGET_TYPE_HOSPITAL) {
-			return DataConstantContainer.getHospitalList();
-		} else if (targetType == DataEvent.TARGET_TYPE_COMMUNITY) {
-			return DataConstantContainer.getCommunityList();
-		}
-		return null;
-	}
-
 	public static Unit getUnit(String id) {
 		return unitMap.get(id);
 	}
 
-	public static Event getEvent(String id) {
+	public static DataProcessEvent getEvent(String id) {
 		return eventMap.get(id);
 	}
 
@@ -231,102 +226,8 @@ public class DataConstantContainer implements VersionContainer {
 	}
 
 	public static String getEventName(String id) {
-		Event event = eventMap.get(id);
+		DataProcessEvent event = eventMap.get(id);
 		return event == null ? "未知统计事件" : event.getName();
-	}
-
-	public static class Event {
-		
-		private String id;
-		private String name;
-		private int eventType;
-		private int targetType;
-		private String dataSource;
-		private int processBefore;
-		private int processBeforeType;
-		private boolean realTimeEnabled;
-		private int realTimeInterval;
-		private boolean enabled;
-
-		public String getId() {
-			return id;
-		}
-
-		public void setId(String id) {
-			this.id = id;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public boolean isEnabled() {
-			return enabled;
-		}
-
-		public void setEnabled(boolean enabled) {
-			this.enabled = enabled;
-		}
-
-		public int getEventType() {
-			return eventType;
-		}
-
-		public void setEventType(int eventType) {
-			this.eventType = eventType;
-		}
-
-		public int getTargetType() {
-			return targetType;
-		}
-
-		public void setTargetType(int targetType) {
-			this.targetType = targetType;
-		}
-
-		public boolean isRealTimeEnabled() {
-			return realTimeEnabled;
-		}
-
-		public void setRealTimeEnabled(boolean realTimeEnabled) {
-			this.realTimeEnabled = realTimeEnabled;
-		}
-
-		public int getRealTimeInterval() {
-			return realTimeInterval;
-		}
-
-		public void setRealTimeInterval(int realTimeInterval) {
-			this.realTimeInterval = realTimeInterval;
-		}
-
-		public String getDataSource() {
-			return dataSource;
-		}
-
-		public void setDataSource(String dataSource) {
-			this.dataSource = dataSource;
-		}
-
-		public int getProcessBefore() {
-			return processBefore;
-		}
-
-		public void setProcessBefore(int processBefore) {
-			this.processBefore = processBefore;
-		}
-
-		public int getProcessBeforeType() {
-			return processBeforeType;
-		}
-
-		public void setProcessBeforeType(int processBeforeType) {
-			this.processBeforeType = processBeforeType;
-		}
 	}
 
 	public static class Unit {
@@ -379,10 +280,5 @@ public class DataConstantContainer implements VersionContainer {
 			this.orderNum = orderNum;
 		}
 	}
-
-	public int order() {
-		// 需要在常量容器后执行
-		return 10;
-	};
 
 }

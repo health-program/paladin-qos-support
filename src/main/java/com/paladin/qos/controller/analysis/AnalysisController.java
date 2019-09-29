@@ -9,7 +9,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,12 +16,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.paladin.framework.web.response.CommonResponse;
 import com.paladin.qos.analysis.DataConstantContainer;
-import com.paladin.qos.analysis.DataConstantContainer.Event;
 import com.paladin.qos.analysis.DataConstantContainer.Unit;
+import com.paladin.qos.analysis.DataProcessEvent;
 import com.paladin.qos.analysis.DataProcessManager;
 import com.paladin.qos.analysis.TimeUtil;
-import com.paladin.qos.model.data.DataEvent;
+import com.paladin.qos.model.data.DataUnit;
 import com.paladin.qos.service.analysis.AnalysisService;
+import com.paladin.qos.service.data.DataEventService;
 
 @Controller
 @RequestMapping("/qos/analysis")
@@ -34,6 +34,9 @@ public class AnalysisController {
 	@Autowired
 	private AnalysisService analysisService;
 
+	@Autowired
+	private DataEventService dataEventService;
+
 	@GetMapping("/process/index")
 	public Object processIndex() {
 		return "/qos/analysis/process_index";
@@ -42,11 +45,6 @@ public class AnalysisController {
 	@GetMapping("/processed/index")
 	public Object dataIndex() {
 		return "/qos/analysis/processed_index";
-	}
-
-	@GetMapping("/view/{name}")
-	public Object viewInex(@PathVariable("name") String name) {
-		return "/qos/analysis/view_" + name;
 	}
 
 	@PostMapping("/data/process")
@@ -68,11 +66,11 @@ public class AnalysisController {
 			}
 		}
 
-		List<Event> events = null;
+		List<DataProcessEvent> events = null;
 		if (eventIds != null && eventIds.size() > 0) {
 			events = new ArrayList<>(eventIds.size());
 			for (String eventId : eventIds) {
-				Event event = DataConstantContainer.getEvent(eventId);
+				DataProcessEvent event = DataConstantContainer.getEvent(eventId);
 				if (event != null) {
 					events.add(event);
 				}
@@ -90,10 +88,10 @@ public class AnalysisController {
 		}
 	}
 
-	@GetMapping("/data/process/schedule")
+	@GetMapping("/data/process/update")
 	@ResponseBody
 	public Object processDataSchedule() {
-		dataProcessManager.processSchedule();
+		dataProcessManager.processUpdate();
 		return CommonResponse.getSuccessResponse();
 	}
 
@@ -128,7 +126,7 @@ public class AnalysisController {
 		if (eventIds != null && eventIds.size() > 0) {
 			Map<String, Object> map = new HashMap<>();
 			for (String eventId : eventIds) {
-				Event event = DataConstantContainer.getEvent(eventId);
+				DataProcessEvent event = DataConstantContainer.getEvent(eventId);
 				if (event != null) {
 					int unitType = getUnitType(event);
 					Object item = byUnit ? analysisService.getDataSetOfDay(eventId, unitType, startDate, endDate)
@@ -156,7 +154,7 @@ public class AnalysisController {
 		if (eventIds != null && eventIds.size() > 0) {
 			Map<String, Object> map = new HashMap<>();
 			for (String eventId : eventIds) {
-				Event event = DataConstantContainer.getEvent(eventId);
+				DataProcessEvent event = DataConstantContainer.getEvent(eventId);
 				if (event != null) {
 					int unitType = getUnitType(event);
 					Object item = byUnit ? analysisService.getDataSetOfMonth(eventId, unitType, startDate, endDate)
@@ -186,7 +184,7 @@ public class AnalysisController {
 		if (eventIds != null && eventIds.size() > 0) {
 			Map<String, Object> map = new HashMap<>();
 			for (String eventId : eventIds) {
-				Event event = DataConstantContainer.getEvent(eventId);
+				DataProcessEvent event = DataConstantContainer.getEvent(eventId);
 				if (event != null) {
 					int unitType = getUnitType(event);
 					Object item = byUnit ? analysisService.getDataSetOfYear(eventId, unitType, startYear, endYear)
@@ -213,16 +211,16 @@ public class AnalysisController {
 		if (eventIds != null && eventIds.size() > 0) {
 			Map<String, Object> map = new HashMap<>();
 			for (String eventId : eventIds) {
-				Event event = DataConstantContainer.getEvent(eventId);
+				DataProcessEvent event = DataConstantContainer.getEvent(eventId);
 				if (event != null) {
 					int eventType = event.getEventType();
 					int unitType = getUnitType(event);
-					if (DataEvent.EVENT_TYPE_COUNT == eventType) {
+					if (DataProcessEvent.EVENT_TYPE_COUNT == eventType) {
 						Object item = analysisService.countTotalNumByUnit(eventId, unitType, startDate, endDate);
 						if (item != null) {
 							map.put(eventId, item);
 						}
-					} else if (DataEvent.EVENT_TYPE_RATE == eventType) {
+					} else if (DataProcessEvent.EVENT_TYPE_RATE == eventType) {
 						Object item = analysisService.getAnalysisResultByUnit(eventId, unitType, startDate, endDate);
 						if (item != null) {
 							map.put(eventId, item);
@@ -233,13 +231,13 @@ public class AnalysisController {
 			return CommonResponse.getSuccessResponse(map);
 		} else {
 			String eventId = request.getEventId();
-			Event event = DataConstantContainer.getEvent(eventId);
+			DataProcessEvent event = DataConstantContainer.getEvent(eventId);
 			if (event != null) {
 				int eventType = event.getEventType();
 				int unitType = getUnitType(event);
-				if (DataEvent.EVENT_TYPE_COUNT == eventType) {
+				if (DataProcessEvent.EVENT_TYPE_COUNT == eventType) {
 					return CommonResponse.getSuccessResponse(analysisService.countTotalNumByUnit(eventId, unitType, startDate, endDate));
-				} else if (DataEvent.EVENT_TYPE_RATE == eventType) {
+				} else if (DataProcessEvent.EVENT_TYPE_RATE == eventType) {
 					return CommonResponse.getSuccessResponse(analysisService.getAnalysisResultByUnit(eventId, unitType, startDate, endDate));
 				}
 			}
@@ -258,7 +256,7 @@ public class AnalysisController {
 		if (eventIds != null && eventIds.size() > 0) {
 			Map<String, Long> map = new HashMap<>();
 			for (String eventId : eventIds) {
-				Event event = DataConstantContainer.getEvent(eventId);
+				DataProcessEvent event = DataConstantContainer.getEvent(eventId);
 				if (event != null) {
 					long count = analysisService.getTotalNumOfEvent(eventId, startDate, endDate);
 					map.put(eventId, count);
@@ -271,19 +269,19 @@ public class AnalysisController {
 		}
 	}
 
-	private int getUnitType(Event event) {
+	private int getUnitType(DataProcessEvent event) {
 		int targetType = event.getTargetType();
-		if (targetType == DataEvent.TARGET_TYPE_COMMUNITY)
-			return 2;
-		if (targetType == DataEvent.TARGET_TYPE_HOSPITAL)
-			return 1;
+		if (targetType == DataProcessEvent.TARGET_TYPE_COMMUNITY)
+			return DataUnit.TYPE_COMMUNITY;
+		if (targetType == DataProcessEvent.TARGET_TYPE_HOSPITAL)
+			return DataUnit.TYPE_HOSPITAL;
 		return 0;
 	}
 
 	@GetMapping("/constant/event")
 	@ResponseBody
 	public Object getEvent() {
-		return CommonResponse.getSuccessResponse(DataConstantContainer.getEventList());
+		return CommonResponse.getSuccessResponse(dataEventService.findAll());
 	}
 
 }
