@@ -27,11 +27,11 @@
     </select>
     <!-- 签约总数 -->
     <select id="singingTotal" resultType="long">
-        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_main_org 
-        WHERE signcode='1'
-        and CREATEDTIME &gt;= #{startTime}
-        and CREATEDTIME &lt; #{endTime}
-        and MANAGEDCENTERCODE = #{unitId}
+  		  SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_main m, phis_chss.v_fha_person_sign_main_org r
+		  WHERE m.guide3 is not null and r.SIGNCODE = '1' and r.code = m.code and m.LASTFLAG = '1' and m.STATEID = '0' and m.STATUS = '1'
+		  and m.SIGNPERIODFROM &gt;= #{startTime}
+		  and m.SIGNPERIODFROM &lt; #{endTime}
+		  and r.MANAGEDCENTERCODE = #{unitId}
     </select>
 
     <!-- 签约居民中心就诊人次数 -->
