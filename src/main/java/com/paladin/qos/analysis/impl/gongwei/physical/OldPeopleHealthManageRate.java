@@ -11,7 +11,7 @@ import org.thymeleaf.util.StringUtils;
 import java.util.Date;
 
 /**
- * 老年人体检率
+ * 老年人健康管理率
  * 
  * @author wcw
  *
@@ -41,6 +41,11 @@ public class OldPeopleHealthManageRate extends GongWeiDataProcessor {
 
 	@Override
 	public long getEventNum(Date startTime, Date endTime, String unitId) {
-		return 0;
+		String gongWeiUnitId = getMappingUnitId(unitId);
+		if (StringUtils.isEmpty(gongWeiUnitId)) {
+			return 0;
+		}
+		sqlSessionContainer.setCurrentDataSource(DSConstant.DS_GONGWEI);
+		return sqlSessionContainer.getSqlSessionTemplate().getMapper(PublicHealthManagementMapper.class).getOldPeopleManageNumber(startTime, endTime, gongWeiUnitId);
 	}
 }
