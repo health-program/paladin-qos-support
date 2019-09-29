@@ -399,4 +399,22 @@
 		            FROM ta)) - LENGTH(regexp_replace((SELECT str FROM ta), ',', '')) + 1)
 		AND x.orgcode = #{unitId}
 	</select>
+	
+	<!-- 医保挂号人数 -->
+	<select id="getYiPay" resultType="long">
+	select count(*) from phis_webhis.v_opr_register
+    where paykindcode = '3001'
+        and REGDATE &gt;= #{startTime}
+        and REGDATE &lt; #{endTime}
+        and ORGCODE = #{unitId}
+	</select>
+	
+	<!-- 自费挂号人数 -->
+	<select id="getYiPay" resultType="long">
+	select count(*) from phis_webhis.v_opr_register
+    where paykindcode = '1001'
+        and REGDATE &gt;= #{startTime}
+        and REGDATE &lt; #{endTime}
+        and ORGCODE = #{unitId}
+	</select>
 </mapper>

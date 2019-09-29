@@ -3,25 +3,17 @@ package com.paladin.qos.analysis.impl.shejike;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.paladin.data.dynamic.SqlSessionContainer;
 import com.paladin.qos.analysis.DataProcessor;
 import com.paladin.qos.dynamic.DSConstant;
 import com.paladin.qos.dynamic.mapper.shejike.SheJiKeMapper;
 
-/**
- * 其他收入
- * 
- * @author FM
- *
- */
-@Component
-public class OtherMoney extends DataProcessor {
+public class YiPay extends DataProcessor{
 	@Autowired
 	private SqlSessionContainer sqlSessionContainer;
 
-	public static final String EVENT_ID = "15004";
+	public static final String EVENT_ID = "15005";
 
 	@Override
 	public String getEventId() {
@@ -31,7 +23,7 @@ public class OtherMoney extends DataProcessor {
 	@Override
 	public long getTotalNum(Date startTime, Date endTime, String unitId) {
 		sqlSessionContainer.setCurrentDataSource(DSConstant.DS_JCYL);
-		return (long) (sqlSessionContainer.getSqlSessionTemplate().getMapper(SheJiKeMapper.class).getOtherMoney(startTime, endTime, unitId) * 100);
+		return sqlSessionContainer.getSqlSessionTemplate().getMapper(SheJiKeMapper.class).getYiPay(startTime, endTime, unitId);
 	}
 
 	@Override

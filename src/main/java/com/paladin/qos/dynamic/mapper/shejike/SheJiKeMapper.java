@@ -102,4 +102,10 @@ public interface SheJiKeMapper {
 
 	// 三联抗生素使用率
 	long getEventThreeAntiDrug(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+
+	//医保挂号人数
+	long getYiPay(Date startTime, Date endTime, String unitId);
+
+	//自费挂号人数
+	long getSelfPay(Date startTime, Date endTime, String unitId);
 }
