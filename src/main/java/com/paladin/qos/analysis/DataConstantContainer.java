@@ -97,6 +97,7 @@ public class DataConstantContainer implements VersionContainer {
 			event.setProcessBeforeType(dataEvent.getProcessBeforeType());
 			event.setSqlSpeed(dataEvent.getSqlSpeed());
 			event.setSeparateProcessThread(separateProcessThread != null && separateProcessThread.intValue() == 1);
+			event.setProcessStartDate(dataEvent.getProcessStartDate());
 
 			events.add(event);
 

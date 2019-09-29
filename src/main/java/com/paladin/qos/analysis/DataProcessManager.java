@@ -45,10 +45,13 @@ public class DataProcessManager {
 	private AnalysisService analysisService;
 
 	// 线程池
-	private ExecutorService executorService;
+	private ExecutorService executorService = new ThreadPoolExecutor(30, 30, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(256), // 使用有界队列，避免OOM
+			new ThreadPoolExecutor.DiscardPolicy());;
 
 	@Value("${qos.simple-mode}")
 	private boolean simpleMode = false;
+
+	private boolean hasReaded = false;
 
 	/**
 	 * 读取最近一次处理的时间
@@ -85,6 +88,8 @@ public class DataProcessManager {
 			}
 		}
 
+		hasReaded = true;
+
 		logger.info("-------------读取最近事件处理日期结束-------------");
 	}
 
@@ -95,11 +100,6 @@ public class DataProcessManager {
 	public void processUpdate() {
 		if (simpleMode) {
 			return;
-		}
-
-		if (executorService == null) {
-			executorService = new ThreadPoolExecutor(30, 30, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(256), // 使用有界队列，避免OOM
-					new ThreadPoolExecutor.DiscardPolicy());
 		}
 
 		// 根据定时时间修改，例如晚上10点到明天凌晨5点，则加7个小时时间
@@ -117,14 +117,15 @@ public class DataProcessManager {
 
 	@Scheduled(cron = "0 */1 * * * ?")
 	public void processRealTime() {
-		if (simpleMode) {
+		if (simpleMode || !hasReaded) {
 			return;
 		}
 
 		Calendar c = Calendar.getInstance();
 		int hour = c.get(Calendar.HOUR_OF_DAY);
-		// 只在白天进行
-		if (hour < 5 || hour > 19) {
+
+		// TODO 实时处理应该避免与更新数据处理同时进行，这里需要与更新数据处理任务同时修改
+		if (hour <= 5 || hour >= 19) {
 			return;
 		}
 

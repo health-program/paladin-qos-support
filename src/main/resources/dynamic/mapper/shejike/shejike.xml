@@ -410,7 +410,7 @@
 	</select>
 	
 	<!-- 自费挂号人数 -->
-	<select id="getYiPay" resultType="long">
+	<select id="getSelfPay" resultType="long">
 	select count(*) from phis_webhis.v_opr_register
     where paykindcode = '1001'
         and REGDATE &gt;= #{startTime}

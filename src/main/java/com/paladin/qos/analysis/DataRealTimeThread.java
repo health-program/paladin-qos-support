@@ -44,7 +44,6 @@ public class DataRealTimeThread implements Runnable {
 		logger.debug("----------开始处理实时部分数据---------");
 
 		for (DataProcessEvent event : events) {
-
 			if (event.beginRealTimeUpdate()) {
 				try {
 					String eventId = event.getId();
@@ -78,14 +77,13 @@ public class DataRealTimeThread implements Runnable {
 							}
 						}
 					}
-
 				} finally {
 					event.setRealTimeUpdateFinished();
+					logger.info("实时更新数据[" + event.getId() + "]");
 				}
 			}
-
 		}
-		
+
 		logger.debug("----------处理实时部分数据结束---------");
 	}
 }
