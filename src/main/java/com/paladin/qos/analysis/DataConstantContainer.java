@@ -24,7 +24,7 @@ public class DataConstantContainer implements VersionContainer {
 
 	private final static String container_id = "data_constant_container";
 
-	private final static int DEFAULT_REAL_TIME_INTERVAL = 5;
+	private final static long DEFAULT_REAL_TIME_INTERVAL = 5 * 60 * 1000;
 
 	@Override
 	public String getId() {
@@ -92,7 +92,7 @@ public class DataConstantContainer implements VersionContainer {
 			event.setDataSource(dataEvent.getDataSource());
 			event.setTargetType(dataEvent.getTargetType());
 			event.setRealTimeEnabled(realTimeEnabled != null && realTimeEnabled.intValue() == 1);
-			event.setRealTimeInterval(realTimeInterval == null ? DEFAULT_REAL_TIME_INTERVAL : realTimeInterval);
+			event.setRealTimeInterval(realTimeInterval == null ? DEFAULT_REAL_TIME_INTERVAL : realTimeInterval * 60 * 1000);
 			event.setProcessBefore(dataEvent.getProcessBefore());
 			event.setProcessBeforeType(dataEvent.getProcessBeforeType());
 			event.setSqlSpeed(dataEvent.getSqlSpeed());

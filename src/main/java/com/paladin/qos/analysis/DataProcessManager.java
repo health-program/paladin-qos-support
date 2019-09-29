@@ -2,6 +2,8 @@ package com.paladin.qos.analysis;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -52,7 +54,7 @@ public class DataProcessManager {
 	 * 读取最近一次处理的时间
 	 */
 	public synchronized void readLastProcessedDay(List<DataProcessEvent> events) {
-		
+
 		if (simpleMode) {
 			return;
 		}
@@ -87,21 +89,21 @@ public class DataProcessManager {
 	}
 
 	/**
-	 * 每天22点开始修复数据，修复到凌晨5点，等到数据修复差不多时需要调整时间为每天凌晨后，避免处理时间截止到前天而不是昨天
+	 * 定时修复数据 TODO 暂时为了多处理数据从晚上开始处理数据到第二天凌晨5点，等数据处理差不多后应该改为凌晨执行
 	 */
-	@Scheduled(cron = "0 0 18 * * ?")
+	@Scheduled(cron = "0 0 19 * * ?")
 	public void processUpdate() {
 		if (simpleMode) {
 			return;
 		}
 
 		if (executorService == null) {
-			executorService = new ThreadPoolExecutor(5, 5, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(256), // 使用有界队列，避免OOM
+			executorService = new ThreadPoolExecutor(30, 30, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(256), // 使用有界队列，避免OOM
 					new ThreadPoolExecutor.DiscardPolicy());
 		}
 
 		// 根据定时时间修改，例如晚上10点到明天凌晨5点，则加7个小时时间
-		long threadEndTime = System.currentTimeMillis() + 11 * 60 * 60 * 1000;
+		long threadEndTime = System.currentTimeMillis() + 10 * 60 * 60 * 1000;
 
 		executorService.execute(
 				new DataRepairThread(this, dataProcessContainer, DataConstantContainer.getEventListByDataSource(DSConstant.DS_FUYOU), threadEndTime, 0));
@@ -117,6 +119,51 @@ public class DataProcessManager {
 	public void processRealTime() {
 		if (simpleMode) {
 			return;
+		}
+
+		Calendar c = Calendar.getInstance();
+		int hour = c.get(Calendar.HOUR_OF_DAY);
+		// 只在白天进行
+		if (hour < 5 || hour > 19) {
+			return;
+		}
+
+		List<DataProcessEvent> fuyouEvents = new ArrayList<>();
+		List<DataProcessEvent> gongweiEvents = new ArrayList<>();
+		List<DataProcessEvent> jcylEvents = new ArrayList<>();
+		List<DataProcessEvent> yiyuanEvents = new ArrayList<>();
+
+		for (DataProcessEvent event : DataConstantContainer.getEventList()) {
+			if (event.needRealTimeUpdate()) {
+				if (event.isSeparateProcessThread()) {
+					// 单独线程处理
+					executorService.execute(new DataRealTimeThread(this, dataProcessContainer, event));
+				} else {
+					String source = event.getDataSource();
+					if (DSConstant.DS_FUYOU.equals(source)) {
+						fuyouEvents.add(event);
+					} else if (DSConstant.DS_GONGWEI.equals(source)) {
+						gongweiEvents.add(event);
+					} else if (DSConstant.DS_JCYL.equals(source)) {
+						jcylEvents.add(event);
+					} else if (DSConstant.DS_YIYUAN.equals(source)) {
+						yiyuanEvents.add(event);
+					}
+				}
+			}
+		}
+
+		if (fuyouEvents.size() > 0) {
+			executorService.execute(new DataRealTimeThread(this, dataProcessContainer, fuyouEvents));
+		}
+		if (gongweiEvents.size() > 0) {
+			executorService.execute(new DataRealTimeThread(this, dataProcessContainer, gongweiEvents));
+		}
+		if (jcylEvents.size() > 0) {
+			executorService.execute(new DataRealTimeThread(this, dataProcessContainer, jcylEvents));
+		}
+		if (yiyuanEvents.size() > 0) {
+			executorService.execute(new DataRealTimeThread(this, dataProcessContainer, yiyuanEvents));
 		}
 
 	}

@@ -1,5 +1,6 @@
 package com.paladin.qos.analysis;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,44 +31,61 @@ public class DataRealTimeThread implements Runnable {
 		this.events = events;
 	}
 
+	public DataRealTimeThread(DataProcessManager processManager, DataProcessContainer processContainer, DataProcessEvent event) {
+		this.processManager = processManager;
+		this.processContainer = processContainer;
+		this.events = new ArrayList<>();
+		this.events.add(event);
+	}
+
 	@Override
 	public void run() {
 
 		logger.debug("----------开始处理实时部分数据---------");
 
 		for (DataProcessEvent event : events) {
-			String eventId = event.getId();
 
-			DataProcessor dataProcessor = processContainer.getDataProcessor(eventId);
-			List<DataProcessUnit> units = event.getTargetUnits();
+			if (event.beginRealTimeUpdate()) {
+				try {
+					String eventId = event.getId();
 
-			// 归档日期，该日期之后的数据都是很可能会变的，所以标识未未确认
-			long filingTime = TimeUtil.getFilingDate(event).getTime();
-			// 截止日期不能超过今天
-			long endTime = TimeUtil.toDayTime(new Date()).getTime();
+					DataProcessor dataProcessor = processContainer.getDataProcessor(eventId);
+					List<DataProcessUnit> units = event.getTargetUnits();
 
-			for (DataProcessUnit unit : units) {
-				String unitId = unit.getId();
+					// 归档日期，该日期之后的数据都是很可能会变的，所以标识未未确认
+					long filingTime = TimeUtil.getFilingDate(event).getTime();
+					// 截止日期不能超过今天
+					long endTime = TimeUtil.toDayTime(new Date()).getTime();
 
-				if (event.getLastProcessedDay(unitId) < filingTime) {
-					// 如果数据预处理还未达到归档日期，则不作实时处理
-					break;
-				}
+					for (DataProcessUnit unit : units) {
+						String unitId = unit.getId();
 
-				long startTime = filingTime + TimeUtil.MILLIS_IN_DAY;
+						if (event.getLastProcessedDay(unitId) < filingTime) {
+							// 如果数据预处理还未达到归档日期，则不作实时处理
+							break;
+						}
 
-				while (startTime <= endTime) {
-					Date start = new Date(startTime);
-					startTime += TimeUtil.MILLIS_IN_DAY;
-					Date end = new Date(startTime);
-					boolean success = processManager.processDataForOneDay(start, end, unitId, dataProcessor, false);
+						long startTime = filingTime + TimeUtil.MILLIS_IN_DAY;
 
-					if (!success) {
-						break;
+						while (startTime <= endTime) {
+							Date start = new Date(startTime);
+							startTime += TimeUtil.MILLIS_IN_DAY;
+							Date end = new Date(startTime);
+							boolean success = processManager.processDataForOneDay(start, end, unitId, dataProcessor, false);
+
+							if (!success) {
+								break;
+							}
+						}
 					}
+
+				} finally {
+					event.setRealTimeUpdateFinished();
 				}
 			}
+
 		}
+		
 		logger.debug("----------处理实时部分数据结束---------");
 	}
 }
