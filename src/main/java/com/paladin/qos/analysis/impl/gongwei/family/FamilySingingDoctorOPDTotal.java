@@ -67,7 +67,7 @@ public class FamilySingingDoctorOPDTotal extends GongWeiDataProcessor {
 	@Override
 	public long getEventNum(Date startTime, Date endTime, String unitId) {
 	    long tatal = 0;
-		sqlSessionContainer.setCurrentDataSource(DSConstant.DS_GONGWEI);
+		sqlSessionContainer.setCurrentDataSource(DSConstant.DS_JCYL);
 		List<DataFamilyVO> vo = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).singingDoctorOPDtotal(startTime, endTime,
 				unitId);
 		
