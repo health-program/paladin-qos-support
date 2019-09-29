@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import com.github.pagehelper.util.StringUtil;
 import com.paladin.data.dynamic.SqlSessionContainer;
 import com.paladin.qos.analysis.DataConstantContainer;
-import com.paladin.qos.analysis.DataConstantContainer.Unit;
+import com.paladin.qos.analysis.DataProcessUnit;
 import com.paladin.qos.analysis.impl.gongwei.GongWeiDataProcessor;
 import com.paladin.qos.dynamic.DSConstant;
 import com.paladin.qos.dynamic.mapper.familydoctor.DataFamilyDoctorMapper;
@@ -70,8 +70,8 @@ public class FamilySingingAgencyOPDTotal extends GongWeiDataProcessor {
 			if (registerOPDtotal1 != null && registerOPDtotal1.size() > 0) {
 			    int listSize1 = registerOPDtotal1.size();
 			    int toIndex1 = 1000;
-			    List<Unit> units =DataConstantContainer.getHospitalList();
-				 for (Unit u : units) {
+			    List<DataProcessUnit> units =DataConstantContainer.getHospitalList();
+				 for (DataProcessUnit u : units) {
 				     String dbCode = u.getSource().getDbCode();
 					if (dbCode != null && dbCode.length() > 0) {
 					    

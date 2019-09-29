@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.paladin.framework.web.response.CommonResponse;
 import com.paladin.qos.analysis.DataConstantContainer;
-import com.paladin.qos.analysis.DataConstantContainer.Unit;
 import com.paladin.qos.analysis.DataProcessEvent;
 import com.paladin.qos.analysis.DataProcessManager;
+import com.paladin.qos.analysis.DataProcessUnit;
 import com.paladin.qos.analysis.TimeUtil;
 import com.paladin.qos.model.data.DataUnit;
 import com.paladin.qos.service.analysis.AnalysisService;
@@ -55,11 +55,11 @@ public class AnalysisController {
 		Date startDate = request.getStartTime();
 		Date endDate = request.getEndTime();
 
-		List<Unit> units = null;
+		List<DataProcessUnit> units = null;
 		if (unitIds != null && unitIds.size() > 0) {
 			units = new ArrayList<>(unitIds.size());
 			for (String unitId : unitIds) {
-				Unit unit = DataConstantContainer.getUnit(unitId);
+				DataProcessUnit unit = DataConstantContainer.getUnit(unitId);
 				if (unit != null) {
 					units.add(unit);
 				}

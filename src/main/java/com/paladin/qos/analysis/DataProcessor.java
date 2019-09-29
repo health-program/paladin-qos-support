@@ -12,28 +12,12 @@ import java.util.Date;
  */
 public abstract class DataProcessor {
 
-	/** 时间粒度：按年 */
-	public final static int TIME_GRANULARITY_YEAR = 10;
-	/** 时间粒度：按月 */
-	public final static int TIME_GRANULARITY_MONTH = 11;
-	/** 时间粒度：按日 */
-	public final static int TIME_GRANULARITY_DAY = 12;
-
 	/**
 	 * 处理器处理的事件ID
 	 * 
 	 * @return
 	 */
 	public abstract String getEventId();
-
-	/**
-	 * 处理时间粒度
-	 * 
-	 * @return
-	 */
-	// public int getTimeGranularity() {
-	// return TIME_GRANULARITY_DAY;
-	// }
 
 	/**
 	 * 处理数据，开始结束时间应当已经处理过（按照timeType），例如开始时间2019-8-13 00:00:00，结束时间为2019-8-14
@@ -45,7 +29,7 @@ public abstract class DataProcessor {
 	 * @param unitId
 	 * @return 如果返回null表示不处理
 	 */
-	public RateMetadata processByDay(Date startTime, Date endTime, String unitId) {
+	public Metadata processByDay(Date startTime, Date endTime, String unitId) {
 
 		if (unitId == null || unitId.length() == 0) {
 			return null;
@@ -63,11 +47,10 @@ public abstract class DataProcessor {
 		long totalNum = getTotalNum(startTime, endTime, unitId);
 		long eventNum = getEventNum(startTime, endTime, unitId);
 
-		RateMetadata metadata = new RateMetadata();
+		Metadata metadata = new Metadata();
 		metadata.setEventNum(eventNum);
 		metadata.setTotalNum(totalNum);
 		metadata.setUnitValue(unitId);
-		metadata.setTimeType(DataProcessor.TIME_GRANULARITY_DAY);
 		metadata.setYear(year);
 		metadata.setMonth(month);
 		metadata.setDay(day);

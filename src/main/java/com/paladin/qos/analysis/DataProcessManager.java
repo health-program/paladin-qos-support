@@ -17,7 +17,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.paladin.framework.utils.uuid.UUIDUtil;
-import com.paladin.qos.analysis.DataConstantContainer.Unit;
+import com.paladin.qos.analysis.DataProcessUnit;
 import com.paladin.qos.dynamic.DSConstant;
 import com.paladin.qos.model.data.DataProcessException;
 import com.paladin.qos.model.data.DataProcessedDay;
@@ -65,7 +65,7 @@ public class DataProcessManager {
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
 		for (DataProcessEvent event : events) {
 			String eventId = event.getId();
-			for (Unit unit : event.getTargetUnits()) {
+			for (DataProcessUnit unit : event.getTargetUnits()) {
 				String unitId = unit.getId();
 				Integer dayNum = analysisService.getCurrentDayOfEventAndUnit(eventId, unitId);
 				if (dayNum != null) {
@@ -124,7 +124,7 @@ public class DataProcessManager {
 	// 处理一天的数据
 	protected boolean processDataForOneDay(Date start, Date end, String unitId, DataProcessor processor, boolean confirmed) {
 		try {
-			RateMetadata rateMetadata = processor.processByDay(start, end, unitId);
+			Metadata rateMetadata = processor.processByDay(start, end, unitId);
 			if (rateMetadata != null) {
 				saveProcessedDataForDay(rateMetadata, confirmed);
 				return true;
@@ -148,7 +148,7 @@ public class DataProcessManager {
 	}
 
 	// 保存按天处理的数据
-	protected void saveProcessedDataForDay(RateMetadata rateMetadata, boolean confirmed) {
+	protected void saveProcessedDataForDay(Metadata rateMetadata, boolean confirmed) {
 
 		// 根据日期与事件创建唯一ID
 		int year = rateMetadata.getYear();
@@ -186,7 +186,7 @@ public class DataProcessManager {
 		long totalNum = rateMetadata.getTotalNum();
 		long eventNum = rateMetadata.getEventNum();
 
-		Unit unit = DataConstantContainer.getUnit(unitId);
+		DataProcessUnit unit = DataConstantContainer.getUnit(unitId);
 
 		model.setUnitId(unitId);
 		model.setUnitType(unit.getType());
@@ -210,7 +210,7 @@ public class DataProcessManager {
 	private DataProcessThread processThread;
 	private int total;
 
-	public synchronized boolean processDataByThread(Date startTime, Date endTime, List<Unit> units, List<DataProcessEvent> events) {
+	public synchronized boolean processDataByThread(Date startTime, Date endTime, List<DataProcessUnit> units, List<DataProcessEvent> events) {
 		if (processThread != null && processThread.isAlive()) {
 			return false;
 		} else {

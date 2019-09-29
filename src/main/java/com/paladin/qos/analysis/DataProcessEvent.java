@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.paladin.qos.analysis.DataConstantContainer.Unit;
+import com.paladin.qos.analysis.DataProcessUnit;
 
 public class DataProcessEvent {
 
@@ -57,7 +57,7 @@ public class DataProcessEvent {
 	private boolean enabled;
 
 	// 统计目标单位
-	private List<Unit> targetUnits = new ArrayList<>();
+	private List<DataProcessUnit> targetUnits = new ArrayList<>();
 	// 最近处理的数据日期
 	private Map<String, Long> lastProcessedDayMap = new HashMap<>();
 
@@ -88,7 +88,7 @@ public class DataProcessEvent {
 	 * @return
 	 */
 	public boolean isTargetUnit(String unitId) {
-		for (Unit unit : targetUnits) {
+		for (DataProcessUnit unit : targetUnits) {
 			if (unit.getId().equals(unitId)) {
 				return true;
 			}
@@ -192,11 +192,11 @@ public class DataProcessEvent {
 		this.enabled = enabled;
 	}
 
-	public List<Unit> getTargetUnits() {
+	public List<DataProcessUnit> getTargetUnits() {
 		return targetUnits;
 	}
 
-	public void setTargetUnits(List<Unit> targetUnits) {
+	public void setTargetUnits(List<DataProcessUnit> targetUnits) {
 		this.targetUnits = targetUnits;
 	}
 

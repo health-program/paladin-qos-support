@@ -6,7 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.paladin.qos.analysis.DataConstantContainer.Unit;
+import com.paladin.qos.analysis.DataProcessUnit;
 
 /**
  * 数据处理线程，处理时间段内，某些事件，某些单位的数据
@@ -22,14 +22,14 @@ public class DataProcessThread extends Thread {
 	private DataProcessContainer processContainer;
 
 	private List<DataProcessEvent> events;
-	private List<Unit> units;
+	private List<DataProcessUnit> units;
 	private Date startTime;
 	private Date endTime;
 	private boolean finished;
 	private boolean shutdown = false;
 	private int count = 0;
 
-	public DataProcessThread(DataProcessManager processManager, DataProcessContainer processContainer, List<DataProcessEvent> events, List<Unit> units,
+	public DataProcessThread(DataProcessManager processManager, DataProcessContainer processContainer, List<DataProcessEvent> events, List<DataProcessUnit> units,
 			Date startTime, Date endTime) {
 		this.events = events;
 		this.units = units;
@@ -50,14 +50,14 @@ public class DataProcessThread extends Thread {
 				String eventId = event.getId();
 				DataProcessor dataProcessor = processContainer.getDataProcessor(eventId);
 
-				List<Unit> units = this.units == null ? event.getTargetUnits() : this.units;
+				List<DataProcessUnit> units = this.units == null ? event.getTargetUnits() : this.units;
 
 				// 归档日期，该日期之后的数据都是很可能会变的，所以标识未未确认
 				long filingTime = TimeUtil.getFilingDate(event).getTime();
 				// 不能超过今天
 				long end = endTime.getTime() > System.currentTimeMillis() ? TimeUtil.toDayTime(new Date()).getTime() : endTime.getTime();
 
-				for (Unit unit : units) {
+				for (DataProcessUnit unit : units) {
 					String unitId = unit.getId();
 
 					if (!event.isTargetUnit(unitId)) {

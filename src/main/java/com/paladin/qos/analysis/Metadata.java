@@ -1,12 +1,11 @@
 package com.paladin.qos.analysis;
 
-public class RateMetadata {
+public class Metadata {
 	
 	private long totalNum;
 	private long eventNum;
 	
 	// 时间维度
-	private int timeType;
 	private int year;
 	private int month;
 	private int day;
@@ -17,14 +16,6 @@ public class RateMetadata {
 	private String unitValue;
 	
 	private String eventId;
-
-	public int getTimeType() {
-		return timeType;
-	}
-
-	public void setTimeType(int timeType) {
-		this.timeType = timeType;
-	}
 
 	public String getUnitValue() {
 		return unitValue;

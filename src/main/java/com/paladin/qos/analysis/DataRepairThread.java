@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.paladin.qos.analysis.DataConstantContainer.Unit;
+import com.paladin.qos.analysis.DataProcessUnit;
 
 /**
  * 数据修复线程，一般在凌晨执行，用于修复和更新数据
@@ -57,14 +57,14 @@ public class DataRepairThread implements Runnable {
 				int eventCount = 0;
 
 				DataProcessor dataProcessor = processContainer.getDataProcessor(eventId);
-				List<Unit> units = event.getTargetUnits();
+				List<DataProcessUnit> units = event.getTargetUnits();
 
 				// 归档日期，该日期之后的数据都是很可能会变的，所以标识未未确认
 				long filingTime = TimeUtil.getFilingDate(event).getTime();
 				// 截止日期不能超过今天
 				long endTime = TimeUtil.toDayTime(new Date()).getTime();
 
-				for (Unit unit : units) {
+				for (DataProcessUnit unit : units) {
 					String unitId = unit.getId();
 					long startTime = event.getLastProcessedDay(unitId);
 					if (startTime > filingTime) {

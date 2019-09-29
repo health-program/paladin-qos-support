@@ -10,7 +10,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.paladin.common.core.container.ConstantsContainer;
 import com.paladin.common.core.container.ConstantsContainer.KeyValue;
 import com.paladin.framework.core.VersionContainer;
@@ -58,22 +57,22 @@ public class DataConstantContainer implements VersionContainer {
 	private DataProcessManager dataProcessManager;
 
 	private static Map<String, DataProcessEvent> eventMap;
-	private static Map<String, Unit> unitMap;
+	private static Map<String, DataProcessUnit> unitMap;
 
 	private static List<DataProcessEvent> events;
-	private static List<Unit> units;
-	private static List<Unit> hospitals;
-	private static List<Unit> communities;
+	private static List<DataProcessUnit> units;
+	private static List<DataProcessUnit> hospitals;
+	private static List<DataProcessUnit> communities;
 
 	public boolean initialize() {
 		List<DataEvent> dataEvents = dataEventService.findAll();
 		List<DataUnit> dataUnits = dataUnitService.findAll();
 
 		List<DataProcessEvent> events = new ArrayList<>();
-		List<Unit> units = new ArrayList<>();
+		List<DataProcessUnit> units = new ArrayList<>();
 
 		Map<String, DataProcessEvent> eventMap = new HashMap<>();
-		Map<String, Unit> unitMap = new HashMap<>();
+		Map<String, DataProcessUnit> unitMap = new HashMap<>();
 
 		List<KeyValue> eventKeyValues = new ArrayList<>();
 
@@ -111,7 +110,7 @@ public class DataConstantContainer implements VersionContainer {
 			Integer type = dataUnit.getType();
 			Integer orderNum = dataUnit.getOrderNum();
 
-			Unit unit = new Unit();
+			DataProcessUnit unit = new DataProcessUnit();
 			unit.setId(id);
 			unit.setName(name);
 			unit.setType(type);
@@ -122,23 +121,23 @@ public class DataConstantContainer implements VersionContainer {
 			unitMap.put(id, unit);
 		}
 
-		units.sort(new Comparator<Unit>() {
+		units.sort(new Comparator<DataProcessUnit>() {
 			@Override
-			public int compare(Unit o1, Unit o2) {
+			public int compare(DataProcessUnit o1, DataProcessUnit o2) {
 				int i1 = o1.getOrderNum();
 				int i2 = o2.getOrderNum();
 				return i1 > i2 ? 1 : -1;
 			}
 		});
 
-		List<Unit> hospitals = new ArrayList<>();
-		List<Unit> communities = new ArrayList<>();
+		List<DataProcessUnit> hospitals = new ArrayList<>();
+		List<DataProcessUnit> communities = new ArrayList<>();
 
 		List<KeyValue> unitKeyValues = new ArrayList<>();
 		List<KeyValue> hospitalKeyValues = new ArrayList<>();
 		List<KeyValue> communityKeyValues = new ArrayList<>();
 
-		for (Unit unit : units) {
+		for (DataProcessUnit unit : units) {
 			String id = unit.getId();
 			String name = unit.getName();
 			int type = unit.getType();
@@ -200,19 +199,19 @@ public class DataConstantContainer implements VersionContainer {
 		return events;
 	}
 
-	public static List<Unit> getUnitList() {
+	public static List<DataProcessUnit> getUnitList() {
 		return units;
 	}
 
-	public static List<Unit> getHospitalList() {
+	public static List<DataProcessUnit> getHospitalList() {
 		return hospitals;
 	}
 
-	public static List<Unit> getCommunityList() {
+	public static List<DataProcessUnit> getCommunityList() {
 		return communities;
 	}
 
-	public static Unit getUnit(String id) {
+	public static DataProcessUnit getUnit(String id) {
 		return unitMap.get(id);
 	}
 
@@ -221,64 +220,13 @@ public class DataConstantContainer implements VersionContainer {
 	}
 
 	public static String getUnitName(String id) {
-		Unit unit = unitMap.get(id);
+		DataProcessUnit unit = unitMap.get(id);
 		return unit == null ? "未知单位" : unit.getName();
 	}
 
 	public static String getEventName(String id) {
 		DataProcessEvent event = eventMap.get(id);
 		return event == null ? "未知统计事件" : event.getName();
-	}
-
-	public static class Unit {
-
-		@JsonIgnore
-		private DataUnit source;
-
-		private String id;
-		private String name;
-		private int type;
-		private int orderNum;
-
-		public String getId() {
-			return id;
-		}
-
-		public void setId(String id) {
-			this.id = id;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public int getType() {
-			return type;
-		}
-
-		public void setType(int type) {
-			this.type = type;
-		}
-
-		public DataUnit getSource() {
-			return source;
-		}
-
-		public void setSource(DataUnit source) {
-			this.source = source;
-		}
-
-		public int getOrderNum() {
-			return orderNum;
-		}
-
-		public void setOrderNum(int orderNum) {
-			this.orderNum = orderNum;
-		}
 	}
 
 }

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import com.paladin.framework.core.exception.BusinessException;
 import com.paladin.qos.analysis.DataByUnit;
 import com.paladin.qos.analysis.DataConstantContainer;
-import com.paladin.qos.analysis.DataConstantContainer.Unit;
+import com.paladin.qos.analysis.DataProcessUnit;
 import com.paladin.qos.analysis.DataProcessContainer;
 import com.paladin.qos.analysis.DataProcessEvent;
 import com.paladin.qos.analysis.DataProcessor;
@@ -83,7 +83,7 @@ public class AnalysisService {
 
 	// ----------------------------------->查找某事件单个或所有医院在时间段内按时间粒度统计<-----------------------------------
 
-	private List<Unit> getUnitByType(int unitType) {
+	private List<DataProcessUnit> getUnitByType(int unitType) {
 		if (unitType == DataUnit.TYPE_HOSPITAL) {
 			return DataConstantContainer.getHospitalList();
 		} else if (unitType == DataUnit.TYPE_COMMUNITY) {
@@ -131,13 +131,13 @@ public class AnalysisService {
 	 * @param endDate
 	 * @return
 	 */
-	public DataResult<DataPointDay> getDataSetOfDay(String eventId, List<Unit> units, Date startDate, Date endDate) {
+	public DataResult<DataPointDay> getDataSetOfDay(String eventId, List<DataProcessUnit> units, Date startDate, Date endDate) {
 		if (units == null) {
 			return null;
 		}
 
 		List<DataPointUnit<DataPointDay>> unitPoints = new ArrayList<>(units.size());
-		for (Unit unit : units) {
+		for (DataProcessUnit unit : units) {
 			unitPoints.add(getDataPointUnitOfDay(eventId, unit.getId(), startDate, endDate));
 		}
 
@@ -180,13 +180,13 @@ public class AnalysisService {
 	 * @param endDate
 	 * @return
 	 */
-	public DataResult<DataPointMonth> getDataSetOfMonth(String eventId, List<Unit> units, Date startDate, Date endDate) {
+	public DataResult<DataPointMonth> getDataSetOfMonth(String eventId, List<DataProcessUnit> units, Date startDate, Date endDate) {
 		if (units == null) {
 			return null;
 		}
 
 		List<DataPointUnit<DataPointMonth>> unitPoints = new ArrayList<>(units.size());
-		for (Unit unit : units) {
+		for (DataProcessUnit unit : units) {
 			unitPoints.add(getDataPointUnitOfMonth(eventId, unit.getId(), startDate, endDate));
 		}
 		return new DataResult<DataPointMonth>(eventId, DATA_TYPE_MONTH, unitPoints);
@@ -228,13 +228,13 @@ public class AnalysisService {
 	 * @param endYear
 	 * @return
 	 */
-	public DataResult<DataPointYear> getDataSetOfYear(String eventId, List<Unit> units, int startYear, int endYear) {
+	public DataResult<DataPointYear> getDataSetOfYear(String eventId, List<DataProcessUnit> units, int startYear, int endYear) {
 		if (units == null) {
 			return null;
 		}
 
 		List<DataPointUnit<DataPointYear>> unitPoints = new ArrayList<>(units.size());
-		for (Unit unit : units) {
+		for (DataProcessUnit unit : units) {
 			unitPoints.add(getDataPointUnitOfYear(eventId, unit.getId(), startYear, endYear));
 		}
 		return new DataResult<DataPointYear>(eventId, DATA_TYPE_YEAR, unitPoints);
@@ -643,13 +643,13 @@ public class AnalysisService {
 		for (DataProcessEvent event : events) {
 			String eventId = event.getId();
 
-			List<Unit> units = event.getTargetUnits();
+			List<DataProcessUnit> units = event.getTargetUnits();
 			if (units == null) {
 				return null;
 			}
 
 			List<ValidateUnitResult> unitResults = new ArrayList<>();
-			for (Unit unit : units) {
+			for (DataProcessUnit unit : units) {
 				ValidateUnitResult unitResult = validateProcessedData(eventId, unit.getId(), serialNumbers);
 				if (unitResult != null) {
 					unitResults.add(unitResult);
@@ -717,7 +717,7 @@ public class AnalysisService {
 			DataProcessor processor = dataProcessContainer.getDataProcessor(eventId);
 			if (processor != null) {
 
-				List<Unit> units = event.getTargetUnits();
+				List<DataProcessUnit> units = event.getTargetUnits();
 				if (units == null) {
 					return null;
 				}
@@ -728,7 +728,7 @@ public class AnalysisService {
 				long begin = System.currentTimeMillis();
 
 				try {
-					for (Unit unit : units) {
+					for (DataProcessUnit unit : units) {
 						String unitId = unit.getId();
 						processor.getTotalNum(startTime, endTime, unitId);
 						processor.getEventNum(startTime, endTime, unitId);
