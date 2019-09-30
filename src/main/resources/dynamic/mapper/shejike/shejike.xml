@@ -129,8 +129,8 @@
         select nvl(SUM(TOTCOST),'0') as totalMoney from phis_webhis.V_OPB_FEEDETAIL
         a
         where ITEMSTATUS = '0'
-        and a.createtime &gt;= #{startTime}
-        and a.createtime &lt; #{endTime}
+        and a.feedate &gt;= #{startTime}
+        and a.feedate &lt; #{endTime}
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 医疗收入!! ^ -->
@@ -138,24 +138,24 @@
         select NVL(SUM(TOTCOST),'0') as medicalMoney from
         phis_webhis.V_OPB_FEEDETAIL a
         where ITEMSTATUS = '0' and ISDRUG = '0'
-        and a.createtime &gt;= #{startTime}
-        and a.createtime &lt; #{endTime}
+        and a.feedate &gt;= #{startTime}
+        and a.feedate &lt; #{endTime}
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 药品收入 !!^-->
     <select id="getDrugMoney" resultType="double">
         select nvl(SUM(TOTCOST),'0') as drugMoney from phis_webhis.V_OPB_FEEDETAIL a
         where ITEMSTATUS = '0' and ISDRUG = '1'
-        and a.createtime &gt;= #{startTime}
-        and a.createtime &lt; #{endTime}
+        and a.feedate &gt;= #{startTime}
+        and a.feedate &lt; #{endTime}
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 其他收入 !! -->
     <select id="getOtherMoney" resultType="double">
         select nvl(SUM(TOTCOST),'0') as drugMoney from phis_webhis.V_OPB_FEEDETAIL a
         where ITEMSTATUS = '0' and ISDRUG not in ('0','1')
-        and a.createtime &gt;= #{startTime}
-        and a.createtime &lt; #{endTime}
+        and a.feedate &gt;= #{startTime}
+        and a.feedate &lt; #{endTime}
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 处方数量 ^ -->
@@ -273,8 +273,8 @@
         nvl(sum(b.totcost),'0')
         from phis_webhis.v_opb_feedetail b
         where b.ITEMSTATUS = 0
-        and b.createtime &gt;= #{startTime}
-        and b.createtime &lt; #{endTime}
+        and b.feedate &gt;= #{startTime}
+        and b.feedate &lt; #{endTime}
         and b.ORGCODE = #{unitId}
     </select>
     <select id="getEventAntiDrug" resultType="double">
@@ -283,8 +283,8 @@
         from phis_webhis.v_opb_feedetail b, phis_webhis.v_pha_drug c
         where b.itemid = c.drugid(+)
         and b.ITEMSTATUS = 0
-        and b.createtime &gt;= #{startTime}
-        and b.createtime &lt; #{endTime}
+        and b.feedate &gt;= #{startTime}
+        and b.feedate &lt; #{endTime}
         and b.ORGCODE = #{unitId}
     </select>
     <!-- 一联抗生素使用率 -->
@@ -310,8 +310,8 @@
         (select DRUG.DRUGID
         from phis_webhis.v_pha_drug DRUG
         where DRUG.ISANTIBIOTIC = 1)
-        AND t.createtime &gt;= #{startTime}
-        and t.createtime &lt;#{endTime}
+        AND t.feedate &gt;= #{startTime}
+        and t.feedate &lt;#{endTime}
         and orgcode = #{unitId}
         group by recipeid) kss
         left join phis_webhis.v_OPM_RECIPE_INFO info
@@ -336,8 +336,8 @@
         (select DRUG.DRUGID
         from phis_webhis.v_pha_drug DRUG
         where DRUG.ISANTIBIOTIC = 1)
-        AND t.createtime &gt;= #{startTime}
-        and t.createtime &lt;#{endTime}
+        AND t.feedate &gt;= #{startTime}
+        and t.feedate &lt;#{endTime}
         and orgcode = #{unitId}
         group by recipeid) kss
         left join phis_webhis.v_OPM_RECIPE_INFO info
@@ -362,8 +362,8 @@
         (select DRUG.DRUGID
         from phis_webhis.v_pha_drug DRUG
         where DRUG.ISANTIBIOTIC = 1)
-        AND t.createtime &gt;= #{startTime}
-        and t.createtime &lt;#{endTime}
+        AND t.feedate &gt;= #{startTime}
+        and t.feedate &lt;#{endTime}
         and orgcode = #{unitId}
         group by recipeid) kss
         left join phis_webhis.v_OPM_RECIPE_INFO info
@@ -410,7 +410,7 @@
 	</select>
 	
 	<!-- 自费挂号人数 -->
-	<select id="getYiPay" resultType="long">
+	<select id="getSelfPay" resultType="long">
 	select count(*) from phis_webhis.v_opr_register
     where paykindcode = '1001'
         and REGDATE &gt;= #{startTime}

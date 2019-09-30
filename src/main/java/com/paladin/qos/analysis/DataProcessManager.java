@@ -2,6 +2,8 @@ package com.paladin.qos.analysis;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -43,16 +45,19 @@ public class DataProcessManager {
 	private AnalysisService analysisService;
 
 	// 线程池
-	private ExecutorService executorService;
+	private ExecutorService executorService = new ThreadPoolExecutor(30, 30, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(256), // 使用有界队列，避免OOM
+			new ThreadPoolExecutor.DiscardPolicy());;
 
 	@Value("${qos.simple-mode}")
 	private boolean simpleMode = false;
+
+	private boolean hasReaded = false;
 
 	/**
 	 * 读取最近一次处理的时间
 	 */
 	public synchronized void readLastProcessedDay(List<DataProcessEvent> events) {
-		
+
 		if (simpleMode) {
 			return;
 		}
@@ -83,25 +88,22 @@ public class DataProcessManager {
 			}
 		}
 
+		hasReaded = true;
+
 		logger.info("-------------读取最近事件处理日期结束-------------");
 	}
 
 	/**
-	 * 每天22点开始修复数据，修复到凌晨5点，等到数据修复差不多时需要调整时间为每天凌晨后，避免处理时间截止到前天而不是昨天
+	 * 定时修复数据 TODO 暂时为了多处理数据从晚上开始处理数据到第二天凌晨5点，等数据处理差不多后应该改为凌晨执行
 	 */
-	@Scheduled(cron = "0 0 18 * * ?")
+	@Scheduled(cron = "0 0 19 * * ?")
 	public void processUpdate() {
 		if (simpleMode) {
 			return;
 		}
 
-		if (executorService == null) {
-			executorService = new ThreadPoolExecutor(5, 5, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(256), // 使用有界队列，避免OOM
-					new ThreadPoolExecutor.DiscardPolicy());
-		}
-
 		// 根据定时时间修改，例如晚上10点到明天凌晨5点，则加7个小时时间
-		long threadEndTime = System.currentTimeMillis() + 11 * 60 * 60 * 1000;
+		long threadEndTime = System.currentTimeMillis() + 10 * 60 * 60 * 1000;
 
 		executorService.execute(
 				new DataRepairThread(this, dataProcessContainer, DataConstantContainer.getEventListByDataSource(DSConstant.DS_FUYOU), threadEndTime, 0));
@@ -115,8 +117,54 @@ public class DataProcessManager {
 
 	@Scheduled(cron = "0 */1 * * * ?")
 	public void processRealTime() {
-		if (simpleMode) {
+		if (simpleMode || !hasReaded) {
 			return;
+		}
+
+		Calendar c = Calendar.getInstance();
+		int hour = c.get(Calendar.HOUR_OF_DAY);
+
+		// TODO 实时处理应该避免与更新数据处理同时进行，这里需要与更新数据处理任务同时修改
+		if (hour <= 5 || hour >= 19) {
+			return;
+		}
+
+		List<DataProcessEvent> fuyouEvents = new ArrayList<>();
+		List<DataProcessEvent> gongweiEvents = new ArrayList<>();
+		List<DataProcessEvent> jcylEvents = new ArrayList<>();
+		List<DataProcessEvent> yiyuanEvents = new ArrayList<>();
+
+		for (DataProcessEvent event : DataConstantContainer.getEventList()) {
+			if (event.needRealTimeUpdate()) {
+				if (event.isSeparateProcessThread()) {
+					// 单独线程处理
+					executorService.execute(new DataRealTimeThread(this, dataProcessContainer, event));
+				} else {
+					String source = event.getDataSource();
+					if (DSConstant.DS_FUYOU.equals(source)) {
+						fuyouEvents.add(event);
+					} else if (DSConstant.DS_GONGWEI.equals(source)) {
+						gongweiEvents.add(event);
+					} else if (DSConstant.DS_JCYL.equals(source)) {
+						jcylEvents.add(event);
+					} else if (DSConstant.DS_YIYUAN.equals(source)) {
+						yiyuanEvents.add(event);
+					}
+				}
+			}
+		}
+
+		if (fuyouEvents.size() > 0) {
+			executorService.execute(new DataRealTimeThread(this, dataProcessContainer, fuyouEvents));
+		}
+		if (gongweiEvents.size() > 0) {
+			executorService.execute(new DataRealTimeThread(this, dataProcessContainer, gongweiEvents));
+		}
+		if (jcylEvents.size() > 0) {
+			executorService.execute(new DataRealTimeThread(this, dataProcessContainer, jcylEvents));
+		}
+		if (yiyuanEvents.size() > 0) {
+			executorService.execute(new DataRealTimeThread(this, dataProcessContainer, yiyuanEvents));
 		}
 
 	}

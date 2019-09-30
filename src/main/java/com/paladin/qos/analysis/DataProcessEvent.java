@@ -47,8 +47,8 @@ public class DataProcessEvent {
 	private int processBeforeType;
 	// 是否实时
 	private boolean realTimeEnabled;
-	// 实时间隔
-	private int realTimeInterval;
+	// 实时间隔，毫秒
+	private long realTimeInterval;
 	// 数据处理SQL执行速度
 	private int sqlSpeed;
 	// 是否单独线程执行数据处理
@@ -60,6 +60,46 @@ public class DataProcessEvent {
 	private List<DataProcessUnit> targetUnits = new ArrayList<>();
 	// 最近处理的数据日期
 	private Map<String, Long> lastProcessedDayMap = new HashMap<>();
+
+	private long realTimeUpdateTime;
+	private boolean realTimeUpdating;
+	private Object realTimeUpdateLock = new Object();
+
+	/**
+	 * 是否需要实时更新，根据是否开启实时，是否正在实时更新，实时超过更新间隔时间
+	 * 
+	 * @return
+	 */
+	public boolean needRealTimeUpdate() {
+		return realTimeEnabled && !realTimeUpdating && System.currentTimeMillis() - realTimeUpdateTime > realTimeInterval;
+	}
+
+	/**
+	 * 设置实时更新完成
+	 * 
+	 * @param realTimeUpdateTime
+	 */
+	public synchronized void setRealTimeUpdateFinished() {
+		synchronized (realTimeUpdateLock) {
+			this.realTimeUpdateTime = System.currentTimeMillis();
+			this.realTimeUpdating = false;
+		}
+	}
+
+	/**
+	 * 开始实时更新
+	 * 
+	 * @return
+	 */
+	public synchronized boolean beginRealTimeUpdate() {
+		synchronized (realTimeUpdateLock) {
+			if (!realTimeUpdating) {
+				realTimeUpdating = true;
+				return true;
+			}
+			return false;
+		}
+	}
 
 	/**
 	 * 更新某单位最近一次处理数据日期
@@ -160,11 +200,11 @@ public class DataProcessEvent {
 		this.realTimeEnabled = realTimeEnabled;
 	}
 
-	public int getRealTimeInterval() {
+	public long getRealTimeInterval() {
 		return realTimeInterval;
 	}
 
-	public void setRealTimeInterval(int realTimeInterval) {
+	public void setRealTimeInterval(long realTimeInterval) {
 		this.realTimeInterval = realTimeInterval;
 	}
 

@@ -52,6 +52,22 @@
         AND createdtime
         <![CDATA[< ]]> #{endDate}
     </select>
+    <!--有完整年度体检的老年人数-->
+    <select id="getOldPeopleManageNumber" resultType="java.lang.Long">
+        select count(1) from phis_chss.v_fha_person_main
+        where birthday<![CDATA[<= ]]>add_months(sysdate,-12*65)
+        and code in(
+        select pm.code from phis_chss.v_fhc_check_main pm
+        join phis_chss.v_fhc_check_attach1 pa on pm.CHID=pa.LINKID
+        join phis_chss.v_fhr_elder_self_care pc on pm.CODE=pc.CODE
+        group by pm.CODE
+        )
+       AND createdtime
+        <![CDATA[>= ]]> #{startDate}
+        AND createdtime
+        <![CDATA[< ]]> #{endDate}
+         AND managedcentercode = #{unitId}
+    </select>
     <!--最近一次血压达标人数-->
     <select id="getRecentPressureReachNumber" resultType="java.lang.Long">
         select count(1)

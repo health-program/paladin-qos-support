@@ -19,6 +19,9 @@ public interface PublicHealthManagementMapper {
     //同辖区老人人数
     Long getOldPeopleNumber(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("unitId") String unitId);
 
+    //有完整年度体检的老年人数
+    Long getOldPeopleManageNumber(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("unitId") String unitId);
+
     //最近一次血压达标人数
     Long getRecentPressureReachNumber(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("unitId") String unitId);
 
