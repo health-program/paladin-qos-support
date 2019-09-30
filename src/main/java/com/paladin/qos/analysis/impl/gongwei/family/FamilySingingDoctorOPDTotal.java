@@ -57,7 +57,7 @@ public class FamilySingingDoctorOPDTotal extends GongWeiDataProcessor {
 					toIndex = listSize - i;
 				}
 				List<DataFamilyVO> newList = vo.subList(i, i + toIndex);
-				sqlSessionContainer.setCurrentDataSource(DSConstant.DS_YIYUAN);
+				sqlSessionContainer.setCurrentDataSource(DSConstant.DS_JCYL);
 				tatal += sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).registerOPD(startTime, endTime, newList);
 			}
 		}
@@ -67,7 +67,7 @@ public class FamilySingingDoctorOPDTotal extends GongWeiDataProcessor {
 	@Override
 	public long getEventNum(Date startTime, Date endTime, String unitId) {
 	    long tatal = 0;
-		sqlSessionContainer.setCurrentDataSource(DSConstant.DS_JCYL);
+		sqlSessionContainer.setCurrentDataSource(DSConstant.DS_GONGWEI);
 		List<DataFamilyVO> vo = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).singingDoctorOPDtotal(startTime, endTime,
 				unitId);
 		
