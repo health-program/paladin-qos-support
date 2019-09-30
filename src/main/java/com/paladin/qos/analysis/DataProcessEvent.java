@@ -2,11 +2,8 @@ package com.paladin.qos.analysis;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.paladin.qos.analysis.DataProcessUnit;
 
 public class DataProcessEvent {
 
@@ -59,7 +56,7 @@ public class DataProcessEvent {
 	// 统计目标单位
 	private List<DataProcessUnit> targetUnits = new ArrayList<>();
 	// 最近处理的数据日期
-	private Map<String, Long> lastProcessedDayMap = new HashMap<>();
+	private volatile Map<String, Long> lastProcessedDayMap;
 
 	private long realTimeUpdateTime;
 	private boolean realTimeUpdating;
@@ -107,8 +104,8 @@ public class DataProcessEvent {
 	 * @param unitId
 	 * @param lastDayTime
 	 */
-	public void updateLastProcessedDay(String unitId, long lastDayTime) {
-		lastProcessedDayMap.put(unitId, lastDayTime);
+	public void updateLastProcessedDay(Map<String, Long> lastProcessedDayMap) {
+		this.lastProcessedDayMap = lastProcessedDayMap;
 	}
 
 	/**

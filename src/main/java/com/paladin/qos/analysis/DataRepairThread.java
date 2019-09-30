@@ -48,7 +48,7 @@ public class DataRepairThread implements Runnable {
 		try {
 			logger.info("--------->开始修复数据任务<---------");
 			for (DataProcessEvent event : events) {
-				
+
 				if (!event.isEnabled()) {
 					continue;
 				}
@@ -91,12 +91,14 @@ public class DataRepairThread implements Runnable {
 							break;
 						}
 					}
+					
 					eventCount += count;
 					if (threadEndTime > 0 && threadEndTime < System.currentTimeMillis()) {
 						break;
 					}
 				}
 				repairCountMap.put(eventId, eventCount);
+				
 				if (threadEndTime > 0 && threadEndTime < System.currentTimeMillis()) {
 					break;
 				}
@@ -106,6 +108,8 @@ public class DataRepairThread implements Runnable {
 			for (Entry<String, Integer> entry : repairCountMap.entrySet()) {
 				logger.info("共处理事件[" + entry.getKey() + "]数据次数：" + entry.getValue() + "次");
 			}
+		} catch (Exception e) {
+			logger.error("修复更新数据异常", e);
 		} finally {
 			logger.info("--------->修复数据任务结束<---------");
 			processManager.readLastProcessedDay(events);

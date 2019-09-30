@@ -34,29 +34,36 @@ public class FamilySingingDoctorOPDTotal extends GongWeiDataProcessor {
 
 	@Override
 	public long getTotalNum(Date startTime, Date endTime, String unitId) {
-	    sqlSessionContainer.setCurrentDataSource(DSConstant.DS_GONGWEI);
+		sqlSessionContainer.setCurrentDataSource(DSConstant.DS_GONGWEI);
 		String unit1 = getMappingUnitId(unitId);
 		if (StringUtil.isEmpty(unit1)) {
 			return 0;
 		}
 		List<DataFamilyVO> vo = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).singingAgencyOPDpersonNum(startTime,
 				endTime, unit1);
-		
+
 		for (DataFamilyVO v : vo) {
-		    if(unit1.equals(v.getUnitId())){
-			v.setUnitId(unitId);
-		    }
+			if (unit1.equals(v.getUnitId())) {
+				v.setUnitId(unitId);
+			}
 		}
-		
+
 		long tatal = 0;
 		if (vo != null && vo.size() > 0) {
 			int listSize = vo.size();
-			int toIndex = 1000;
-			for (int i = 0; i < vo.size(); i += toIndex) {
-				if (i + toIndex > listSize) {
-					toIndex = listSize - i;
+			for (int i = 0, j = 0; i < listSize; i = j) {
+				j += 500;
+
+				if (j > listSize) {
+					j = listSize;
 				}
-				List<DataFamilyVO> newList = vo.subList(i, i + toIndex);
+
+				List<DataFamilyVO> newList = vo.subList(i, j);
+
+				if (newList.size() == 0) {
+					break;
+				}
+
 				sqlSessionContainer.setCurrentDataSource(DSConstant.DS_JCYL);
 				tatal += sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).registerOPD(startTime, endTime, newList);
 			}
@@ -66,22 +73,22 @@ public class FamilySingingDoctorOPDTotal extends GongWeiDataProcessor {
 
 	@Override
 	public long getEventNum(Date startTime, Date endTime, String unitId) {
-	    long tatal = 0;
+		long tatal = 0;
 		sqlSessionContainer.setCurrentDataSource(DSConstant.DS_GONGWEI);
 		List<DataFamilyVO> vo = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).singingDoctorOPDtotal(startTime, endTime,
 				unitId);
-		
+
 		String unit1 = getMappingUnitId(unitId);
 		if (StringUtil.isEmpty(unit1)) {
 			return 0;
 		}
-		
+
 		for (DataFamilyVO v : vo) {
-		    if(unit1.equals(v.getUnitId())){
-			v.setUnitId(unitId);
-		    }
+			if (unit1.equals(v.getUnitId())) {
+				v.setUnitId(unitId);
+			}
 		}
-		
+
 		if (vo != null && vo.size() > 0) {
 			for (DataFamilyVO d : vo) {
 				String unit = getMappingUnitId(d.getUnitId());
@@ -94,4 +101,5 @@ public class FamilySingingDoctorOPDTotal extends GongWeiDataProcessor {
 		}
 		return tatal;
 	}
+
 }

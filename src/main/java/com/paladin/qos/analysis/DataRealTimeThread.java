@@ -77,9 +77,10 @@ public class DataRealTimeThread implements Runnable {
 							}
 						}
 					}
+				} catch (Exception e) {
+					logger.error("实时更新数据异常", e);
 				} finally {
 					event.setRealTimeUpdateFinished();
-					logger.info("实时更新数据[" + event.getId() + "]");
 				}
 			}
 		}

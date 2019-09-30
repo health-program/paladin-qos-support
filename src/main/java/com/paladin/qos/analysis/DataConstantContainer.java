@@ -158,6 +158,17 @@ public class DataConstantContainer implements VersionContainer {
 		constantsContainer.putConstant(TYPE_HOSPITAL, hospitalKeyValues);
 		constantsContainer.putConstant(TYPE_COMMUNITY, communityKeyValues);
 
+		for (DataProcessEvent event : events) {
+			int targetType = event.getTargetType();
+			if (targetType == DataProcessEvent.TARGET_TYPE_ALL) {
+				event.setTargetUnits(units);
+			} else if (targetType == DataProcessEvent.TARGET_TYPE_HOSPITAL) {
+				event.setTargetUnits(hospitals);
+			} else if (targetType == DataProcessEvent.TARGET_TYPE_COMMUNITY) {
+				event.setTargetUnits(communities);
+			}
+		}
+
 		DataConstantContainer.events = Collections.unmodifiableList(events);
 		DataConstantContainer.units = Collections.unmodifiableList(units);
 
@@ -166,17 +177,6 @@ public class DataConstantContainer implements VersionContainer {
 
 		DataConstantContainer.hospitals = Collections.unmodifiableList(hospitals);
 		DataConstantContainer.communities = Collections.unmodifiableList(communities);
-
-		for (DataProcessEvent event : events) {
-			int targetType = event.getTargetType();
-			if (targetType == DataProcessEvent.TARGET_TYPE_ALL) {
-				event.setTargetUnits(DataConstantContainer.units);
-			} else if (targetType == DataProcessEvent.TARGET_TYPE_HOSPITAL) {
-				event.setTargetUnits(DataConstantContainer.hospitals);
-			} else if (targetType == DataProcessEvent.TARGET_TYPE_COMMUNITY) {
-				event.setTargetUnits(DataConstantContainer.communities);
-			}
-		}
 
 		dataProcessManager.readLastProcessedDay(null);
 		return true;

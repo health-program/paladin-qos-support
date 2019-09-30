@@ -5,7 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -57,7 +59,6 @@ public class DataProcessManager {
 	 * 读取最近一次处理的时间
 	 */
 	public synchronized void readLastProcessedDay(List<DataProcessEvent> events) {
-
 		if (simpleMode) {
 			return;
 		}
@@ -70,6 +71,7 @@ public class DataProcessManager {
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
 		for (DataProcessEvent event : events) {
 			String eventId = event.getId();
+			Map<String, Long> lastProcessedDayMap = new HashMap<>();
 			for (DataProcessUnit unit : event.getTargetUnits()) {
 				String unitId = unit.getId();
 				Integer dayNum = analysisService.getCurrentDayOfEventAndUnit(eventId, unitId);
@@ -77,15 +79,16 @@ public class DataProcessManager {
 					Date date;
 					try {
 						date = format.parse(String.valueOf(dayNum));
-						event.updateLastProcessedDay(unitId, date.getTime());
+						lastProcessedDayMap.put(unitId, date.getTime());
 					} catch (ParseException e) {
 						e.printStackTrace();
 					}
 				} else {
 					// 如果一个数据都没，则从默认时间开始
-					event.updateLastProcessedDay(unitId, event.getProcessStartDate().getTime() - TimeUtil.MILLIS_IN_DAY);
+					lastProcessedDayMap.put(unitId, event.getProcessStartDate().getTime() - TimeUtil.MILLIS_IN_DAY);
 				}
 			}
+			event.updateLastProcessedDay(lastProcessedDayMap);
 		}
 
 		hasReaded = true;
@@ -100,6 +103,10 @@ public class DataProcessManager {
 	public void processUpdate() {
 		if (simpleMode) {
 			return;
+		}
+
+		if (!hasReaded) {
+			readLastProcessedDay(null);
 		}
 
 		// 根据定时时间修改，例如晚上10点到明天凌晨5点，则加7个小时时间
