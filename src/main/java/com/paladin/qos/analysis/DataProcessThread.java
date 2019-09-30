@@ -29,8 +29,10 @@ public class DataProcessThread extends Thread {
 	private boolean shutdown = false;
 	private int count = 0;
 
-	public DataProcessThread(DataProcessManager processManager, DataProcessContainer processContainer, List<DataProcessEvent> events, List<DataProcessUnit> units,
-			Date startTime, Date endTime) {
+	public DataProcessThread(DataProcessManager processManager, DataProcessContainer processContainer, List<DataProcessEvent> events,
+			List<DataProcessUnit> units, Date startTime, Date endTime) {
+		this.processManager = processManager;
+		this.processContainer = processContainer;
 		this.events = events;
 		this.units = units;
 		this.startTime = TimeUtil.toDayTime(startTime);
@@ -82,7 +84,9 @@ public class DataProcessThread extends Thread {
 						if (!success) {
 							break;
 						}
-
+						
+						count++;
+						
 						if (shutdown) {
 							break;
 						}
@@ -99,6 +103,8 @@ public class DataProcessThread extends Thread {
 					break;
 				}
 			}
+		} catch (Exception e) {
+			logger.error("处理数据异常", e);
 		} finally {
 			finished = true;
 			logger.info("--------->处理数据任务结束<---------");

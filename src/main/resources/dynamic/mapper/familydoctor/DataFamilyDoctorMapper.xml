@@ -69,23 +69,24 @@
         and r.orgcode = #{unitId}
         and r.idcardno in
         <foreach collection="idCard" item="item" index="index" open="(" separator="," close=")">
-            #{item} 
-        </foreach>
+	        #{item}
+	    </foreach>
     </select>
     
     <select id="hospitalOPDTotal" resultType="long">
-    	select count(1) from RegisterRecord where REC_DT &gt;= #{startTime} 
+    	select count(1) from RegisterRecord 
+    	where REC_DT &gt;= #{startTime} 
     	and REC_DT &lt; #{endTime}
     	and organ_code = #{unitId}
-    	and cardno in 
+    	and cardno in
     	<foreach collection="idCard" item="item" index="index" open="(" separator="," close=")">
-            #{item} 
+            #{item}
         </foreach>
     </select>
     
     <!-- 签约居民家庭医生就诊总数 -->
     <select id="singingDoctorOPDtotal" resultType="String">
-        select m.CREATEDUNITCODE unitId,m.CENTERDOCTORNAME name from
+        select m.CENTERDOCTORNAME name from
         phis_chss.v_fha_person_sign_main_org o left join phis_chss.v_fha_person_sign_main m on o.CODE=m.CODE
         where m.CENTERDOCTORNAME is not null
         and m.CREATEDTIME &gt;= #{startTime}
@@ -100,9 +101,10 @@
         and r.ORGCODE =#{unitId}
         and r.docname in
         <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
-            #{item} 
-        </foreach>     
+            #{item}
+        </foreach>
     </select>
+    
     <!-- 慢病签约人员管理数 -->
     <select id="singingPersonManageNum" resultType="long">
         select count(1) from phis_chss.v_fha_person_sign_main_org o
