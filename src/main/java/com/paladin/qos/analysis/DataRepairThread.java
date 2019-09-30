@@ -57,6 +57,11 @@ public class DataRepairThread implements Runnable {
 				int eventCount = 0;
 
 				DataProcessor dataProcessor = processContainer.getDataProcessor(eventId);
+				if (dataProcessor == null) {
+					logger.error("统计事件[eventId:" + eventId + "]没有对应处理器");
+					continue;
+				}
+
 				List<DataProcessUnit> units = event.getTargetUnits();
 
 				// 归档日期，该日期之后的数据都是很可能会变的，所以标识未未确认
@@ -91,14 +96,14 @@ public class DataRepairThread implements Runnable {
 							break;
 						}
 					}
-					
+
 					eventCount += count;
 					if (threadEndTime > 0 && threadEndTime < System.currentTimeMillis()) {
 						break;
 					}
 				}
 				repairCountMap.put(eventId, eventCount);
-				
+
 				if (threadEndTime > 0 && threadEndTime < System.currentTimeMillis()) {
 					break;
 				}

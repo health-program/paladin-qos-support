@@ -49,6 +49,10 @@ public class DataProcessThread extends Thread {
 
 				String eventId = event.getId();
 				DataProcessor dataProcessor = processContainer.getDataProcessor(eventId);
+				if (dataProcessor == null) {
+					logger.error("统计事件[eventId:" + eventId + "]没有对应处理器");
+					continue;
+				}
 
 				List<DataProcessUnit> units = this.units == null ? event.getTargetUnits() : this.units;
 

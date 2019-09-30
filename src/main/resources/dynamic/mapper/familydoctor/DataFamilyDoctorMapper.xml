@@ -34,27 +34,26 @@
     </select>
 
     <!-- 签约居民中心就诊人次数 -->
-    <select id="singingAgencyOPDpersonNum" resultType="com.paladin.qos.dynamic.mapper.familydoctor.DataFamilyVO">
-        SELECT o.MANAGEDCENTERCODE unitId,o.IDNUMBER idCard FROM phis_chss.v_fha_person_sign_main_org o where o.signcode ='1'
+    <select id="singingAgencyOPDpersonNum" resultType="String">
+        SELECT o.IDNUMBER idCard 
+        FROM phis_chss.v_fha_person_sign_main_org o 
+        where o.signcode ='1'
         and o.CREATEDTIME &gt;= #{startTime}
         and o.CREATEDTIME &lt; #{endTime}
         and o.MANAGEDCENTERCODE = #{unitId}
     </select>
 
     <select id="registerOPD" resultType="long">
-        select count(1) from phis_webhis.v_Opr_Register r 
-        where length(r.idcardno)=18
-        and r.REGDATE &gt;= #{startTime}
-        and r.REGDATE &lt; #{endTime}
-        and r.idcardno in     
-        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
-            #{item.idCard}
-        </foreach>
-        and r.orgcode in
-        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
-            #{item.unitId} 
-        </foreach>
-    </select>
+	    select count(1) from phis_webhis.V_OPR_REGISTER r
+	    where r.REGDATE &gt;= #{startTime}
+	    and r.REGDATE &lt; #{endTime}
+	    and r.orgcode =#{unitId}	
+	    and r.idcardno in
+	    <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+	        #{item}
+	    </foreach>	       
+	</select>
+	
     <!-- 签约居民就诊总次数 -->
     <select id="singingAgencyOPDTotal" resultType="String">
         SELECT o.IDNUMBER idCard FROM phis_chss.v_fha_person_sign_main_org o
@@ -65,8 +64,7 @@
     </select>
     <select id="registerOPDtotal" resultType="String">
         select r.idcardno idCard from phis_webhis.v_Opr_Register r 
-        where length(r.idcardno)=18
-        and r.REGDATE &gt;= #{startTime}
+        where  r.REGDATE &gt;= #{startTime}
         and r.REGDATE &lt; #{endTime}
         and r.orgcode = #{unitId}
         and r.idcardno in
@@ -76,8 +74,7 @@
     </select>
     
     <select id="hospitalOPDTotal" resultType="long">
-    	select count(1) from RegisterRecord where length(cardno) = 18 
-    	and REC_DT &gt;= #{startTime} 
+    	select count(1) from RegisterRecord where REC_DT &gt;= #{startTime} 
     	and REC_DT &lt; #{endTime}
     	and organ_code = #{unitId}
     	and cardno in 
@@ -87,7 +84,7 @@
     </select>
     
     <!-- 签约居民家庭医生就诊总数 -->
-    <select id="singingDoctorOPDtotal" resultType="com.paladin.qos.dynamic.mapper.familydoctor.DataFamilyVO">
+    <select id="singingDoctorOPDtotal" resultType="String">
         select m.CREATEDUNITCODE unitId,m.CENTERDOCTORNAME name from
         phis_chss.v_fha_person_sign_main_org o left join phis_chss.v_fha_person_sign_main m on o.CODE=m.CODE
         where m.CENTERDOCTORNAME is not null
@@ -95,18 +92,16 @@
         and m.CREATEDTIME &lt; #{endTime}
         and m.CREATEDUNITCODE = #{unitId}
     </select>
+    
     <select id="docnameOPDnum" resultType="long">
         select count(1) from phis_webhis.v_Opr_Register r 
         where r.REGDATE &gt;= #{startTime}
         and r.REGDATE &lt; #{endTime}
+        and r.ORGCODE =#{unitId}
         and r.docname in
         <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
-            #{item.name} 
-        </foreach>
-        and r.ORGCODE in
-        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
-            #{item.unitId} 
-        </foreach>
+            #{item} 
+        </foreach>     
     </select>
     <!-- 慢病签约人员管理数 -->
     <select id="singingPersonManageNum" resultType="long">

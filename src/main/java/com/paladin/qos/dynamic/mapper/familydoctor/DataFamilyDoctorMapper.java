@@ -27,9 +27,10 @@ public interface DataFamilyDoctorMapper {
 
 	/** 签约机构门诊就诊率 */
 	// 签约居民中心就诊人次数
-	public List<DataFamilyVO> singingAgencyOPDpersonNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	public List<String> singingAgencyOPDpersonNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
 
-	public long registerOPD(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("list") List<DataFamilyVO> list);
+	public long registerOPD(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId,
+			@Param("list") List<String> idcards);
 
 	// 签约居民就诊总次数
 	public List<String> singingAgencyOPDTotal(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
@@ -41,9 +42,10 @@ public interface DataFamilyDoctorMapper {
 			@Param("idCard") List<String> idCard);
 
 	/** 签约医生门诊就诊率 */
-	public List<DataFamilyVO> singingDoctorOPDtotal(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);// 签约居民家庭医生就诊总数
+	public List<String> singingDoctorOPDtotal(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);// 签约居民家庭医生就诊总数
 
-	public long docnameOPDnum(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("list") List<DataFamilyVO> list);
+	public long docnameOPDnum(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId,
+			@Param("list") List<String> idcards);
 
 	/** 慢病签约人员管理数 */
 	public long singingPersonManageNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);

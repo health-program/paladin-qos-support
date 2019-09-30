@@ -14,7 +14,6 @@ import com.paladin.qos.analysis.DataProcessUnit;
 import com.paladin.qos.analysis.impl.gongwei.GongWeiDataProcessor;
 import com.paladin.qos.dynamic.DSConstant;
 import com.paladin.qos.dynamic.mapper.familydoctor.DataFamilyDoctorMapper;
-import com.paladin.qos.dynamic.mapper.familydoctor.DataFamilyVO;
 
 /**
  * 签约机构门诊就诊率
@@ -40,40 +39,39 @@ public class FamilySingingAgencyOPDTotal extends GongWeiDataProcessor {
 		long tatol = 0;
 		sqlSessionContainer.setCurrentDataSource(DSConstant.DS_GONGWEI);
 
-		String unit1 = getMappingUnitId(unitId);
-		if (StringUtil.isEmpty(unit1)) {
+		String gongweiUnitId = getMappingUnitId(unitId);
+		if (StringUtil.isEmpty(gongweiUnitId)) {
 			return 0;
 		}
 
-		List<String> singingAgencyOPDTotal = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class)
-				.singingAgencyOPDTotal(startTime, endTime, unit1);
+		List<String> idcards = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).singingAgencyOPDTotal(startTime, endTime,
+				gongweiUnitId);
 
-		if (singingAgencyOPDTotal != null && singingAgencyOPDTotal.size() > 0) {
+		if (idcards != null && idcards.size() > 0) {
 
 			List<String> registerOPDtotal1 = new ArrayList<String>();
 
-			if (singingAgencyOPDTotal != null && singingAgencyOPDTotal.size() > 0) {
-				int listSize = singingAgencyOPDTotal.size();
-				for (int i = 0, j = 0; i < listSize; i = j) {
-					j += 500;
-					if (j > listSize) {
-						j = listSize;
-					}
-
-					List<String> newList = singingAgencyOPDTotal.subList(i, j);
-					if (newList.size() == 0) {
-						break;
-					}
-
-					sqlSessionContainer.setCurrentDataSource(DSConstant.DS_JCYL);
-					List<String> registerOPDtotal = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class)
-							.registerOPDtotal(startTime, endTime, unitId, newList);
-					registerOPDtotal1.addAll(registerOPDtotal);
+			int listSize = idcards.size();
+			for (int i = 0, j = 0; i < listSize; i = j) {
+				j += 500;
+				if (j > listSize) {
+					j = listSize;
 				}
+
+				List<String> newList = idcards.subList(i, j);
+				if (newList.size() == 0) {
+					break;
+				}
+
+				sqlSessionContainer.setCurrentDataSource(DSConstant.DS_JCYL);
+				List<String> registerOPDtotal = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).registerOPDtotal(startTime,
+						endTime, unitId, newList);
+				registerOPDtotal1.addAll(registerOPDtotal);
 			}
 
-			if (registerOPDtotal1 != null && registerOPDtotal1.size() > 0) {
-				int listSize = registerOPDtotal1.size();
+			if (registerOPDtotal1.size() > 0) {
+				listSize = registerOPDtotal1.size();
+				
 				List<DataProcessUnit> units = DataConstantContainer.getHospitalList();
 				for (DataProcessUnit u : units) {
 					String dbCode = u.getSource().getDbCode();
@@ -103,30 +101,32 @@ public class FamilySingingAgencyOPDTotal extends GongWeiDataProcessor {
 	@Override
 	public long getEventNum(Date startTime, Date endTime, String unitId) {
 		sqlSessionContainer.setCurrentDataSource(DSConstant.DS_GONGWEI);
-		String unit1 = getMappingUnitId(unitId);
-		if (StringUtil.isEmpty(unit1)) {
+		String gongweiUnitId = getMappingUnitId(unitId);
+		if (StringUtil.isEmpty(gongweiUnitId)) {
 			return 0;
 		}
-		List<DataFamilyVO> vo = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).singingAgencyOPDpersonNum(startTime,
-				endTime, unit1);
 
-		for (DataFamilyVO v : vo) {
-			if (unit1.equals(v.getUnitId())) {
-				v.setUnitId(unitId);
-			}
-		}
+		List<String> idcards = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).singingAgencyOPDpersonNum(startTime, endTime,
+				gongweiUnitId);
 
 		long tatal = 0;
-		if (vo != null && vo.size() > 0) {
-			int listSize = vo.size();
-			int toIndex = 1000;
-			for (int i = 0; i < vo.size(); i += toIndex) {
-				if (i + toIndex > listSize) {
-					toIndex = listSize - i;
+		if (idcards != null && idcards.size() > 0) {
+			int listSize = idcards.size();
+			for (int i = 0, j = 0; i < listSize; i = j) {
+				j += 500;
+
+				if (j > listSize) {
+					j = listSize;
 				}
-				List<DataFamilyVO> newList = vo.subList(i, i + toIndex);
+
+				List<String> newList = idcards.subList(i, j);
+
+				if (newList.size() == 0) {
+					break;
+				}
+
 				sqlSessionContainer.setCurrentDataSource(DSConstant.DS_JCYL);
-				tatal += sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).registerOPD(startTime, endTime, newList);
+				tatal += sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).registerOPD(startTime, endTime, unitId, newList);
 			}
 		}
 		return tatal;
