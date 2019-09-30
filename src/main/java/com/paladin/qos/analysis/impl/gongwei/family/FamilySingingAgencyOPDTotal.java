@@ -117,7 +117,7 @@ public class FamilySingingAgencyOPDTotal extends GongWeiDataProcessor {
 					toIndex = listSize - i;
 				}
 				List<DataFamilyVO> newList = vo.subList(i, i + toIndex);
-				sqlSessionContainer.setCurrentDataSource(DSConstant.DS_YIYUAN);
+				sqlSessionContainer.setCurrentDataSource(DSConstant.DS_JCYL);
 				tatal += sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).registerOPD(startTime, endTime, newList);
 			}
 		}
