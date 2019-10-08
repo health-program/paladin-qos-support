@@ -60,13 +60,26 @@
         select pm.code from phis_chss.v_fhc_check_main pm
         join phis_chss.v_fhc_check_attach1 pa on pm.CHID=pa.LINKID
         join phis_chss.v_fhr_elder_self_care pc on pm.CODE=pc.CODE
+        where  (pm.exercisecode is not null or pm.EATCUSTOMCODE is not null or pm.SMOKECODE is not null or pm.drinkcode is not null or pm.WORKDISEASECODE is not null)
+        and (pm.heat is not null or pm.PULSE is not null or pm.BREATH is not null or pm.RSBP is not null or pm.RDBP is not null or pm.HEIGHT is not null or pm.WEIGHT is not null
+        or pm.WAIST is not null or pm.BMI is not null or pa.FEVERCODE is not null or pa.DENTITION is not null or pa.PHARYNGEALCODE is not null or pa.EYELEFT is not null
+        or pa.EYERIGHT is not null or pa.AUDITIONCODE is not null or pa.SPORTFUNCTIONCODE is not null or pa.EYEGROUNDCODE is not null or pa.SKINCODE is not null or pa.SCLERACODE is not null
+        or pa.SCROFULACODE is not null or pa.BUCKETCODE is not null or pa.BREATHSOUNDCODE is not null or pa.RALECODE is not null or pa.HEARTRATE is not null or pa.RHYTHMCODE is not null
+        or pa.SOUFFLECODE is not null or pa.TENDERNESSCODE is not null or pa.ENCLOSECODE is not null or pa.HEPATOMECODE is not null or pa.SPLENAUXECODE is not null or pa.SONANTCODE is not null
+        or pa.LOWEXTRECODE is not null or pa.ACROTARSIUMCODE is not null or pa.ANUSCODE is not null or pa.GALACTOPHORECODE is not null or pa.PUDENDUMCODE is not null or pa.VAGINACODE is not null
+        or pa.UTERUSNECKCODE is not null or pa.UTERUSBODYCODE is not null or pa.ADNEXACODE is not null)
+        and (pa.HEMOGLOBIN is not null or pa.WBC is not null or pa.PLATELET is not null or pa.UPROTEIN is not null or pa.GIU is not null or pa.UAB is not null or pa.HEMATURIA is not null
+        or pa.FBGDL1 is not null or pa.FBGDL2 is not null or pa.CARDIOGRAMCODE is not null or pa.UAA is not null or pa.FOBCODE is not null or pa.GH is not null or pa.HBSAGCODE is not null
+        or pa.SGPT is not null or pa.SGOT is not null or pa.ALBUMIN is not null or pa.BILIRUBIN is not null or pa.CB is not null or pa.DSC is not null or pa.BUN is not null or pa.BK is not null
+        or pa.BN is not null or pa.TC is not null or pa.TG is not null or pa.HDLC is not null or pa.LCLC is not null)
+        and (pa.INSTRUCTCODE is not null)
         group by pm.CODE
         )
-       AND createdtime
+        AND createdtime
         <![CDATA[>= ]]> #{startDate}
         AND createdtime
         <![CDATA[< ]]> #{endDate}
-         AND managedcentercode = #{unitId}
+        AND managedcentercode = #{unitId}
     </select>
     <!--最近一次血压达标人数-->
     <select id="getRecentPressureReachNumber" resultType="java.lang.Long">
