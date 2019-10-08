@@ -126,8 +126,7 @@
     </select>
     <!-- 合计总收入!!^ -->
     <select id="getTotalMoney" resultType="double">
-        select nvl(SUM(TOTCOST),'0') as totalMoney from phis_webhis.V_OPB_FEEDETAIL
-        a
+        select nvl(SUM(TOTCOST),'0') as totalMoney from phis_webhis.V_OPB_FEEDETAIL a
         where ITEMSTATUS = '0'
         and a.feedate &gt;= #{startTime}
         and a.feedate &lt; #{endTime}

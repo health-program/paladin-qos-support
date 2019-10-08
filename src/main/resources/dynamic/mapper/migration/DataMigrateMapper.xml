@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.paladin.qos.dynamic.mapper.migration.DataMigrateMapper">
+
+	<select id="selectData" resultType="Map">
+		${sql}
+	</select>
+
+	<insert id="insertData">
+		${sql}
+	</insert>
+	
+	<update id="updateData">
+		${sql}
+	</update>
+
+</mapper>
