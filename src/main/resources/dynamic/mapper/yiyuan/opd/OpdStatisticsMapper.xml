@@ -96,7 +96,7 @@
 	
 	<!-- 医疗收入 -->
 	<select id="medicalIncome" resultType="long">
-	  select sum(TOTAL_COST)-((COALESCE (SUM(COST_99) ,0)+COALESCE (SUM(COST_02_99) ,0))+(COALESCE (SUM(COST_01_10) ,0)+COALESCE (SUM(COST_02_10) ,0))) 
+	  select COALESCE(sum(TOTAL_COST) ,0)-((COALESCE (SUM(COST_99) ,0)+COALESCE (SUM(COST_02_99) ,0))+(COALESCE (SUM(COST_01_10) ,0)+COALESCE (SUM(COST_02_10) ,0))) 
 	  from ED_Outpa_Inpa_Charge_Stat where STAT_DATE  &gt;= #{startTime} and STAT_DATE &lt; #{endTime}  
 	</select>
 	

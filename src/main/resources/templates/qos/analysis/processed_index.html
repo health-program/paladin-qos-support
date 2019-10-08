@@ -38,11 +38,25 @@
             </div>
             <div class="col-md-6">
                 <div class="box box-solid">
-                    <div id="monthChartGrid" class="box-body" style="height: 450px">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">按月数据图</h3>
+                        <div class="box-tools">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                            <button type="button" class="btn btn-box-tool"><i class="fa fa-clone"></i></button>
+                        </div>
+                    </div>
+                    <div id="monthChartGrid" class="box-body" style="height: 400px">
                     </div>
                 </div>
                 <div class="box box-solid">
-                    <div id="unitChartGrid" class="box-body" style="height: 450px">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">按机构数据图</h3>
+                        <div class="box-tools">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                            <button type="button" class="btn btn-box-tool"><i class="fa fa-clone"></i></button>
+                        </div>
+                    </div>
+                    <div id="unitChartGrid" class="box-body" style="height: 400px">
                     </div>
                 </div>
             </div>
@@ -146,10 +160,6 @@
         });
 
         var option = {
-            //加载数据图表
-            title: {
-                text: '按月数据图'
-            },
             tooltip: {
                 trigger: 'axis',
                 axisPointer: {
@@ -171,6 +181,7 @@
                 data: xAxisData
             },
             grid: {
+                top: 20,
                 left: 45,
                 right: 20,
                 bottom: 40,
@@ -286,9 +297,6 @@
         });
 
         var option = {
-            title: {
-                text: '医院社区柱状图'
-            },
             tooltip: {
                 trigger: 'axis',
                 axisPointer: {
@@ -296,6 +304,7 @@
                 }
             },
             grid: {
+                top: 20,
                 left: 45,
                 right: 20,
                 bottom: 50,
