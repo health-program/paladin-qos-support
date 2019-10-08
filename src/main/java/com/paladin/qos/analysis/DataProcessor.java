@@ -3,6 +3,8 @@ package com.paladin.qos.analysis;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 数据处理器，对数据进行时间维度和机构维度的数据预处理，提高统计效率
@@ -11,6 +13,8 @@ import java.util.Date;
  * @since 2019年8月14日
  */
 public abstract class DataProcessor {
+
+	private static Logger logger = LoggerFactory.getLogger(DataProcessor.class);
 
 	/**
 	 * 处理器处理的事件ID
@@ -44,8 +48,15 @@ public abstract class DataProcessor {
 		int weekYear = c.get(Calendar.WEEK_OF_YEAR);
 		int weekMonth = c.get(Calendar.WEEK_OF_MONTH);
 
+		long begin = System.currentTimeMillis();
+
 		long totalNum = getTotalNum(startTime, endTime, unitId);
 		long eventNum = getEventNum(startTime, endTime, unitId);
+
+		long expend = System.currentTimeMillis() - begin;
+		if (expend > 60 * 1000) {
+			logger.warn("处理数据耗时过长！耗时：" + expend + "ms，事件：" + getEventId());
+		}
 
 		Metadata metadata = new Metadata();
 		metadata.setEventNum(eventNum);
@@ -80,6 +91,5 @@ public abstract class DataProcessor {
 	 * @return
 	 */
 	public abstract long getEventNum(Date startTime, Date endTime, String unitId);
-
 
 }

@@ -178,15 +178,10 @@ public class DataProcessManager {
 
 	// 处理一天的数据
 	protected boolean processDataForOneDay(Date start, Date end, String unitId, DataProcessor processor, boolean confirmed) {
-		try {
-			long begin = System.currentTimeMillis();
+		try {			
 			Metadata rateMetadata = processor.processByDay(start, end, unitId);
 			if (rateMetadata != null) {
-				saveProcessedDataForDay(rateMetadata, confirmed);
-				long expend = System.currentTimeMillis() - begin;
-				if (expend > 60 * 1000) {
-					logger.warn("处理数据耗时过长！耗时：" + expend + "ms，日期：" + start + "，事件：" + processor.getEventId() + "，医院：" + unitId);
-				}
+				saveProcessedDataForDay(rateMetadata, confirmed);				
 				return true;
 			}
 		} catch (Exception ex) {
