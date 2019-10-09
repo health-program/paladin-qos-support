@@ -289,7 +289,7 @@
     <!-- 一联抗生素使用率 -->
     <select id="getTotalRecipe" resultType="long">
         select count(r.recipeid) recipeall
-        from phis_webhis.opm_recipe_info r
+        from phis_webhis.v_opm_recipe_info r
         where r.PRESSTATUS = '2'
         and r.CHARSTATUS = '2'
         and r.Opertime &gt;= #{startTime}+0
