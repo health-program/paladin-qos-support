@@ -161,8 +161,8 @@
     <select id="getPrescriptionNumber" resultType="long">
         select count(*) as prescriptionNumber from phis_webhis.V_OPM_RECIPE_INFO a
         where PRESSTATUS = '2' and CHARSTATUS = '2'
-        and a.opertime &gt;= #{startTime}+0
-        and a.opertime &lt; #{endTime}+0
+        and a.drawtime &gt;= #{startTime}+0
+        and a.drawtime &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 处方总额 ^ -->
@@ -170,8 +170,8 @@
         select nvl(sum(TOTCOST),'0') as prescriptionMoney from
         phis_webhis.V_OPM_RECIPE_INFO a
         where a.PRESSTATUS = '2' and a.CHARSTATUS = '2'
-        and a.opertime &gt;= #{startTime}+0
-        and a.opertime &lt; #{endTime}+0
+        and a.drawtime &gt;= #{startTime}+0
+        and a.drawtime &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 最大处方金额 ^ -->
@@ -179,8 +179,8 @@
         select nvl(MAX(TOTCOST),'0') as maxPrescriptionMoney from
         phis_webhis.V_OPM_RECIPE_INFO a
         where a.PRESSTATUS = '2' and a.CHARSTATUS = '2'
-        and a.opertime &gt;= #{startTime}+0
-        and a.opertime &lt; #{endTime}+0
+        and a.drawtime &gt;= #{startTime}+0
+        and a.drawtime &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 最小处方金额 ^-->
@@ -188,8 +188,8 @@
         select nvl(MIN(TOTCOST),'0') as minPrescriptionMoney from
         phis_webhis.V_OPM_RECIPE_INFO a
         where a.PRESSTATUS = '2' and a.CHARSTATUS = '2'
-        and a.opertime &gt;= #{startTime}+0
-        and a.opertime &lt; #{endTime}+0
+        and a.drawtime &gt;= #{startTime}+0
+        and a.drawtime &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 平均处方金额(处方金额/处方数)^-->
@@ -205,8 +205,8 @@
     <select id="getTotalChineseMedicinePrescription" resultType="long">
         select count(a.recipeid) from phis_webhis.v_opm_recipe_info a
         where a.PRESSTATUS = '2' and a.CHARSTATUS = '2'
-        and a.opertime &gt;= #{startTime}+0
-        and a.opertime &lt; #{endTime}+0
+        and a.drawtime &gt;= #{startTime}+0
+        and a.drawtime &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <select id="getEventChineseMedicinePrescription" resultType="long">
@@ -215,8 +215,8 @@
         where a.BUSITYPE in ('2' ,'8' )
         and a.PRESSTATUS = '2'
         and a.CHARSTATUS = '2'
-        and a.opertime &gt;= #{startTime}+0
-        and a.opertime &lt; #{endTime}+0
+        and a.drawtime &gt;= #{startTime}+0
+        and a.drawtime &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 门诊中药饮片占比 ^-->
@@ -226,8 +226,8 @@
         where a.BUSITYPE ='2'
         and a.PRESSTATUS = '2'
         and a.CHARSTATUS = '2'
-        and a.opertime &gt;= #{startTime}+0
-        and a.opertime &lt; #{endTime}+0
+        and a.drawtime &gt;= #{startTime}+0
+        and a.drawtime &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 门诊中药非药物治疗处方占比 ^-->
@@ -237,8 +237,8 @@
         where a.BUSITYPE ='8'
         and a.PRESSTATUS = '2'
         and a.CHARSTATUS = '2'
-        and a.opertime &gt;= #{startTime}+0
-        and a.opertime &lt; #{endTime}+0
+        and a.drawtime &gt;= #{startTime}+0
+        and a.drawtime &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 静脉输液率 -->
@@ -246,8 +246,8 @@
     <select id="getTotalHormone" resultType="long">
         select count(a.recipeid) from phis_webhis.v_opm_recipe_info a
         where a.PRESSTATUS = '2' and a.CHARSTATUS = '2'
-        and a.opertime &gt;= #{startTime}+0
-        and a.opertime &lt; #{endTime}+0
+        and a.drawtime &gt;= #{startTime}+0
+        and a.drawtime &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <select id="getEventHormone" resultType="long">
@@ -262,8 +262,8 @@
         where drugcode like '113%'))
         and t1.PRESSTATUS = '2'
         and t1.CHARSTATUS = '2'
-        and t1.opertime &gt;= #{startTime}+0
-        and t1.opertime &lt; #{endTime}+0
+        and t1.drawtime &gt;= #{startTime}+0
+        and t1.drawtime &lt; #{endTime}+0
         and t1.ORGCODE = #{unitId}
     </select>
     <!-- 抗菌药物使用率 -->
@@ -292,8 +292,8 @@
         from phis_webhis.v_opm_recipe_info r
         where r.PRESSTATUS = '2'
         and r.CHARSTATUS = '2'
-        and r.Opertime &gt;= #{startTime}+0
-        and r.Opertime &lt; #{endTime}+0
+        and r.drawtime &gt;= #{startTime}+0
+        and r.drawtime &lt; #{endTime}+0
         and r.ORGCODE = #{unitId}
     </select>
     <!-- ！慢 -->
@@ -316,8 +316,8 @@
         left join phis_webhis.v_OPM_RECIPE_INFO info
         on kss.recipeid = info.recipeid
         where 1=1
-        AND info.Opertime &gt;= #{startTime}+0
-        and info.Opertime &lt;#{endTime}+0
+        AND info.drawtime &gt;= #{startTime}+0
+        and info.drawtime &lt;#{endTime}+0
         and info.orgcode = #{unitId}
         and info.PRESSTATUS = '2'
         and info.CHARSTATUS = '2'
@@ -342,8 +342,8 @@
         left join phis_webhis.v_OPM_RECIPE_INFO info
         on kss.recipeid = info.recipeid
         where 1=1
-        AND info.Opertime &gt;= #{startTime}+0
-        and info.Opertime &lt;#{endTime}+0
+        AND info.drawtime &gt;= #{startTime}+0
+        and info.drawtime &lt;#{endTime}+0
         and info.orgcode = #{unitId}
         and info.PRESSTATUS = '2'
         and info.CHARSTATUS = '2'
@@ -368,8 +368,8 @@
         left join phis_webhis.v_OPM_RECIPE_INFO info
         on kss.recipeid = info.recipeid
         where 1=1
-        AND info.Opertime &gt;= #{startTime}+0
-        and info.Opertime &lt;#{endTime}+0
+        AND info.drawtime &gt;= #{startTime}+0
+        and info.drawtime &lt;#{endTime}+0
         and info.orgcode = #{unitId}
         and info.PRESSTATUS = '2'
         and info.CHARSTATUS = '2'

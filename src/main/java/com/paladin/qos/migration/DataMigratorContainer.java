@@ -25,9 +25,9 @@ public class DataMigratorContainer implements SpringContainer {
 
 		List<DataMigrator> dataMigratorList = new ArrayList<>();
 
-		CommonDataMigrator demo = new CommonDataMigrator();
+		IncrementDataMigrator demo = new IncrementDataMigrator();
 		demo.setOriginDataSource("fuyou");
-		demo.setOriginDataSourceType(CommonDataMigrator.ORIGIN_DATA_SOURCE_TYPE_SQLSERVER);
+		demo.setOriginDataSourceType(IncrementDataMigrator.ORIGIN_DATA_SOURCE_TYPE_SQLSERVER);
 		demo.setOriginTableName("Csqyslqffdjb");
 		demo.setTargetDataSource("yiyuan");
 		demo.setTargetTableName("Csqyslqffdjb");

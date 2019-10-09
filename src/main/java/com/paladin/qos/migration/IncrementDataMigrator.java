@@ -1,6 +1,7 @@
 package com.paladin.qos.migration;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -13,13 +14,19 @@ import com.paladin.data.dynamic.SqlSessionContainer;
 import com.paladin.framework.utils.time.DateFormatUtil;
 import com.paladin.qos.dynamic.mapper.migration.DataMigrateMapper;
 
-public class CommonDataMigrator implements DataMigrator {
+/**
+ * 增量数据迁移实现类
+ * 
+ * @author TontoZhou
+ * @since 2019年10月9日
+ */
+public class IncrementDataMigrator implements DataMigrator {
 
 	public final static String ORIGIN_DATA_SOURCE_TYPE_MYSQL = "mysql";
 	public final static String ORIGIN_DATA_SOURCE_TYPE_SQLSERVER = "sqlserver";
 	public final static String ORIGIN_DATA_SOURCE_TYPE_ORACLE = "oracle";
 
-	private static Logger logger = LoggerFactory.getLogger(CommonDataMigrator.class);
+	private static Logger logger = LoggerFactory.getLogger(IncrementDataMigrator.class);
 
 	private SqlSessionContainer sqlSessionContainer;
 
@@ -60,7 +67,13 @@ public class CommonDataMigrator implements DataMigrator {
 	 * 
 	 * @return
 	 */
-	private int migrateMaximum = 500;
+	private int maximumMigrate = 500;
+	
+	
+	/**
+	 * 当前更新到的时间
+	 */
+	private Date currentUpdateTime;
 
 	/**
 	 * 更新时间字段
@@ -123,7 +136,7 @@ public class CommonDataMigrator implements DataMigrator {
 				boolean readMax = migrateData(updateTime, result, selectDataLimit);
 				int total = result.getMigrateNum();
 
-				if (!readMax || !result.isSuccess() || (migrateMaximum > 0 && total >= migrateMaximum)) {
+				if (!readMax || !result.isSuccess() || (maximumMigrate > 0 && total >= maximumMigrate)) {
 					break;
 				}
 
@@ -191,82 +204,40 @@ public class CommonDataMigrator implements DataMigrator {
 	 * @return
 	 */
 	public Map<String, Object> processData(Map<String, Object> data) {
+		for (Entry<String, Object> entry : data.entrySet()) {
+			Object value = entry.getValue();
+			if (value instanceof Boolean) {
+				data.put(entry.getKey(), ((Boolean) value) ? "1" : "0");
+			}
+		}
 		return data;
 	}
 
-	public boolean insertOrUpdateData(Map<String, Object> data) {
-
-		StringBuilder keys = new StringBuilder();
-		StringBuilder values = new StringBuilder();
-
-		StringBuilder updateSql = new StringBuilder();
-		updateSql.append("UPDATE ").append(targetTableName).append(" SET ");
-
-		for (Entry<String, Object> entry : data.entrySet()) {
-
-			String key = entry.getKey();
-			Object value = entry.getValue();
-
-			String valueStr = convertValue2SqlString(value);
-
-			keys.append(key).append(',');
-			values.append(valueStr).append(',');
-
-			if (!primaryKeyFields.contains(key)) {
-				updateSql.append(key).append("=").append(valueStr).append(',');
-			}
-		}
-
-		keys.deleteCharAt(keys.length() - 1);
-		values.deleteCharAt(values.length() - 1);
-
-		updateSql.deleteCharAt(updateSql.length() - 1);
-		updateSql.append(" WHERE ");
-
-		boolean first = true;
-
-		for (String primaryKeyField : primaryKeyFields) {
-
-			Object value = data.get(primaryKeyField);
-			if (value == null) {
-				return false;
-			}
-
-			String valueStr = convertValue2SqlString(value);
-
-			if (first) {
-				updateSql.append(primaryKeyField).append('=').append(valueStr);
-				first = false;
-			} else {
-				updateSql.append(" AND ").append(primaryKeyField).append('=').append(valueStr);
-			}
-		}
+	public boolean insertOrUpdateData(Map<String, Object> dataMap) {
 
 		sqlSessionContainer.setCurrentDataSource(targetDataSource);
 		DataMigrateMapper sqlMapper = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataMigrateMapper.class);
 
-		String update = updateSql.toString();
+		Map<String, Object> primaryMap = new HashMap<>();
 
-		if (sqlMapper.updateData(update) > 0) {
+		for (String primaryKey : primaryKeyFields) {
+			Object value = dataMap.get(primaryKey);
+			if (value == null) {
+				return false;
+			}
+			primaryMap.put(primaryKey, value);
+			dataMap.remove(primaryKey);
+		}
+
+		if (sqlMapper.updateData(targetTableName, dataMap, primaryMap) > 0) {
 			return true;
 		} else {
-			String insert = "INSERT INTO " + targetTableName + " (" + keys.toString() + ") VALUES (" + values.toString() + ")";
-			return sqlMapper.insertData(insert) > 0;
+			dataMap.putAll(primaryMap);
+			return sqlMapper.insertData(targetTableName, dataMap) > 0;
 		}
 	}
 
-	private String convertValue2SqlString(Object value) {
-		if (value == null) {
-			return "null";
-		} else if (value instanceof Date) {
-			return "'" + DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:ss:mm").format((Date) value) + "'";
-		} else if (value instanceof Boolean) {
-			return ((Boolean) value) ? "1" : "0";
-		} else {
-			return "'" + value.toString() + "'";
-		}
-	}
-
+	
 	public int getSelectDataLimit() {
 		return selectDataLimit;
 	}
@@ -276,11 +247,11 @@ public class CommonDataMigrator implements DataMigrator {
 	}
 
 	public int getMigrateMaximum() {
-		return migrateMaximum;
+		return maximumMigrate;
 	}
 
 	public void setMigrateMaximum(int migrateMaximum) {
-		this.migrateMaximum = migrateMaximum;
+		this.maximumMigrate = migrateMaximum;
 	}
 
 	public String getUpdateTimeField() {
@@ -345,6 +316,14 @@ public class CommonDataMigrator implements DataMigrator {
 
 	public void setOriginDataSourceType(String originDataSourceType) {
 		this.originDataSourceType = originDataSourceType;
+	}
+
+	public Date getCurrentUpdateTime() {
+		return currentUpdateTime;
+	}
+
+	public void setCurrentUpdateTime(Date currentUpdateTime) {
+		this.currentUpdateTime = currentUpdateTime;
 	}
 
 }

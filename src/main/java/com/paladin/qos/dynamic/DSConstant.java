@@ -13,4 +13,8 @@ public class DSConstant {
 	
 	/** 基层医疗数据库 */
 	public final static String DS_JCYL = "jcyl";
+	
+	/** 本地数据库 */
+	public final static String DS_LOCAL = "local";
+	
 }

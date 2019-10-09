@@ -7,11 +7,30 @@
 	</select>
 
 	<insert id="insertData">
-		${sql}
+		 INSERT INTO ${tableName}
+        <foreach collection="dataMap.keys" item="key" separator="," open="(" close=")">
+            ${key}
+        </foreach>
+        VALUES
+        <foreach collection="dataMap.keys" item="key" separator="," open="(" close=")">
+            #{dataMap[${key}]}
+		</foreach>
 	</insert>
 	
 	<update id="updateData">
-		${sql}
+		UPDATE ${tableName} SET
+		<foreach collection="dataMap.entrySet()" item="value" index="key" separator=",">
+			${key}=#{value}
+		</foreach>
+		<where>
+			<foreach collection="primaryMap.entrySet()" item="value" index="key" separator=",">
+				AND ${key}=#{value}
+			</foreach>
+		</where>
 	</update>
+
+	<select id="getMaxUpdateTime" resultType="Date">
+		SELECT ${updateTimeField} FROM ${tableName} ORDER BY ${updateTimeField} DESC LIMIT 1
+	</select>
 
 </mapper>
