@@ -6,8 +6,8 @@
         select count(*) from phis_webhis.V_OPR_REGISTER a
         where REGLEVLCODE !='5'
         and REGSTATUS = '0'
-        and a.REGDATE &gt;= #{startTime}
-        and a.REGDATE &lt; #{endTime}
+        and a.REGDATE &gt;= #{startTime}+0
+        and a.REGDATE &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 急诊人次数 ^ -->
@@ -15,24 +15,24 @@
         select count(*) from phis_webhis.V_OPR_REGISTER a
         where REGLEVLCODE = '5'
         and REGSTATUS = '0'
-        and a.REGDATE &gt;= #{startTime}
-        and a.REGDATE &lt; #{endTime}
+        and a.REGDATE &gt;= #{startTime}+0
+        and a.REGDATE &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 门急诊总人数 ^ -->
     <select id="getPatientsNumber" resultType="Long">
         select count(*) from phis_webhis.V_OPR_REGISTER a
         where a.REGSTATUS = '0'
-        and a.REGDATE &gt;= #{startTime}
-        and a.REGDATE &lt; #{endTime}
+        and a.REGDATE &gt;= #{startTime}+0
+        and a.REGDATE &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 出诊医生数 **11s -->
     <select id="getVisitDoctorNumber" resultType="Long">
         select count(distinct(DOCTCODE)) from phis_webhis.V_OPM_RECIPE_INFO a
         where a.PRESSTATUS = '2' and a.CHARSTATUS = '2'
-        and a.DRAWTIME &gt;= #{startTime}
-        and a.DRAWTIME &lt; #{endTime}
+        and a.DRAWTIME &gt;= #{startTime}+0
+        and a.DRAWTIME &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 医生平均门急诊量** -->
@@ -40,31 +40,31 @@
         select round(count(*)/count(distinct(DOCTCODE)),2) as from
         phis_webhis.V_OPM_RECIPE_INFO a
         where a.PRESSTATUS = '2' and a.CHARSTATUS = '2'
-        and a.DRAWTIME &gt;= #{startTime}
-        and a.DRAWTIME &lt;#{endTime}
+        and a.DRAWTIME &gt;= #{startTime}+0
+        and a.DRAWTIME &lt;#{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 康复服务数 -->
     <!-- 住院人次数^ -->
     <select id="getInhospitalNumber" resultType="Long">
         select count(1) from phis_webhis.V_IPR_INPATIENTINFO a
-        where a.INDATE &gt;= #{startTime}
-        and a.INDATE &lt; #{endTime}
+        where a.INDATE &gt;= #{startTime}+0
+        and a.INDATE &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 出院人次数^ -->
     <select id="getOuthospitalNumber" resultType="Long">
         select count(OUT_DATE) from phis_webhis.V_IPR_INPATIENTINFO a
-        where a.OUT_DATE &gt;= #{startTime}
-        and a.OUT_DATE &lt; #{endTime}
+        where a.OUT_DATE &gt;= #{startTime}+0
+        and a.OUT_DATE &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 在院人数 ^ -->
     <select id="getOnhospitalNumber" resultType="Long">
         select count(INSTATE) from phis_webhis.V_IPR_INPATIENTINFO a
         where a.INSTATE in ('R','I')
-        and a.INDATE &gt;= #{startTime}
-        and a.INDATE &lt; #{endTime}
+        and a.INDATE &gt;= #{startTime}+0
+        and a.INDATE &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 额定床位 ^ -->
@@ -75,8 +75,8 @@
     <!-- 使用床位 **^ -->
     <select id="getBedInUseNumber" resultType="Long">
         select count(*) from phis_webhis.V_INR_RECEIVEINFO a
-        where a.opertime &gt;= #{startTime}
-        and a.opertime &lt; #{endTime}
+        where a.opertime &gt;= #{startTime}+0
+        and a.opertime &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 病床总天数 **? -->
@@ -118,8 +118,8 @@
         from phis_webhis.v_ipr_inpatientinfo
         where 1=1
         and orgcode = #{unitId}
-        and INDATE &gt;= #{startTime}
-        and INDATE &lt; #{endTime}
+        and INDATE &gt;= #{startTime}+0
+        and INDATE &lt; #{endTime}+0
         ) a
         where (a.enddate &gt; to_char(#{startTime},'yyyy-mm-dd')
         or a.enddate is null)
@@ -128,8 +128,8 @@
     <select id="getTotalMoney" resultType="double">
         select nvl(SUM(TOTCOST),'0') as totalMoney from phis_webhis.V_OPB_FEEDETAIL a
         where ITEMSTATUS = '0'
-        and a.feedate &gt;= #{startTime}
-        and a.feedate &lt; #{endTime}
+        and a.feedate &gt;= #{startTime}+0
+        and a.feedate &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 医疗收入!! ^ -->
@@ -137,32 +137,32 @@
         select NVL(SUM(TOTCOST),'0') as medicalMoney from
         phis_webhis.V_OPB_FEEDETAIL a
         where ITEMSTATUS = '0' and ISDRUG = '0'
-        and a.feedate &gt;= #{startTime}
-        and a.feedate &lt; #{endTime}
+        and a.feedate &gt;= #{startTime}+0
+        and a.feedate &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 药品收入 !!^-->
     <select id="getDrugMoney" resultType="double">
         select nvl(SUM(TOTCOST),'0') as drugMoney from phis_webhis.V_OPB_FEEDETAIL a
         where ITEMSTATUS = '0' and ISDRUG = '1'
-        and a.feedate &gt;= #{startTime}
-        and a.feedate &lt; #{endTime}
+        and a.feedate &gt;= #{startTime}+0
+        and a.feedate &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 其他收入 !! -->
     <select id="getOtherMoney" resultType="double">
         select nvl(SUM(TOTCOST),'0') as drugMoney from phis_webhis.V_OPB_FEEDETAIL a
         where ITEMSTATUS = '0' and ISDRUG not in ('0','1')
-        and a.feedate &gt;= #{startTime}
-        and a.feedate &lt; #{endTime}
+        and a.feedate &gt;= #{startTime}+0
+        and a.feedate &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 处方数量 ^ -->
     <select id="getPrescriptionNumber" resultType="long">
         select count(*) as prescriptionNumber from phis_webhis.V_OPM_RECIPE_INFO a
         where PRESSTATUS = '2' and CHARSTATUS = '2'
-        and a.opertime &gt;= #{startTime}
-        and a.opertime &lt; #{endTime}
+        and a.opertime &gt;= #{startTime}+0
+        and a.opertime &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 处方总额 ^ -->
@@ -170,8 +170,8 @@
         select nvl(sum(TOTCOST),'0') as prescriptionMoney from
         phis_webhis.V_OPM_RECIPE_INFO a
         where a.PRESSTATUS = '2' and a.CHARSTATUS = '2'
-        and a.opertime &gt;= #{startTime}
-        and a.opertime &lt; #{endTime}
+        and a.opertime &gt;= #{startTime}+0
+        and a.opertime &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 最大处方金额 ^ -->
@@ -179,8 +179,8 @@
         select nvl(MAX(TOTCOST),'0') as maxPrescriptionMoney from
         phis_webhis.V_OPM_RECIPE_INFO a
         where a.PRESSTATUS = '2' and a.CHARSTATUS = '2'
-        and a.opertime &gt;= #{startTime}
-        and a.opertime &lt; #{endTime}
+        and a.opertime &gt;= #{startTime}+0
+        and a.opertime &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 最小处方金额 ^-->
@@ -188,8 +188,8 @@
         select nvl(MIN(TOTCOST),'0') as minPrescriptionMoney from
         phis_webhis.V_OPM_RECIPE_INFO a
         where a.PRESSTATUS = '2' and a.CHARSTATUS = '2'
-        and a.opertime &gt;= #{startTime}
-        and a.opertime &lt; #{endTime}
+        and a.opertime &gt;= #{startTime}+0
+        and a.opertime &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 平均处方金额(处方金额/处方数)^-->
@@ -205,8 +205,8 @@
     <select id="getTotalChineseMedicinePrescription" resultType="long">
         select count(a.recipeid) from phis_webhis.v_opm_recipe_info a
         where a.PRESSTATUS = '2' and a.CHARSTATUS = '2'
-        and a.opertime &gt;= #{startTime}
-        and a.opertime &lt; #{endTime}
+        and a.opertime &gt;= #{startTime}+0
+        and a.opertime &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <select id="getEventChineseMedicinePrescription" resultType="long">
@@ -215,8 +215,8 @@
         where a.BUSITYPE in ('2' ,'8' )
         and a.PRESSTATUS = '2'
         and a.CHARSTATUS = '2'
-        and a.opertime &gt;= #{startTime}
-        and a.opertime &lt; #{endTime}
+        and a.opertime &gt;= #{startTime}+0
+        and a.opertime &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 门诊中药饮片占比 ^-->
@@ -226,8 +226,8 @@
         where a.BUSITYPE ='2'
         and a.PRESSTATUS = '2'
         and a.CHARSTATUS = '2'
-        and a.opertime &gt;= #{startTime}
-        and a.opertime &lt; #{endTime}
+        and a.opertime &gt;= #{startTime}+0
+        and a.opertime &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 门诊中药非药物治疗处方占比 ^-->
@@ -237,8 +237,8 @@
         where a.BUSITYPE ='8'
         and a.PRESSTATUS = '2'
         and a.CHARSTATUS = '2'
-        and a.opertime &gt;= #{startTime}
-        and a.opertime &lt; #{endTime}
+        and a.opertime &gt;= #{startTime}+0
+        and a.opertime &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 静脉输液率 -->
@@ -246,8 +246,8 @@
     <select id="getTotalHormone" resultType="long">
         select count(a.recipeid) from phis_webhis.v_opm_recipe_info a
         where a.PRESSTATUS = '2' and a.CHARSTATUS = '2'
-        and a.opertime &gt;= #{startTime}
-        and a.opertime &lt; #{endTime}
+        and a.opertime &gt;= #{startTime}+0
+        and a.opertime &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
     <select id="getEventHormone" resultType="long">
@@ -262,8 +262,8 @@
         where drugcode like '113%'))
         and t1.PRESSTATUS = '2'
         and t1.CHARSTATUS = '2'
-        and t1.opertime &gt;= #{startTime}
-        and t1.opertime &lt; #{endTime}
+        and t1.opertime &gt;= #{startTime}+0
+        and t1.opertime &lt; #{endTime}+0
         and t1.ORGCODE = #{unitId}
     </select>
     <!-- 抗菌药物使用率 -->
@@ -272,8 +272,8 @@
         nvl(sum(b.totcost),'0')
         from phis_webhis.v_opb_feedetail b
         where b.ITEMSTATUS = 0
-        and b.feedate &gt;= #{startTime}
-        and b.feedate &lt; #{endTime}
+        and b.feedate &gt;= #{startTime}+0
+        and b.feedate &lt; #{endTime}+0
         and b.ORGCODE = #{unitId}
     </select>
     <select id="getEventAntiDrug" resultType="double">
@@ -282,8 +282,8 @@
         from phis_webhis.v_opb_feedetail b, phis_webhis.v_pha_drug c
         where b.itemid = c.drugid(+)
         and b.ITEMSTATUS = 0
-        and b.feedate &gt;= #{startTime}
-        and b.feedate &lt; #{endTime}
+        and b.feedate &gt;= #{startTime}+0
+        and b.feedate &lt; #{endTime}+0
         and b.ORGCODE = #{unitId}
     </select>
     <!-- 一联抗生素使用率 -->
@@ -292,8 +292,8 @@
         from phis_webhis.opm_recipe_info r
         where r.PRESSTATUS = '2'
         and r.CHARSTATUS = '2'
-        and r.Opertime &gt;= #{startTime}
-        and r.Opertime &lt; #{endTime}
+        and r.Opertime &gt;= #{startTime}+0
+        and r.Opertime &lt; #{endTime}+0
         and r.ORGCODE = #{unitId}
     </select>
     <!-- ！慢 -->
@@ -309,15 +309,15 @@
         (select DRUG.DRUGID
         from phis_webhis.v_pha_drug DRUG
         where DRUG.ISANTIBIOTIC = 1)
-        AND t.feedate &gt;= #{startTime}
-        and t.feedate &lt;#{endTime}
+        AND t.feedate &gt;= #{startTime}+0
+        and t.feedate &lt;#{endTime}+0
         and orgcode = #{unitId}
         group by recipeid) kss
         left join phis_webhis.v_OPM_RECIPE_INFO info
         on kss.recipeid = info.recipeid
         where 1=1
-        AND info.Opertime &gt;= #{startTime}
-        and info.Opertime &lt;#{endTime}
+        AND info.Opertime &gt;= #{startTime}+0
+        and info.Opertime &lt;#{endTime}+0
         and info.orgcode = #{unitId}
         and info.PRESSTATUS = '2'
         and info.CHARSTATUS = '2'
@@ -335,15 +335,15 @@
         (select DRUG.DRUGID
         from phis_webhis.v_pha_drug DRUG
         where DRUG.ISANTIBIOTIC = 1)
-        AND t.feedate &gt;= #{startTime}
-        and t.feedate &lt;#{endTime}
+        AND t.feedate &gt;= #{startTime}+0
+        and t.feedate &lt;#{endTime}+0
         and orgcode = #{unitId}
         group by recipeid) kss
         left join phis_webhis.v_OPM_RECIPE_INFO info
         on kss.recipeid = info.recipeid
         where 1=1
-        AND info.Opertime &gt;= #{startTime}
-        and info.Opertime &lt;#{endTime}
+        AND info.Opertime &gt;= #{startTime}+0
+        and info.Opertime &lt;#{endTime}+0
         and info.orgcode = #{unitId}
         and info.PRESSTATUS = '2'
         and info.CHARSTATUS = '2'
@@ -361,15 +361,15 @@
         (select DRUG.DRUGID
         from phis_webhis.v_pha_drug DRUG
         where DRUG.ISANTIBIOTIC = 1)
-        AND t.feedate &gt;= #{startTime}
-        and t.feedate &lt;#{endTime}
+        AND t.feedate &gt;= #{startTime}+0
+        and t.feedate &lt;#{endTime}+0
         and orgcode = #{unitId}
         group by recipeid) kss
         left join phis_webhis.v_OPM_RECIPE_INFO info
         on kss.recipeid = info.recipeid
         where 1=1
-        AND info.Opertime &gt;= #{startTime}
-        and info.Opertime &lt;#{endTime}
+        AND info.Opertime &gt;= #{startTime}+0
+        and info.Opertime &lt;#{endTime}+0
         and info.orgcode = #{unitId}
         and info.PRESSTATUS = '2'
         and info.CHARSTATUS = '2'
@@ -386,8 +386,8 @@
 		WHERE x.recipeid IN (
 		  SELECT t.recipeid
 		  FROM phis_webhis.v_opm_recipe_info t WHERE 1=1
-		  AND t.DRAWTIME &gt;= #{startTime}
-		AND t.DRAWTIME &lt; #{endTime}
+		  AND t.DRAWTIME &gt;= #{startTime}+0
+		AND t.DRAWTIME &lt; #{endTime}+0
 		AND t.ORGCODE = #{unitId}
 		AND t.CHARSTATUS = '2'
 		AND t.busitype = '1')
@@ -403,8 +403,8 @@
 	<select id="getYiPay" resultType="long">
 	select count(*) from phis_webhis.v_opr_register
     where paykindcode = '3001'
-        and REGDATE &gt;= #{startTime}
-        and REGDATE &lt; #{endTime}
+        and REGDATE &gt;= #{startTime}+0
+        and REGDATE &lt; #{endTime}+0
         and ORGCODE = #{unitId}
 	</select>
 	
@@ -412,8 +412,8 @@
 	<select id="getSelfPay" resultType="long">
 	select count(*) from phis_webhis.v_opr_register
     where paykindcode = '1001'
-        and REGDATE &gt;= #{startTime}
-        and REGDATE &lt; #{endTime}
+        and REGDATE &gt;= #{startTime}+0
+        and REGDATE &lt; #{endTime}+0
         and ORGCODE = #{unitId}
 	</select>
 </mapper>
