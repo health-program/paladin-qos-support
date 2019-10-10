@@ -1,4 +1,4 @@
-package com.paladin.qos.analysis;
+package com.paladin.qos.util;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -6,6 +6,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+
+import com.paladin.qos.analysis.DataProcessEvent;
 
 public class TimeUtil {
 

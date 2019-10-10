@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 
 import com.paladin.data.dynamic.SqlSessionContainer;
 import com.paladin.qos.analysis.DataProcessor;
-import com.paladin.qos.analysis.TimeUtil;
 import com.paladin.qos.dynamic.DSConstant;
 import com.paladin.qos.dynamic.mapper.shejike.SheJiKeMapper;
+import com.paladin.qos.util.TimeUtil;
 
 /**
  * 病床使用率（病床使用天数/总天数）

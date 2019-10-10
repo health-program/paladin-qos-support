@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.paladin.qos.util.TimeUtil;
+
 public class DataProcessEvent {
 
 	public static final int EVENT_TYPE_RATE = 1;

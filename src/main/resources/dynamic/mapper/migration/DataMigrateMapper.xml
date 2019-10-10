@@ -2,9 +2,34 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.paladin.qos.dynamic.mapper.migration.DataMigrateMapper">
 
-	<select id="selectData" resultType="Map">
-		${sql}
+	<select id="selectDataForMySql" resultType="Map">
+		SELECT * FROM ${tableName} 
+		WHERE ${updateTimeField} &gt;= #{startTime}
+		<if test="endTime != null">
+			AND ${updateTimeField} &lt;= #{endTime}
+		</if>
+		ORDER BY ${updateTimeField} ASC LIMIT ${limit}
 	</select>
+	
+	<select id="selectDataForSqlServer" resultType="Map">
+		SELECT TOP ${limit} * FROM ${tableName} 
+		WHERE ${updateTimeField} &gt;= #{startTime}
+		<if test="endTime != null">
+			AND ${updateTimeField} &lt;= #{endTime}
+		</if>
+		ORDER BY ${updateTimeField} ASC
+	</select>
+	
+	<select id="selectDataForOracle" resultType="Map">
+		SELECT * FROM ${tableName} 
+		WHERE ${updateTimeField} &gt;= to_date('${startTime}','yyyy-mm-dd hh24:mi:ss')
+		<if test="endTime != null">
+			AND ${updateTimeField} &lt;= to_date('${endTime}','yyyy-mm-dd hh24:mi:ss')
+		</if>
+		AND rownum &lt;= ${limit}
+		ORDER BY ${updateTimeField} ASC
+	</select>
+	
 
 	<insert id="insertData">
 		 INSERT INTO ${tableName}

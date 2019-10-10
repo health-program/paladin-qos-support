@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.paladin.framework.utils.time.DateFormatUtil;
 import com.paladin.framework.web.response.CommonResponse;
-import com.paladin.qos.migration.DataMigrator;
 import com.paladin.qos.migration.DataMigratorContainer;
+import com.paladin.qos.migration.increment.IncrementDataMigrator;
 
 @Controller
 @RequestMapping("/qos/migrate")
@@ -21,14 +21,16 @@ public class MigrateController {
 	@Autowired
 	private DataMigratorContainer container;
 
-	@GetMapping("/test")
+	@GetMapping("/execute")
 	@ResponseBody
-	public Object processDataSchedule() {
+	public Object execute(String id) {
 
-		DataMigrator migrator = container.getDataMigratorList().get(0);
+		IncrementDataMigrator migrator = container.getIncrementDataMigratorList().get(0);
+		
+		
 		try {
 			Date updateTime = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:ss:mm").parse("2019-01-01 00:00:00");
-			migrator.migrateData(updateTime);
+			migrator.migrateData(updateTime, null, 500);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}

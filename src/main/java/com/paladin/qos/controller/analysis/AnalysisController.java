@@ -19,10 +19,10 @@ import com.paladin.qos.analysis.DataConstantContainer;
 import com.paladin.qos.analysis.DataProcessEvent;
 import com.paladin.qos.analysis.DataProcessManager;
 import com.paladin.qos.analysis.DataProcessUnit;
-import com.paladin.qos.analysis.TimeUtil;
 import com.paladin.qos.model.data.DataUnit;
 import com.paladin.qos.service.analysis.AnalysisService;
 import com.paladin.qos.service.data.DataEventService;
+import com.paladin.qos.util.TimeUtil;
 
 @Controller
 @RequestMapping("/qos/analysis")
