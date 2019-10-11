@@ -61,5 +61,15 @@
 	<select id="getMaxUpdateTimeByYear" resultType="String">
 		SELECT ${updateTimeField} FROM ${tableName} ORDER BY ${updateTimeField} DESC LIMIT 1
 	</select>
+	
+	<select id="selectDataByYear" resultType="Map">
+		SELECT * FROM ${tableName}
+		WHERE ${updateTimeField} IN
+		<foreach collection="years" item="year" separator="," open="(" close=")">
+            #{year}
+        </foreach>
+	</select>
+	
+	
 
 </mapper>

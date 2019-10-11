@@ -61,9 +61,7 @@ public interface IncrementDataMigrator {
 	 * 
 	 * @return
 	 */
-	default public boolean needScheduleToday() {
-		return true;
-	}
+	public boolean needScheduleToday();
 
 	/**
 	 * 迁移结果

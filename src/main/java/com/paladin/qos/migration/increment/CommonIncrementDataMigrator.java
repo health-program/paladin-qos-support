@@ -1,6 +1,7 @@
 package com.paladin.qos.migration.increment;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -274,19 +275,62 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 
 	@Override
 	public Date getScheduleFilingDate() {
-		int scheduleStrategy = dataMigration.getFilingStrategy();
-		if (scheduleStrategy == DataMigration.FILING_STRATEGY_DEFAULT_NOW) {
+		int filingStrategy = dataMigration.getFilingStrategy();
+		if (filingStrategy == DataMigration.FILING_STRATEGY_DEFAULT_NOW) {
 			return null;
-		} else if (scheduleStrategy == DataMigration.FILING_STRATEGY_DEFAULT_DAY) {
+		} else if (filingStrategy == DataMigration.FILING_STRATEGY_DEFAULT_DAY) {
 			return TimeUtil.getTodayBefore(dataMigration.getFilingStrategyParam1());
-		} else if (scheduleStrategy == DataMigration.FILING_STRATEGY_DEFAULT_MONTH) {
+		} else if (filingStrategy == DataMigration.FILING_STRATEGY_DEFAULT_MONTH) {
 			return TimeUtil.getTodayBeforeMonth(dataMigration.getFilingStrategyParam1());
-		} else if (scheduleStrategy == DataMigration.FILING_STRATEGY_DEFAULT_YEAR) {
+		} else if (filingStrategy == DataMigration.FILING_STRATEGY_DEFAULT_YEAR) {
 			return TimeUtil.getTodayBeforeYear(dataMigration.getFilingStrategyParam1());
-		} else if (scheduleStrategy == DataMigration.FILING_STRATEGY_CUSTOM) {
+		} else if (filingStrategy == DataMigration.FILING_STRATEGY_CUSTOM) {
 			throw new RuntimeException("自定义归档策略需要开发者扩展重写代码");
 		}
-		throw new RuntimeException("不存在的归档策略代码：" + scheduleStrategy);
+
+		throw new RuntimeException("不存在的归档策略代码：" + filingStrategy);
 	}
 
+	/**
+	 * 每日调度任务时判断是否需要执行
+	 * 
+	 * @return
+	 */
+	public boolean needScheduleToday() {
+
+		int scheduleStrategy = dataMigration.getScheduleStrategy();
+
+		if (scheduleStrategy == DataMigration.SCHEDULE_STRATEGY_NO) {
+			return false;
+		} else if (scheduleStrategy == DataMigration.SCHEDULE_STRATEGY_EVERY_DAY) {
+			return true;
+		} else if (scheduleStrategy == DataMigration.SCHEDULE_STRATEGY_FIXED_DAY_OF_MONTH) {
+			String dayStr = dataMigration.getScheduleStrategyParam2();
+			String[] days = dayStr.split(",");
+			Calendar c = Calendar.getInstance();
+			String d = String.valueOf(c.get(Calendar.DAY_OF_MONTH));
+			for (String day : days) {
+				if (d.equals(day)) {
+					return true;
+				}
+			}
+			return false;
+		} else if (scheduleStrategy == DataMigration.SCHEDULE_STRATEGY_FIXED_DAY_OF_YEAR) {
+			String dayStr = dataMigration.getScheduleStrategyParam2();
+			String[] days = dayStr.split(",");
+
+			Calendar c = Calendar.getInstance();
+			String d = String.valueOf(c.get(Calendar.MONTH) + 1) + "/" + String.valueOf(c.get(Calendar.DAY_OF_MONTH));
+
+			for (String day : days) {
+				if (d.equals(day)) {
+					return true;
+				}
+			}
+			return false;
+		} else {
+			throw new RuntimeException("还未实现策略：" + scheduleStrategy);
+		}
+
+	}
 }

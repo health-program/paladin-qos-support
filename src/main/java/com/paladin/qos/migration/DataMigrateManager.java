@@ -13,11 +13,13 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import com.paladin.qos.migration.increment.IncrementDataMigrator;
 import com.paladin.qos.model.migration.DataMigration;
 
-//@Component
+@Component
 public class DataMigrateManager {
 
 	private static Logger logger = LoggerFactory.getLogger(DataMigrateManager.class);
@@ -29,7 +31,7 @@ public class DataMigrateManager {
 	private ExecutorService executorService = new ThreadPoolExecutor(30, 30, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(256), // 使用有界队列，避免OOM
 			new ThreadPoolExecutor.DiscardPolicy());
 
-	// @Scheduled(cron = "0 0 19 * * ?")
+	@Scheduled(cron = "0 0 19 * * ?")
 	public void processUpdate() {
 
 		logger.info("开始执行定时数据迁移任务");

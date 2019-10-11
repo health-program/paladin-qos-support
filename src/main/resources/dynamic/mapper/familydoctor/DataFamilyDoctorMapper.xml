@@ -44,7 +44,7 @@
     </select>
 
     <select id="registerOPD" resultType="long">
-	    select count(1) from phis_webhis.V_OPR_REGISTER r
+	    select count(1) from phis_webhis.v_opr_register r
 	    where r.REGDATE &gt;= #{startTime}
 	    and r.REGDATE &lt; #{endTime}
 	    and r.orgcode =#{unitId}	
