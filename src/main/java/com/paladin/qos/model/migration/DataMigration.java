@@ -9,8 +9,10 @@ public class DataMigration {
 	public final static String ORIGIN_DATA_SOURCE_TYPE_SQLSERVER = "sqlserver";
 	public final static String ORIGIN_DATA_SOURCE_TYPE_ORACLE = "oracle";
 	
-	public final static int TYPE_INCREMENT_UPDATE = 1;
-	public final static int TYPE_ALL_UPDATE = 2;
+	public final static int TYPE_INCREMENT_UPDATE = 10;
+	public final static int TYPE_INCREMENT_UPDATE_YEAR = 11;
+	public final static int TYPE_ALL_UPDATE = 20;
+	
 	
 	/**
 	 * 固定默认策略，数据执行到当前时间

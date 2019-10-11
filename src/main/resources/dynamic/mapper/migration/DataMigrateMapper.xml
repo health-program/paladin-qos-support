@@ -57,5 +57,9 @@
 	<select id="getMaxUpdateTime" resultType="Date">
 		SELECT ${updateTimeField} FROM ${tableName} ORDER BY ${updateTimeField} DESC LIMIT 1
 	</select>
+	
+	<select id="getMaxUpdateTimeByYear" resultType="String">
+		SELECT ${updateTimeField} FROM ${tableName} ORDER BY ${updateTimeField} DESC LIMIT 1
+	</select>
 
 </mapper>

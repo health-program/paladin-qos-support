@@ -3,7 +3,6 @@ package com.paladin.qos.migration.increment;
 import java.util.Date;
 
 import com.paladin.qos.model.migration.DataMigration;
-import com.paladin.qos.util.TimeUtil;
 
 public interface IncrementDataMigrator {
 
@@ -55,23 +54,7 @@ public interface IncrementDataMigrator {
 	 * 
 	 * @return
 	 */
-	default public Date getScheduleFilingDate() {
-		DataMigration dataMigration = getDataMigration();
-		int scheduleStrategy = dataMigration.getFilingStrategy();
-		if (scheduleStrategy == DataMigration.FILING_STRATEGY_DEFAULT_NOW) {
-			return null;
-		} else if (scheduleStrategy == DataMigration.FILING_STRATEGY_DEFAULT_DAY) {
-			return TimeUtil.getTodayBefore(dataMigration.getFilingStrategyParam1());
-		} else if (scheduleStrategy == DataMigration.FILING_STRATEGY_DEFAULT_MONTH) {
-			return TimeUtil.getTodayBeforeMonth(dataMigration.getFilingStrategyParam1());
-		} else if (scheduleStrategy == DataMigration.FILING_STRATEGY_DEFAULT_YEAR) {
-			return TimeUtil.getTodayBeforeYear(dataMigration.getFilingStrategyParam1());
-		} else if (scheduleStrategy == DataMigration.FILING_STRATEGY_CUSTOM) {
-			throw new RuntimeException("自定义归档策略需要开发者扩展重写代码");
-		}
-
-		throw new RuntimeException("不存在的归档策略代码：" + scheduleStrategy);
-	}
+	public Date getScheduleFilingDate();
 
 	/**
 	 * 每日调度任务时判断是否需要执行
@@ -96,7 +79,7 @@ public interface IncrementDataMigrator {
 		private Date migrateEndTime;
 
 		public MigrateResult(Date migrateBeginTime) {
-			this.success = true;
+			this.success = false;
 			this.migrateNum = 0;
 			this.migrateBeginTime = migrateBeginTime;
 			this.migrateEndTime = migrateBeginTime;

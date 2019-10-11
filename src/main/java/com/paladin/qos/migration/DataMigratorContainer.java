@@ -14,6 +14,7 @@ import com.paladin.framework.spring.SpringBeanHelper;
 import com.paladin.framework.spring.SpringContainer;
 import com.paladin.qos.migration.increment.CommonIncrementDataMigrator;
 import com.paladin.qos.migration.increment.IncrementDataMigrator;
+import com.paladin.qos.migration.increment.YearIncrementDataMigrator;
 import com.paladin.qos.model.migration.DataMigration;
 import com.paladin.qos.service.migration.DataMigrationService;
 
@@ -50,6 +51,14 @@ public class DataMigratorContainer implements SpringContainer {
 			if (type == DataMigration.TYPE_INCREMENT_UPDATE) {
 				if (!migratorIdMap.containsKey(id)) {
 					IncrementDataMigrator migrator = new CommonIncrementDataMigrator(dataMigration, sqlSessionContainer);
+					migratorIdMap.put(migrator.getId(), migrator);
+				} else {
+					IncrementDataMigrator migrator = migratorIdMap.get(id);
+					migrator.setDataMigration(dataMigration);
+				}
+			} else if (type == DataMigration.TYPE_INCREMENT_UPDATE_YEAR) {
+				if (!migratorIdMap.containsKey(id)) {
+					IncrementDataMigrator migrator = new YearIncrementDataMigrator(dataMigration, sqlSessionContainer);
 					migratorIdMap.put(migrator.getId(), migrator);
 				} else {
 					IncrementDataMigrator migrator = migratorIdMap.get(id);

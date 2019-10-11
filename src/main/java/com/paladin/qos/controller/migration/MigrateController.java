@@ -21,20 +21,18 @@ public class MigrateController {
 	@Autowired
 	private DataMigratorContainer container;
 
-	@GetMapping("/execute")
+	@GetMapping("/execute/test")
 	@ResponseBody
 	public Object execute(String id) {
-
-		IncrementDataMigrator migrator = container.getIncrementDataMigratorList().get(0);
-		
+		IncrementDataMigrator migrator = container.getIncrementDataMigrator(id);
 		
 		try {
-			Date updateTime = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:ss:mm").parse("2019-01-01 00:00:00");
+			Date updateTime = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:ss:mm").parse("2018-01-01 00:00:00");
 			migrator.migrateData(updateTime, null, 500);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-
+		
 		return CommonResponse.getSuccessResponse();
 	}
 

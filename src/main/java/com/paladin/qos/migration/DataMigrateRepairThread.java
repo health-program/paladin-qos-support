@@ -1,50 +1,48 @@
 package com.paladin.qos.migration;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.paladin.framework.utils.time.DateFormatUtil;
+import com.paladin.qos.migration.DataMigrateManager.DataMigratorStack;
 import com.paladin.qos.migration.increment.IncrementDataMigrator;
 import com.paladin.qos.migration.increment.IncrementDataMigrator.MigrateResult;
 import com.paladin.qos.model.migration.DataMigration;
 
 /**
- * 数据修复线程，一般在凌晨执行，用于修复和更新数据
+ * 数据迁移修复线程
  * 
  * @author TontoZhou
- * @since 2019年9月27日
+ * @since 2019年10月11日
  */
 public class DataMigrateRepairThread implements Runnable {
 
 	private static Logger logger = LoggerFactory.getLogger(DataMigrateRepairThread.class);
 
-	private List<IncrementDataMigrator> migrators;
+	private DataMigratorStack migratorStack;
 
 	// 线程结束时间
 	private long threadEndTime;
 
-	public DataMigrateRepairThread(List<IncrementDataMigrator> migrators, long threadEndTime) {
-		this.migrators = migrators;
-		this.threadEndTime = threadEndTime;
-	}
-
-	public DataMigrateRepairThread(IncrementDataMigrator migrator, long threadEndTime) {
-		this.migrators = new ArrayList<>();
-		this.migrators.add(migrator);
+	public DataMigrateRepairThread(DataMigratorStack migratorStack, long threadEndTime) {
+		this.migratorStack = migratorStack;
 		this.threadEndTime = threadEndTime;
 	}
 
 	@Override
 	public void run() {
 		try {
-			logger.info("--------->开始数据迁移任务，迁移任务数：" + migrators.size() + "个<---------");
+			logger.info("--------->开始数据迁移任务<---------");
 
-			for (IncrementDataMigrator migrator : migrators) {
+			while (true) {
+				IncrementDataMigrator migrator = migratorStack.pop();
+
+				if (migrator == null) {
+					break;
+				}
 
 				DataMigration dataMigration = migrator.getDataMigration();
 
@@ -65,22 +63,34 @@ public class DataMigrateRepairThread implements Runnable {
 					startTime = filingDate;
 				}
 
-				MigrateResult result = migrator.migrateData(startTime, null, dataMigration.getMaximumMigrate());
+				int maximumMigrate = dataMigration.getMaximumMigrate();
+				int selectLimit = dataMigration.getSelectDataLimit();
+				int count = 0;
 
-				if (result != null) {
+				Date time = new Date(startTime.getTime());
+				MigrateResult result = null;
+
+				do {
+					result = migrator.migrateData(time, null, selectLimit);
 					migrator.setScheduleStartTime(result.getMigrateEndTime());
-					SimpleDateFormat format = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:ss:mm");
-					logger.info("计划迁移数据任务[ID:" + id + "]执行" + (result.isSuccess() ? "完成" : "未完成") + "，迁移数据条数：" + result.getMigrateNum() + "条，迁移开始时间："
-							+ format.format(result.getMigrateBeginTime()) + "，迁移结束时间：" + format.format(result.getMigrateEndTime()));
-				} else {
-					logger.info("计划迁移数据任务[ID:" + id + "]执行异常");
-				}
+					int num = result.getMigrateNum();
+					count += num;
 
-				if (threadEndTime > 0 && threadEndTime < System.currentTimeMillis()) {
-					break;
-				}
+					if (threadEndTime > 0 && threadEndTime < System.currentTimeMillis()) {
+						break;
+					}
+
+					if (!result.isSuccess() || num < selectLimit || (maximumMigrate > 0 && count >= maximumMigrate)) {
+						break;
+					}
+
+					time = result.getMigrateEndTime();
+				} while (true);
+
+				SimpleDateFormat format = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:ss:mm");
+				logger.info("计划迁移数据任务[ID:" + id + "]执行" + (result.isSuccess() ? "完成" : "未完成") + "，迁移数据条数：" + count + "条，迁移开始时间：" + format.format(startTime)
+						+ "，迁移结束时间：" + format.format(result.getMigrateEndTime()));
 			}
-
 		} catch (Exception e) {
 			logger.error("数据迁移异常", e);
 		} finally {

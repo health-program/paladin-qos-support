@@ -16,6 +16,7 @@ import com.paladin.data.dynamic.SqlSessionContainer;
 import com.paladin.framework.utils.time.DateFormatUtil;
 import com.paladin.qos.dynamic.mapper.migration.DataMigrateMapper;
 import com.paladin.qos.model.migration.DataMigration;
+import com.paladin.qos.util.TimeUtil;
 
 /**
  * 增量数据迁移实现类
@@ -62,13 +63,6 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 	protected String targetTableName;
 
 	/**
-	 * 获取数据限制条目
-	 * 
-	 * @return
-	 */
-	protected int selectDataLimit;
-
-	/**
 	 * 更新时间字段
 	 */
 	protected String updateTimeField;
@@ -79,14 +73,14 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 	protected Set<String> primaryKeyFields;
 
 	/**
-	 * 缺省默认开始更新时间
-	 */
-	protected Date defaultStartDate;
-
-	/**
 	 * 当前更新时间
 	 */
 	protected Date scheduleStartTime;
+
+	/**
+	 * 缺省开始时间
+	 */
+	protected Date defaultStartDate;
 
 	/**
 	 * 数据迁移描述
@@ -110,7 +104,6 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 		this.originTableName = dataMigration.getOriginTableName();
 		this.targetDataSource = dataMigration.getTargetDataSource();
 		this.targetTableName = dataMigration.getTargetTableName();
-		this.selectDataLimit = dataMigration.getSelectDataLimit();
 		this.updateTimeField = dataMigration.getUpdateTimeField();
 		this.defaultStartDate = dataMigration.getDefaultStartDate();
 
@@ -131,37 +124,28 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 
 	public MigrateResult migrateData(Date updateStartTime, Date updateEndTime, int migrateNum) {
 		MigrateResult result = new MigrateResult(updateStartTime);
-		do {
-			try {
-				updateStartTime = result.getMigrateEndTime();
 
-				if (updateEndTime != null && updateStartTime.getTime() > updateEndTime.getTime()) {
-					break;
-				}
+		updateStartTime = result.getMigrateEndTime();
+		if (updateEndTime != null && updateStartTime.getTime() > updateEndTime.getTime()) {
+			return result;
+		}
 
-				boolean readMax = migrateData(updateStartTime, updateEndTime, result, selectDataLimit);
-				int total = result.getMigrateNum();
-
-				if (!readMax || !result.isSuccess() || (migrateNum > 0 && total >= migrateNum)) {
-					break;
-				}
-
-			} catch (Exception e) {
-				logger.error("迁移数据失败！数据迁移ID：" + id + "，更新开始时间点：" + updateStartTime, e);
-				result.setSuccess(false);
-				break;
-			}
-		} while (true);
+		try {
+			migrateData(updateStartTime, updateEndTime, result, migrateNum);
+		} catch (Exception e) {
+			logger.error("迁移数据失败！数据迁移ID：" + id + "，更新开始时间点：" + updateStartTime, e);
+			result.setSuccess(false);
+		}
 
 		return result;
 	}
 
-	protected boolean migrateData(Date updateStartTime, Date updateEndTime, MigrateResult result, int selectDataLimit) {
+	protected void migrateData(Date updateStartTime, Date updateEndTime, MigrateResult result, int selectDataLimit) {
 
 		if (selectDataLimit > MAX_SELECT_DATA_LIMIT) {
 			logger.error("超过最大查询限制数据！数据迁移ID：" + id + "，更新开始时间点：" + updateStartTime);
 			result.setSuccess(false);
-			return false;
+			return;
 		}
 
 		List<Map<String, Object>> datas = getData(updateStartTime, updateEndTime, selectDataLimit);
@@ -169,36 +153,39 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 		if (datas != null) {
 			int size = datas.size();
 			if (size >= selectDataLimit) {
-				Date start = (Date) datas.get(0).get(updateTimeField);
-				Date end = (Date) datas.get(size - 1).get(updateTimeField);
+				Date start = getDataUpdateTime(datas.get(0));
+				Date end = getDataUpdateTime(datas.get(size - 1));
 				// 如果查出数据都是一个时间点，则需要扩大搜索范围以保证不进入死循环
 				if (start.getTime() == end.getTime()) {
-					return migrateData(updateStartTime, updateEndTime, result, selectDataLimit * 2);
+					migrateData(updateStartTime, updateEndTime, result, selectDataLimit * 2);
+					return;
 				}
 			}
 
 			for (Map<String, Object> data : datas) {
 				Map<String, Object> needData = processData(data);
-
 				boolean success = insertOrUpdateData(needData);
-
 				if (success) {
-					Date time = (Date) needData.get(updateTimeField);
+					Date time = getDataUpdateTime(needData);
 					result.setMigrateEndTime(time);
 					result.setMigrateNum(result.getMigrateNum() + 1);
 				} else {
 					logger.error("更新或插入数据失败！数据迁移ID：" + id + "，更新开始时间点：" + updateStartTime);
 					result.setSuccess(false);
-					return false;
+					return;
 				}
 			}
-
-			return size >= selectDataLimit;
 		}
-
-		return false;
 	}
 
+	/**
+	 * 获取原始数据
+	 * 
+	 * @param updateStartTime
+	 * @param updateEndTime
+	 * @param limit
+	 * @return
+	 */
 	protected List<Map<String, Object>> getData(Date updateStartTime, Date updateEndTime, int limit) {
 		sqlSessionContainer.setCurrentDataSource(originDataSource);
 		DataMigrateMapper mapper = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataMigrateMapper.class);
@@ -218,13 +205,17 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 		throw new RuntimeException("不存在类型[" + originDataSourceType + "]数据库");
 	}
 
+	protected Date getDataUpdateTime(Map<String, Object> data) {
+		return (Date) data.get(updateTimeField);
+	}
+
 	/**
 	 * 重写该方法以达到处理数据，默认为不处理
 	 * 
 	 * @param data
 	 * @return
 	 */
-	public Map<String, Object> processData(Map<String, Object> data) {
+	protected Map<String, Object> processData(Map<String, Object> data) {
 		for (Entry<String, Object> entry : data.entrySet()) {
 			Object value = entry.getValue();
 			if (value instanceof Boolean) {
@@ -234,7 +225,13 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 		return data;
 	}
 
-	public boolean insertOrUpdateData(Map<String, Object> dataMap) {
+	/**
+	 * 插入或更新数据到目标数据源
+	 * 
+	 * @param dataMap
+	 * @return
+	 */
+	protected boolean insertOrUpdateData(Map<String, Object> dataMap) {
 
 		sqlSessionContainer.setCurrentDataSource(targetDataSource);
 		DataMigrateMapper sqlMapper = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataMigrateMapper.class);
@@ -273,6 +270,23 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 	@Override
 	public void setScheduleStartTime(Date scheduleStartTime) {
 		this.scheduleStartTime = scheduleStartTime;
+	}
+
+	@Override
+	public Date getScheduleFilingDate() {
+		int scheduleStrategy = dataMigration.getFilingStrategy();
+		if (scheduleStrategy == DataMigration.FILING_STRATEGY_DEFAULT_NOW) {
+			return null;
+		} else if (scheduleStrategy == DataMigration.FILING_STRATEGY_DEFAULT_DAY) {
+			return TimeUtil.getTodayBefore(dataMigration.getFilingStrategyParam1());
+		} else if (scheduleStrategy == DataMigration.FILING_STRATEGY_DEFAULT_MONTH) {
+			return TimeUtil.getTodayBeforeMonth(dataMigration.getFilingStrategyParam1());
+		} else if (scheduleStrategy == DataMigration.FILING_STRATEGY_DEFAULT_YEAR) {
+			return TimeUtil.getTodayBeforeYear(dataMigration.getFilingStrategyParam1());
+		} else if (scheduleStrategy == DataMigration.FILING_STRATEGY_CUSTOM) {
+			throw new RuntimeException("自定义归档策略需要开发者扩展重写代码");
+		}
+		throw new RuntimeException("不存在的归档策略代码：" + scheduleStrategy);
 	}
 
 }
