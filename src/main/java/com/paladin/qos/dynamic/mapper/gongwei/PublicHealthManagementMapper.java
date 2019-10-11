@@ -54,4 +54,8 @@ public interface PublicHealthManagementMapper {
 
     //辖区内对65岁以上老年人规范进行中医体质辨识和中医保健指导人数
     Long getGuideNumber(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("unitId") String unitId);
+
+    //特殊人群人数
+    Long getSpecialPeopleNumber(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("unitId") String unitId);
+
 }

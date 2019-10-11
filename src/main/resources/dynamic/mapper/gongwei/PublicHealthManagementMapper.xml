@@ -8,9 +8,9 @@
         where stateid=1
         AND managedcentercode = #{unitId}
         AND createdtime
-        <![CDATA[>= ]]> #{startDate}
+        <![CDATA[>= ]]> #{startDate}+0
         AND createdtime
-        <![CDATA[< ]]> #{endDate}
+        <![CDATA[< ]]> #{endDate}+0
     </select>
     <!--审核公开的健康档案数-->
     <select id="getPublicArchives" resultType="java.lang.Long">
@@ -19,9 +19,9 @@
         where stateid=1 and verify=1
         AND managedcentercode = #{unitId}
         AND createdtime
-        <![CDATA[>= ]]> #{startDate}
+        <![CDATA[>= ]]> #{startDate}+0
         AND createdtime
-        <![CDATA[< ]]> #{endDate}
+        <![CDATA[< ]]> #{endDate}+0
     </select>
     <!--老年人体检数-->
     <select id="getPhysicalNumber" resultType="java.lang.Long">
@@ -36,9 +36,9 @@
         group by p.code)
         AND managedcentercode = #{unitId}
         AND createdtime
-        <![CDATA[>= ]]> #{startDate}
+        <![CDATA[>= ]]> #{startDate}+0
         AND createdtime
-        <![CDATA[< ]]> #{endDate}
+        <![CDATA[< ]]> #{endDate}+0
     </select>
     <!--同辖区老人人数-->
     <select id="getOldPeopleNumber" resultType="java.lang.Long">
@@ -48,9 +48,9 @@
         <![CDATA[<= ]]> add_months(sysdate,-12*65)
         AND managedcentercode = #{unitId}
         AND createdtime
-        <![CDATA[>= ]]> #{startDate}
+        <![CDATA[>= ]]> #{startDate}+0
         AND createdtime
-        <![CDATA[< ]]> #{endDate}
+        <![CDATA[< ]]> #{endDate}+0
     </select>
     <!--有完整年度体检的老年人数-->
     <select id="getOldPeopleManageNumber" resultType="java.lang.Long">
@@ -76,9 +76,9 @@
         group by pm.CODE
         )
         AND createdtime
-        <![CDATA[>= ]]> #{startDate}
+        <![CDATA[>= ]]> #{startDate}+0
         AND createdtime
-        <![CDATA[< ]]> #{endDate}
+        <![CDATA[< ]]> #{endDate}+0
         AND managedcentercode = #{unitId}
     </select>
     <!--最近一次血压达标人数-->
@@ -114,9 +114,9 @@
         )
         )
         AND examdate
-        <![CDATA[>= ]]> #{startDate}
+        <![CDATA[>= ]]> #{startDate}+0
         AND examdate
-        <![CDATA[< ]]> #{endDate}
+        <![CDATA[< ]]> #{endDate}+0
         union all
         select code from (select * from ( select row_number()over(partition by c.code order by c.examdate desc)num,c.*
         from phis_chss.v_fhc_check_main c left join phis_chss.v_fha_person_main p on c.code=p.code where p.LINKB is not null and p.birthday
@@ -148,9 +148,9 @@
         )
         )
         AND examdate
-        <![CDATA[>= ]]> #{startDate}
+        <![CDATA[>= ]]> #{startDate}+0
         AND examdate
-        <![CDATA[< ]]> #{endDate}
+        <![CDATA[< ]]> #{endDate}+0
         )
         AND managedcentercode = #{unitId}
     </select>
@@ -162,9 +162,9 @@
         and code in (
         select code from phis_chss.v_fhc_check_main where
         examdate
-        <![CDATA[>= ]]> #{startDate}
+        <![CDATA[>= ]]> #{startDate}+0
         AND examdate
-        <![CDATA[< ]]> #{endDate}
+        <![CDATA[< ]]> #{endDate}+0
         group by code
         )
         AND managedcentercode = #{unitId}
@@ -199,9 +199,9 @@
         JOIN phis_chss.v_fhc_check_attach1 ca on c.chid=ca.linkid
         where
         ca.createdtime
-        <![CDATA[>= ]]> #{startDate}
+        <![CDATA[>= ]]> #{startDate}+0
         AND ca.createdtime
-        <![CDATA[< ]]> #{endDate}
+        <![CDATA[< ]]> #{endDate}+0
         group by c.code
         )
         AND managedcentercode = #{unitId}
@@ -220,9 +220,9 @@
         and fbgdl1
         <![CDATA[<>]]>0
         AND createdtime
-        <![CDATA[>= ]]> #{startDate}
+        <![CDATA[>= ]]> #{startDate}+0
         AND createdtime
-        <![CDATA[< ]]> #{endDate}
+        <![CDATA[< ]]> #{endDate}+0
         )
         AND managedcentercode = #{unitId}
     </select>
@@ -255,9 +255,9 @@
         select count(1) from phis_chss.v_fha_person_main where code in (
         select code from phis_chss.v_fhd_diabetes_visit where sftransorg=0
         AND visitdate
-        <![CDATA[>= ]]> #{startDate}
+        <![CDATA[>= ]]> #{startDate}+0
         AND visitdate
-        <![CDATA[< ]]> #{endDate}
+        <![CDATA[< ]]> #{endDate}+0
         group by code)
         AND managedcentercode = #{unitId}
     </select>
@@ -266,9 +266,9 @@
         select count(1) from phis_chss.v_fha_person_main where code in (
         select code from phis_chss.v_fhd_diabetes_visit where 1=1
         AND visitdate
-        <![CDATA[>= ]]> #{startDate}
+        <![CDATA[>= ]]> #{startDate}+0
         AND visitdate
-        <![CDATA[< ]]> #{endDate}
+        <![CDATA[< ]]> #{endDate}+0
         group by code)
         AND managedcentercode = #{unitId}
     </select>
@@ -280,10 +280,25 @@
         join phis_chss.v_fhr_elder_tcm_item pt on pm.CODE=pt.CODE
         join phis_chss.v_fhr_elder_tcm_physique pp on pt.CHID=pp.LINKID
         where pm.birthday <![CDATA[<=]]> add_months(sysdate,-12*65)
-        AND  pm.createdtime <![CDATA[>= ]]> #{startDate}
-        AND  pm.createdtime <![CDATA[< ]]> #{endDate}
+        AND  pm.createdtime <![CDATA[>= ]]> #{startDate}+0
+        AND  pm.createdtime <![CDATA[< ]]> #{endDate}+0
         AND  pm.managedcentercode = #{unitId}
         group by pm.code
         )
+    </select>
+
+
+    <!--特殊人群人数-->
+    <select id="getSpecialPeopleNumber" resultType="java.lang.Long">
+        select count(1)
+        from phis_chss.v_fha_person_main
+        where birthday <![CDATA[<=]]> add_months(sysdate,-12*65)
+        or code in (select code from phis_chss.v_fhb_blood_main)
+        or code in (select code from phis_chss.v_fhd_diabetes_main)
+        or code in (select code from phis_chss.v_fhn_brain_main)
+        or code in (select code from phis_chss.v_fhx_heart_main)
+        AND  createdtime <![CDATA[>= ]]> #{startDate}+0
+        AND  createdtime <![CDATA[< ]]> #{endDate}+0
+        AND  managedcentercode = #{unitId}
     </select>
 </mapper>
