@@ -318,4 +318,13 @@
         and m.CREATEDTIME &lt; #{endTime}+0
         and m.CREATEDUNITCODE = #{unitId}
     </select>
+     <!-- 离休干部签约率 -->
+    <select id="retirementCadreRate" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_main 
+        WHERE signmemtype like '%G%'
+        and CREATEDTIME &gt;= #{startTime}+0
+        and CREATEDTIME &lt; #{endTime}+0
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    
 </mapper>

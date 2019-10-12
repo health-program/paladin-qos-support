@@ -124,4 +124,8 @@ public interface DataFamilyDoctorMapper {
 
 	/** 疾病筛查高危人员签约率 */
 	public long diseaseSiftSigningRate(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	
+	/** 离休干部签约率 */
+	public long retirementCadreRate(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	
 }
