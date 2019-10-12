@@ -14,8 +14,14 @@ public interface DataFamilyDoctorMapper {
 	/**
 	 * 综合健康管理服务包签约率（收费）
 	 */
-	public long signingNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);// 签约健康管理服务包签约数
+	public long signingIsMoneyNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
 
+	/**
+	 * 综合健康管理服务包签约率（免费）
+	 */
+	public long signingNotMoneyNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+
+	
 	public long singingResidentNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);// 应签约居民数
 
 	/**

@@ -12,18 +12,18 @@ import com.paladin.qos.dynamic.DSConstant;
 import com.paladin.qos.dynamic.mapper.familydoctor.DataFamilyDoctorMapper;
 
 /**
- * 综合健康管理服务包签约率（收费）
+ * 综合健康管理服务包签约率（免费）
  * 
  * @author MyKite
  * @version 2019年9月11日 上午10:34:09
  */
 @Component
-public class FamilyServiceSigningRateTotal extends GongWeiDataProcessor {
+public class FamilyServiceSigningNotRateTotal extends GongWeiDataProcessor{
 
 	@Autowired
 	private SqlSessionContainer sqlSessionContainer;
 
-	public static final String EVENT_ID = "21001";
+	public static final String EVENT_ID = "21000";
 
 	@Override
 	public String getEventId() {
@@ -47,6 +47,6 @@ public class FamilyServiceSigningRateTotal extends GongWeiDataProcessor {
 		if (StringUtil.isEmpty(unit)) {
 			return 0;
 		}
-		return sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).signingIsMoneyNum(startTime, endTime, unit);
+		return sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).signingNotMoneyNum(startTime, endTime, unit);
 	}
 }

@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.paladin.qos.dynamic.mapper.familydoctor.DataFamilyDoctorMapper">
-    <!-- 签约健康管理服务包签约数 -->
-    <select id="signingNum" resultType="long">
+    <!-- 健康管理服务包签约数(收费) -->
+    <select id="signingIsMoneyNum" resultType="long">
         SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_main WHERE lastflag
-        ='1' AND familynew='1'
+        ='1' AND familynew='1' and FAMILYNEW ='1' 
+        and CREATEDTIME &gt;= #{startTime}+0
+        and CREATEDTIME &lt; #{endTime}+0
+        and CREATEDUNITCODE = #{unitId}
+    </select>
+    <!-- 健康管理服务包签约数(免费) -->
+    <select id="signingNotMoneyNum" resultType="long">
+        SELECT COUNT(1) FROM phis_chss.v_fha_person_sign_main WHERE lastflag
+        ='1' AND familynew='1' and FAMILYNEW is null  
         and CREATEDTIME &gt;= #{startTime}+0
         and CREATEDTIME &lt; #{endTime}+0
         and CREATEDUNITCODE = #{unitId}
