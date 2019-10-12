@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -27,12 +28,18 @@ public class DataMigrateManager {
 	@Autowired
 	private DataMigratorContainer dataMigratorContainer;
 
+	@Value("${qos.simple-mode}")
+	private boolean simpleMode = false;
+
 	// 线程池
 	private ExecutorService executorService = new ThreadPoolExecutor(30, 30, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(256), // 使用有界队列，避免OOM
 			new ThreadPoolExecutor.DiscardPolicy());
 
 	@Scheduled(cron = "0 0 19 * * ?")
 	public void processUpdate() {
+		if (simpleMode) {
+			return;
+		}
 
 		logger.info("开始执行定时数据迁移任务");
 
@@ -45,6 +52,12 @@ public class DataMigrateManager {
 
 		for (IncrementDataMigrator migrator : migrators) {
 			DataMigration dataMigration = migrator.getDataMigration();
+
+			// 实时获取数据的单独处理
+			if (dataMigration.getRealTimeEnabled() == 1) {
+				continue;
+			}
+
 			if (dataMigration.getSeparateProcessThread() == 1) {
 				executorService.execute(new DataMigrateRepairThread(new DataMigratorStack(migrator), threadEndTime));
 			} else {
@@ -67,7 +80,56 @@ public class DataMigrateManager {
 		for (int i = 0; i < stacks.size(); i++) {
 			executorService.execute(new DataMigrateRepairThread(new DataMigratorStack(stacks, i), threadEndTime));
 		}
+
 	}
+
+	@Scheduled(cron = "0 */5 * * * ?")
+	public void processRealTime() {
+		if (simpleMode) {
+			return;
+		}
+
+		List<IncrementDataMigrator> migrators = dataMigratorContainer.getIncrementDataMigratorList();
+		Map<String, List<IncrementDataMigrator>> migratorMap = new HashMap<>();
+
+		for (IncrementDataMigrator migrator : migrators) {
+			DataMigration dataMigration = migrator.getDataMigration();
+
+			// 实时获取数据的单独处理
+			if (dataMigration.getRealTimeEnabled() != 1) {
+				continue;
+			}
+
+			if (dataMigration.getSeparateProcessThread() == 1) {
+				executorService.execute(new DataMigrateRealTimeThread(new DataMigratorStack(migrator)));
+			} else {
+				String originDS = dataMigration.getOriginDataSource();
+				List<IncrementDataMigrator> migratorList = migratorMap.get(originDS);
+				if (migratorList == null) {
+					migratorList = new ArrayList<>();
+					migratorMap.put(originDS, migratorList);
+				}
+				migratorList.add(migrator);
+			}
+		}
+
+		List<Stack> stacks = new ArrayList<>();
+		for (Entry<String, List<IncrementDataMigrator>> entry : migratorMap.entrySet()) {
+			Stack stack = new Stack(entry.getValue());
+			stacks.add(stack);
+		}
+
+		for (int i = 0; i < stacks.size(); i++) {
+			executorService.execute(new DataMigrateRealTimeThread(new DataMigratorStack(stacks, i)));
+		}
+	}
+
+	/*
+	 * Stack 和 DataMigratorStack 配合作为调用数据迁移任务的栈，基于优先同一数据源下迁移数据在同一个线程下，
+	 * 迁移任务完成后再尝试去获取其他数据源下的迁移任务，并且多个线程切换数据源任务时都能切换到不同数据源，达到充分利用
+	 * 每个数据源的性能，并同时利用到自身系统的性能。
+	 * 
+	 */
 
 	private static class Stack {
 

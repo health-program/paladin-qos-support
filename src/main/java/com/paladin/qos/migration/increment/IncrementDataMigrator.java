@@ -64,6 +64,32 @@ public interface IncrementDataMigrator {
 	public boolean needScheduleToday();
 
 	/**
+	 * 获取锁，一个数据迁移对象在多线程下只能有一个线程执行
+	 * 
+	 * @return
+	 */
+	public boolean getLock();
+
+	/**
+	 * 取消锁
+	 */
+	public void cancelLock();
+
+	/**
+	 * 获取上次实时更新时间
+	 * 
+	 * @return
+	 */
+	public long getRealTimeMigrateTime();
+
+	/**
+	 * 设置实时更新时间
+	 * 
+	 * @param time
+	 */
+	public void setRealTimeMigrateTime(long time);
+
+	/**
 	 * 迁移结果
 	 * 
 	 * @author TontoZhou
@@ -77,7 +103,7 @@ public interface IncrementDataMigrator {
 		private Date migrateEndTime;
 
 		public MigrateResult(Date migrateBeginTime) {
-			this.success = false;
+			this.success = true;
 			this.migrateNum = 0;
 			this.migrateBeginTime = migrateBeginTime;
 			this.migrateEndTime = migrateBeginTime;

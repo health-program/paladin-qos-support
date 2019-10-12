@@ -233,7 +233,6 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 	 * @return
 	 */
 	protected boolean insertOrUpdateData(Map<String, Object> dataMap) {
-
 		sqlSessionContainer.setCurrentDataSource(targetDataSource);
 		DataMigrateMapper sqlMapper = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataMigrateMapper.class);
 
@@ -332,5 +331,38 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 			throw new RuntimeException("还未实现策略：" + scheduleStrategy);
 		}
 
+	}
+
+	private Boolean lock = false;
+
+	@Override
+	public boolean getLock() {
+		synchronized (lock) {
+			if (lock) {
+				return false;
+			} else {
+				lock = true;
+				return true;
+			}
+		}
+	}
+
+	@Override
+	public void cancelLock() {
+		synchronized (lock) {
+			lock = false;
+		}
+	}
+
+	private volatile long realTimeUpdateTime;
+
+	@Override
+	public long getRealTimeMigrateTime() {
+		return realTimeUpdateTime;
+	}
+
+	@Override
+	public void setRealTimeMigrateTime(long time) {
+		realTimeUpdateTime = time;
 	}
 }

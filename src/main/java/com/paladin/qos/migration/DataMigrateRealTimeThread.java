@@ -1,12 +1,10 @@
 package com.paladin.qos.migration;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.paladin.framework.utils.time.DateFormatUtil;
 import com.paladin.qos.migration.DataMigrateManager.DataMigratorStack;
 import com.paladin.qos.migration.increment.IncrementDataMigrator;
 import com.paladin.qos.migration.increment.IncrementDataMigrator.MigrateResult;
@@ -18,18 +16,14 @@ import com.paladin.qos.model.migration.DataMigration;
  * @author TontoZhou
  * @since 2019年10月11日
  */
-public class DataMigrateRepairThread implements Runnable {
+public class DataMigrateRealTimeThread implements Runnable {
 
-	private static Logger logger = LoggerFactory.getLogger(DataMigrateRepairThread.class);
+	private static Logger logger = LoggerFactory.getLogger(DataMigrateRealTimeThread.class);
 
 	private DataMigratorStack migratorStack;
 
-	// 线程结束时间
-	private long threadEndTime;
-
-	public DataMigrateRepairThread(DataMigratorStack migratorStack, long threadEndTime) {
+	public DataMigrateRealTimeThread(DataMigratorStack migratorStack) {
 		this.migratorStack = migratorStack;
-		this.threadEndTime = threadEndTime;
 	}
 
 	@Override
@@ -45,17 +39,17 @@ public class DataMigrateRepairThread implements Runnable {
 			}
 
 			try {
+				if (!migrator.getLock()) {
+					continue;
+				}
+
 				DataMigration dataMigration = migrator.getDataMigration();
 
-				if (dataMigration.getEnabled() != 1) {
+				// 超过实时更新间隔才会实现实时更新
+				long realTime = migrator.getRealTimeMigrateTime();
+				if (System.currentTimeMillis() - realTime < dataMigration.getRealTimeInterval() * 60 * 1000) {
 					continue;
 				}
-
-				if (!migrator.needScheduleToday()) {
-					continue;
-				}
-
-				String id = migrator.getId();
 
 				Date startTime = migrator.getScheduleStartTime();
 				Date filingDate = migrator.getScheduleFilingDate();
@@ -77,10 +71,6 @@ public class DataMigrateRepairThread implements Runnable {
 					int num = result.getMigrateNum();
 					count += num;
 
-					if (threadEndTime > 0 && threadEndTime < System.currentTimeMillis()) {
-						break;
-					}
-
 					if (!result.isSuccess() || num < selectLimit || (maximumMigrate > 0 && count >= maximumMigrate)) {
 						break;
 					}
@@ -88,12 +78,12 @@ public class DataMigrateRepairThread implements Runnable {
 					time = result.getMigrateEndTime();
 				} while (true);
 
-				SimpleDateFormat format = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:ss:mm");
-				logger.info("计划迁移数据任务[ID:" + id + "]执行" + (result.isSuccess() ? "完成" : "未完成") + "，迁移数据条数：" + count + "条，迁移开始时间：" + format.format(startTime)
-						+ "，迁移结束时间：" + format.format(result.getMigrateEndTime()));
+				logger.info("实时更新数据[" + migrator.getId() + "]一次，完成数据：" + count + "条");
 
 			} catch (Exception e) {
-				logger.error("数据迁移异常[ID:" + migrator.getId() + "]", e);
+				logger.error("数据迁移异常", e);
+			} finally {
+				migrator.cancelLock();
 			}
 		}
 

@@ -41,14 +41,11 @@ public class DataRealTimeThread implements Runnable {
 
 	@Override
 	public void run() {
-
-		logger.debug("----------开始处理实时部分数据---------");
-
 		for (DataProcessEvent event : events) {
 			if (event.beginRealTimeUpdate()) {
 				try {
 					String eventId = event.getId();
-
+					logger.info("----------> 开始实时更新事件[" + eventId + "]的数据<---------");
 					DataProcessor dataProcessor = processContainer.getDataProcessor(eventId);
 					if (dataProcessor == null) {
 						logger.error("统计事件[eventId:" + eventId + "]没有对应处理器");
@@ -90,7 +87,5 @@ public class DataRealTimeThread implements Runnable {
 				}
 			}
 		}
-
-		logger.debug("----------处理实时部分数据结束---------");
 	}
 }
