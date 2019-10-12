@@ -67,7 +67,9 @@ public class DataMigrateRealTimeThread implements Runnable {
 
 				do {
 					result = migrator.migrateData(time, null, selectLimit);
-					migrator.setScheduleStartTime(result.getMigrateEndTime());
+					Date updateTime = result.getMigrateEndTime();
+					migrator.setScheduleStartTime(updateTime);
+					migrator.setRealTimeMigrateTime(updateTime.getTime());
 					int num = result.getMigrateNum();
 					count += num;
 
