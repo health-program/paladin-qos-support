@@ -26,6 +26,9 @@ public interface DataMigrateMapper {
 	public List<Map<String, Object>> selectDataForOracle(@Param("tableName") String tableName, @Param("updateTimeField") String updateTimeField,
 			@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("limit") int limit);
 
+	public List<Map<String, Object>> selectDataForOracleToMillisecond(@Param("tableName") String tableName, @Param("updateTimeField") String updateTimeField,
+			@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("limit") int limit);
+	
 	public List<Map<String, Object>> selectDataByYear(@Param("tableName") String tableName, @Param("updateTimeField") String updateTimeField,
 			@Param("years") List<String> years);
 

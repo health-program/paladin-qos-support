@@ -23,8 +23,11 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.NestedIOException;
 import org.springframework.core.io.Resource;
 
+import com.paladin.data.dynamic.handler.OracleClobTypeHandler;
+import com.paladin.data.dynamic.handler.OracleTimeStampTypeHandler;
+
 public class SimpleSqlSessionFactoryBuilder {
-	
+
 	private static Logger LOGGER = LoggerFactory.getLogger(SimpleSqlSessionFactoryBuilder.class);
 
 	private Configuration configuration;
@@ -44,7 +47,7 @@ public class SimpleSqlSessionFactoryBuilder {
 
 	private Interceptor[] plugins;
 
-	private TypeHandler<?>[] typeHandlers;
+	private TypeHandler<?>[] typeHandlers = { new OracleTimeStampTypeHandler(), new OracleClobTypeHandler() };
 
 	private String typeHandlersPackage;
 

@@ -28,9 +28,6 @@ public class DataMigrateRealTimeThread implements Runnable {
 
 	@Override
 	public void run() {
-
-		logger.info("--------->开始数据迁移任务<---------");
-
 		while (true) {
 			IncrementDataMigrator migrator = migratorStack.pop();
 
@@ -88,8 +85,6 @@ public class DataMigrateRealTimeThread implements Runnable {
 				migrator.cancelLock();
 			}
 		}
-
-		logger.info("--------->数据迁移任务结束<---------");
 	}
 
 }

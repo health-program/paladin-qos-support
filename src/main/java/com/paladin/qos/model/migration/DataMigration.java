@@ -133,6 +133,9 @@ public class DataMigration {
 	// 单独处理线程
 	private Integer separateProcessThread;
 
+	// 是否启用毫秒
+	private Integer millisecondEnabled;
+	
 	// 备注
 	private String notes;
 
@@ -329,6 +332,14 @@ public class DataMigration {
 
 	public void setScheduleStrategyParam2(String scheduleStrategyParam2) {
 		this.scheduleStrategyParam2 = scheduleStrategyParam2;
+	}
+
+	public Integer getMillisecondEnabled() {
+		return millisecondEnabled;
+	}
+
+	public void setMillisecondEnabled(Integer millisecondEnabled) {
+		this.millisecondEnabled = millisecondEnabled;
 	}
 
 }

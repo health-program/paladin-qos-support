@@ -21,13 +21,25 @@
 	</select>
 	
 	<select id="selectDataForOracle" resultType="Map">
+		SELECT * FROM (
 		SELECT * FROM ${tableName} 
 		WHERE ${updateTimeField} &gt;= to_date('${startTime}','yyyy-mm-dd hh24:mi:ss')
 		<if test="endTime != null">
 			AND ${updateTimeField} &lt;= to_date('${endTime}','yyyy-mm-dd hh24:mi:ss')
 		</if>
-		AND rownum &lt;= ${limit}
 		ORDER BY ${updateTimeField} ASC
+		) WHERE rownum &lt;= ${limit}		
+	</select>
+	
+	<select id="selectDataForOracleToMillisecond" resultType="Map">
+		SELECT * FROM (
+		SELECT * FROM ${tableName} 
+		WHERE ${updateTimeField} &gt;= to_timestamp('${startTime}','yyyy-mm-dd hh24:mi:ss.ff')
+		<if test="endTime != null">
+			AND ${updateTimeField} &lt;= to_timestamp('${endTime}','yyyy-mm-dd hh24:mi:ss.ff')
+		</if>		
+		ORDER BY ${updateTimeField} ASC
+		) WHERE rownum &lt;= ${limit}
 	</select>
 	
 

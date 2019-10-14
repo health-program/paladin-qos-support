@@ -1,5 +1,6 @@
 package com.paladin.qos.migration.increment;
 
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,6 +19,8 @@ import com.paladin.framework.utils.time.DateFormatUtil;
 import com.paladin.qos.dynamic.mapper.migration.DataMigrateMapper;
 import com.paladin.qos.model.migration.DataMigration;
 import com.paladin.qos.util.TimeUtil;
+
+import oracle.sql.TIMESTAMP;
 
 /**
  * 增量数据迁移实现类
@@ -84,6 +87,11 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 	protected Date defaultStartDate;
 
 	/**
+	 * 是否精确到毫秒
+	 */
+	protected boolean millisecondEnabled = false;
+
+	/**
 	 * 数据迁移描述
 	 */
 	protected DataMigration dataMigration;
@@ -107,6 +115,7 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 		this.targetTableName = dataMigration.getTargetTableName();
 		this.updateTimeField = dataMigration.getUpdateTimeField();
 		this.defaultStartDate = dataMigration.getDefaultStartDate();
+		this.millisecondEnabled = dataMigration.getMillisecondEnabled() == 1;
 
 		String primaryKeyField = dataMigration.getPrimaryKeyField();
 		String[] keyFields = primaryKeyField.split(",");
@@ -190,7 +199,7 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 	protected List<Map<String, Object>> getData(Date updateStartTime, Date updateEndTime, int limit) {
 		sqlSessionContainer.setCurrentDataSource(originDataSource);
 		DataMigrateMapper mapper = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataMigrateMapper.class);
-		SimpleDateFormat format = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:ss:mm");
+		SimpleDateFormat format = DateFormatUtil.getThreadSafeFormat(millisecondEnabled ? "yyyy-MM-dd HH:ss:mm.sss" : "yyyy-MM-dd HH:ss:mm");
 
 		String startTime = format.format(updateStartTime);
 		String endTime = updateEndTime != null ? format.format(updateEndTime) : null;
@@ -200,14 +209,27 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 		} else if (DataMigration.ORIGIN_DATA_SOURCE_TYPE_SQLSERVER.equals(originDataSourceType)) {
 			return mapper.selectDataForSqlServer(originTableName, updateTimeField, startTime, endTime, limit);
 		} else if (DataMigration.ORIGIN_DATA_SOURCE_TYPE_ORACLE.equals(originDataSourceType)) {
-			return mapper.selectDataForOracle(originTableName, updateTimeField, startTime, endTime, limit);
+			return millisecondEnabled ? mapper.selectDataForOracleToMillisecond(originTableName, updateTimeField, startTime, endTime, limit)
+					: mapper.selectDataForOracle(originTableName, updateTimeField, startTime, endTime, limit);
 		}
 
 		throw new RuntimeException("不存在类型[" + originDataSourceType + "]数据库");
 	}
 
 	protected Date getDataUpdateTime(Map<String, Object> data) {
-		return (Date) data.get(updateTimeField);
+		Object date = data.get(updateTimeField);
+		if (date != null) {
+			if (date instanceof TIMESTAMP) {
+				try {
+					return ((TIMESTAMP) date).dateValue();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			} else {
+				return (Date) date;
+			}
+		}
+		return null;
 	}
 
 	/**
