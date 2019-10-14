@@ -91,7 +91,7 @@
     </select>
 
     <select id="getHighriskMaternalNumber" resultType="long">
-        SELECT  COUNT (1) AS total  FROM  yfgwys  WHERE  dindate >=  #{startTime} AND  dindate <![CDATA[< ]]> #{endTime} AND  cJcdwbh LIKE  #{code} + '%'
+        SELECT  COUNT ( DISTINCT(cCardNo) ) AS total  FROM  yfgwys  WHERE  dindate >=  #{startTime} AND  dindate <![CDATA[< ]]> #{endTime} AND  cJcdwbh LIKE  #{code} + '%'
     </select>
 
     <!--孕产妇死亡人数-->
