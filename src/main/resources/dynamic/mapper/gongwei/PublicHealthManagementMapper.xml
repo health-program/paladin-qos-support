@@ -292,11 +292,14 @@
     <select id="getSpecialPeopleNumber" resultType="java.lang.Long">
         select count(1)
         from phis_chss.v_fha_person_main
-        where birthday <![CDATA[<=]]> add_months(sysdate,-12*65)
+        where
+        (
+         birthday <![CDATA[<=]]> add_months(sysdate,-12*65)
         or code in (select code from phis_chss.v_fhb_blood_main)
         or code in (select code from phis_chss.v_fhd_diabetes_main)
         or code in (select code from phis_chss.v_fhn_brain_main)
         or code in (select code from phis_chss.v_fhx_heart_main)
+        )
         AND  createdtime <![CDATA[>= ]]> #{startDate}+0
         AND  createdtime <![CDATA[< ]]> #{endDate}+0
         AND  managedcentercode = #{unitId}
