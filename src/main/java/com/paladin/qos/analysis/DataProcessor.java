@@ -54,7 +54,7 @@ public abstract class DataProcessor {
 		long eventNum = getEventNum(startTime, endTime, unitId);
 
 		long expend = System.currentTimeMillis() - begin;
-		if (expend > 30 * 1000) {
+		if (expend > 15 * 1000) {
 			logger.warn("处理数据耗时过长！耗时：" + expend + "ms，事件：" + getEventId());
 		}
 
