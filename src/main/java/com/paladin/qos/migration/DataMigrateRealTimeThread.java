@@ -76,9 +76,7 @@ public class DataMigrateRealTimeThread implements Runnable {
 
 					time = result.getMigrateEndTime();
 				} while (true);
-
 				logger.info("实时更新数据[" + migrator.getId() + "]一次，完成数据：" + count + "条");
-
 			} catch (Exception e) {
 				logger.error("数据迁移异常", e);
 			} finally {
