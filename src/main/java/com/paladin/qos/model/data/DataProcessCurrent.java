@@ -1,6 +1,7 @@
 package com.paladin.qos.model.data;
 
 import java.util.Date;
+
 import javax.persistence.Id;
 
 public class DataProcessCurrent {

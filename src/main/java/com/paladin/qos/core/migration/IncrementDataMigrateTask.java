@@ -1,4 +1,4 @@
-package com.paladin.qos.migration;
+package com.paladin.qos.core.migration;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -8,8 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.paladin.framework.utils.time.DateFormatUtil;
 import com.paladin.qos.core.DataTask;
-import com.paladin.qos.migration.increment.IncrementDataMigrator;
-import com.paladin.qos.migration.increment.IncrementDataMigrator.MigrateResult;
+import com.paladin.qos.core.migration.IncrementDataMigrator.MigrateResult;
 import com.paladin.qos.model.migration.DataMigration;
 
 public class IncrementDataMigrateTask extends DataTask {

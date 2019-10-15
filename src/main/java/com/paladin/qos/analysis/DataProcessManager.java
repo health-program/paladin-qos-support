@@ -21,7 +21,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.paladin.framework.utils.uuid.UUIDUtil;
-import com.paladin.qos.analysis.DataProcessUnit;
 import com.paladin.qos.dynamic.DSConstant;
 import com.paladin.qos.model.data.DataProcessException;
 import com.paladin.qos.model.data.DataProcessedDay;

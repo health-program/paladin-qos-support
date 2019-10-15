@@ -2,12 +2,12 @@ package com.paladin.qos.analysis.impl.gongwei.inoculate;
 
 import java.util.Date;
 
-import com.paladin.qos.dynamic.mapper.gongwei.PublicHealthManagementMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.paladin.data.dynamic.SqlSessionContainer;
 import com.paladin.qos.analysis.impl.gongwei.GongWeiDataProcessor;
+import com.paladin.qos.dynamic.mapper.gongwei.PublicHealthManagementMapper;
 
 /**
  * 居民健康档案档案公开率

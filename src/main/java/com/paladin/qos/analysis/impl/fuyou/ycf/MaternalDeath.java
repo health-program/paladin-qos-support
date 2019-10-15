@@ -1,13 +1,14 @@
 package com.paladin.qos.analysis.impl.fuyou.ycf;
 
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.paladin.data.dynamic.SqlSessionContainer;
 import com.paladin.qos.analysis.impl.fuyou.FuyouDataProcessor;
 import com.paladin.qos.dynamic.DSConstant;
 import com.paladin.qos.dynamic.mapper.exhibition.MaternalManagementMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.Date;
 
 /**
  * <孕产妇死亡人数>

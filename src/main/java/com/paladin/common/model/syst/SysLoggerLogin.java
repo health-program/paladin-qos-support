@@ -1,6 +1,7 @@
 package com.paladin.common.model.syst;
 
 import java.util.Date;
+
 import javax.persistence.Id;
 
 public class SysLoggerLogin {

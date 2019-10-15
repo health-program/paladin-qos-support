@@ -1,8 +1,8 @@
 package com.paladin.qos.analysis.impl.gongwei;
 
 import com.paladin.qos.analysis.DataConstantContainer;
-import com.paladin.qos.analysis.DataProcessor;
 import com.paladin.qos.analysis.DataProcessUnit;
+import com.paladin.qos.analysis.DataProcessor;
 
 /**
  * @author MyKite

@@ -1,18 +1,9 @@
 package com.paladin.common.controller.org;
 
-import com.paladin.common.service.org.OrgPermissionService;
-import com.paladin.common.service.org.OrgRolePermissionService;
-import com.paladin.common.service.org.OrgRoleService;
-import com.paladin.common.service.org.dto.OrgRoleQueryDTO;
-import com.paladin.common.service.org.dto.OrgRoleDTO;
-import com.paladin.common.service.org.vo.OrgRoleVO;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.paladin.framework.core.ControllerSupport;
-import com.paladin.framework.web.response.CommonResponse;
-
-import springfox.documentation.annotations.ApiIgnore;
-
-import com.paladin.framework.utils.uuid.UUIDUtil;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,10 +13,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.paladin.common.service.org.OrgPermissionService;
+import com.paladin.common.service.org.OrgRolePermissionService;
+import com.paladin.common.service.org.OrgRoleService;
+import com.paladin.common.service.org.dto.OrgRoleDTO;
+import com.paladin.common.service.org.dto.OrgRoleQueryDTO;
+import com.paladin.common.service.org.vo.OrgRoleVO;
+import com.paladin.framework.core.ControllerSupport;
+import com.paladin.framework.utils.uuid.UUIDUtil;
+import com.paladin.framework.web.response.CommonResponse;
 
-import javax.validation.Valid;
+import springfox.documentation.annotations.ApiIgnore;
 
 @ApiIgnore
 @Controller

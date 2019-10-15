@@ -10,12 +10,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.persistence.Id;
 
 import org.springframework.stereotype.Component;
-
-import java.util.Set;
 
 import com.paladin.data.generate.GenerateColumnOption;
 import com.paladin.data.generate.GenerateEnvironment;

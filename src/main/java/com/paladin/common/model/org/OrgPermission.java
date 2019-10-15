@@ -1,7 +1,8 @@
 package com.paladin.common.model.org;
 
-import com.paladin.framework.common.UnDeleteBaseModel;
 import javax.persistence.Id;
+
+import com.paladin.framework.common.UnDeleteBaseModel;
 
 public class OrgPermission extends UnDeleteBaseModel {
 

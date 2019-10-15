@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.paladin.framework.web.response.CommonResponse;
-import com.paladin.qos.migration.DataMigratorContainer;
-import com.paladin.qos.migration.increment.IncrementDataMigrator;
-import com.paladin.qos.migration.increment.IncrementDataMigrator.MigrateResult;
+import com.paladin.qos.core.migration.DataMigratorContainer;
+import com.paladin.qos.core.migration.IncrementDataMigrator;
+import com.paladin.qos.core.migration.IncrementDataMigrator.MigrateResult;
 
 @Controller
 @RequestMapping("/qos/migrate")

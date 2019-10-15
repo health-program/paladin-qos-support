@@ -1,14 +1,15 @@
 package com.paladin.qos.analysis.impl.gongwei.physical;
 
-import com.paladin.data.dynamic.SqlSessionContainer;
-import com.paladin.qos.analysis.impl.gongwei.GongWeiDataProcessor;
-import com.paladin.qos.dynamic.DSConstant;
-import com.paladin.qos.dynamic.mapper.gongwei.PublicHealthManagementMapper;
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.util.StringUtils;
 
-import java.util.Date;
+import com.paladin.data.dynamic.SqlSessionContainer;
+import com.paladin.qos.analysis.impl.gongwei.GongWeiDataProcessor;
+import com.paladin.qos.dynamic.DSConstant;
+import com.paladin.qos.dynamic.mapper.gongwei.PublicHealthManagementMapper;
 
 /**
  * 老年人体检率

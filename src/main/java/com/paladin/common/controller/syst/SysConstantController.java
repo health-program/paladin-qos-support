@@ -1,5 +1,10 @@
 package com.paladin.common.controller.syst;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.paladin.common.core.container.ConstantsContainer;
 import com.paladin.common.service.syst.SysConstantService;
 import com.paladin.common.service.syst.dto.SysConstantQuery;
@@ -7,11 +12,6 @@ import com.paladin.framework.core.ControllerSupport;
 import com.paladin.framework.web.response.CommonResponse;
 
 import springfox.documentation.annotations.ApiIgnore;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @ApiIgnore
 @Controller

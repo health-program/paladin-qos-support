@@ -1,4 +1,4 @@
-package com.paladin.qos.migration.increment;
+package com.paladin.qos.core.migration;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;

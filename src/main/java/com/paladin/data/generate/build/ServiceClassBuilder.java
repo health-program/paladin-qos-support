@@ -1,11 +1,10 @@
 package com.paladin.data.generate.build;
 
-import com.paladin.data.generate.GenerateBuilderContainer;
-import com.paladin.data.generate.GenerateTableOption;
-
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import com.paladin.data.generate.GenerateBuilderContainer;
+import com.paladin.data.generate.GenerateTableOption;
 import com.paladin.framework.core.ServiceSupport;
 
 @Component

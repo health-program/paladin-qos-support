@@ -1,17 +1,17 @@
 package com.paladin.data.generate.build;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.HashMap;
+
+import org.springframework.stereotype.Component;
+
 import com.paladin.data.generate.GenerateBuilderContainer;
 import com.paladin.data.generate.GenerateTableOption;
 import com.paladin.framework.utils.reflect.NameUtil;
 
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.HashMap;
-
-import org.springframework.stereotype.Component;
 
 @Component
 public class ControllerClassBuilder extends SpringBootClassBuilder {

@@ -1,4 +1,4 @@
-package com.paladin.qos.migration;
+package com.paladin.qos.core.migration;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,9 +19,6 @@ import com.paladin.qos.core.mixed.DefaultTaskStack;
 import com.paladin.qos.core.mixed.MatrixTaskStack;
 import com.paladin.qos.core.mixed.MixedDataTask;
 import com.paladin.qos.core.mixed.TaskStack;
-import com.paladin.qos.migration.increment.CommonIncrementDataMigrator;
-import com.paladin.qos.migration.increment.IncrementDataMigrator;
-import com.paladin.qos.migration.increment.YearIncrementDataMigrator;
 import com.paladin.qos.model.migration.DataMigration;
 import com.paladin.qos.service.migration.DataMigrationService;
 

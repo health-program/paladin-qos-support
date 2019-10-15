@@ -1,11 +1,11 @@
 package com.paladin.qos.analysis.impl.fuyou;
 
+import java.util.Date;
+
 import com.paladin.qos.analysis.DataConstantContainer;
 import com.paladin.qos.analysis.DataProcessUnit;
 import com.paladin.qos.analysis.DataProcessor;
 import com.paladin.qos.analysis.Metadata;
-
-import java.util.Date;
 
 public abstract class FuyouDataProcessor extends DataProcessor{
 
