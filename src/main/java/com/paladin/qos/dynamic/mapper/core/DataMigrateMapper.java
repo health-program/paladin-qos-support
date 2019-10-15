@@ -1,4 +1,4 @@
-package com.paladin.qos.dynamic.mapper.migration;
+package com.paladin.qos.dynamic.mapper.core;
 
 import java.util.Date;
 import java.util.List;

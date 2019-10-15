@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.paladin.data.dynamic.SqlSessionContainer;
-import com.paladin.qos.dynamic.mapper.migration.DataMigrateMapper;
+import com.paladin.qos.dynamic.mapper.core.DataMigrateMapper;
 import com.paladin.qos.model.migration.DataMigration;
 import com.paladin.qos.util.TimeUtil;
 

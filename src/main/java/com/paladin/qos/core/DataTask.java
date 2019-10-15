@@ -46,7 +46,7 @@ public abstract class DataTask implements Runnable {
 
 	private Boolean lock = false;
 
-	public boolean getLock() {
+	private boolean getLock() {
 		synchronized (lock) {
 			if (lock) {
 				return false;
@@ -57,7 +57,7 @@ public abstract class DataTask implements Runnable {
 		}
 	}
 
-	public void cancelLock() {
+	private void cancelLock() {
 		synchronized (lock) {
 			lock = false;
 		}
@@ -71,7 +71,7 @@ public abstract class DataTask implements Runnable {
 		try {
 			if (getLock()) {
 				doTask();
-				if(realTime) {
+				if (realTime) {
 					realTimeMillisecond = System.currentTimeMillis();
 				}
 			}

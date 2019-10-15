@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.paladin.data.dynamic.SqlSessionContainer;
 import com.paladin.framework.utils.time.DateFormatUtil;
-import com.paladin.qos.dynamic.mapper.migration.DataMigrateMapper;
+import com.paladin.qos.dynamic.mapper.core.DataMigrateMapper;
 import com.paladin.qos.model.migration.DataMigration;
 
 import oracle.sql.TIMESTAMP;

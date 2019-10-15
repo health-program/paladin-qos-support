@@ -19,6 +19,9 @@ public class DataTaskManager {
 	@Value("${qos.data-task-pool-size}")
 	private int dataTaskPoolSize = 50;
 
+	@Value("${qos.simple-mode}")
+	private boolean simpleMode = false;
+
 	private ExecutorService executorService;
 
 	private CopyOnWriteArrayList<DataTask> dawnTasks = new CopyOnWriteArrayList<>();
@@ -48,6 +51,10 @@ public class DataTaskManager {
 	 */
 	@Scheduled(cron = "0 0 0 * * ?")
 	public void executeScheduleDawn() {
+		if (simpleMode) {
+			return;
+		}
+
 		long threadEndTime = System.currentTimeMillis() + 5 * 60 * 60 * 1000;
 
 		for (DataTask task : dawnTasks) {
@@ -63,6 +70,10 @@ public class DataTaskManager {
 	 */
 	@Scheduled(cron = "0 0 19 * * ?")
 	public void executeScheduleNight() {
+		if (simpleMode) {
+			return;
+		}
+
 		long threadEndTime = System.currentTimeMillis() + 10 * 60 * 60 * 1000;
 
 		for (DataTask task : nightTasks) {
@@ -78,16 +89,12 @@ public class DataTaskManager {
 	 */
 	@Scheduled(cron = "0 */1 * * * ?")
 	public void executeRealTime() {
-		for (DataTask task : realTimeTasks) {
-			boolean execute = false;
-			try {
-				if (task.getLock()) {
-					execute = task.isRealTime() && task.doRealTime();
-				}
-			} finally {
-				task.cancelLock();
-			}
+//		if (simpleMode) {
+//			return;
+//		}
 
+		for (DataTask task : realTimeTasks) {
+			boolean execute = !task.isRun() && task.isRealTime() && task.doRealTime();
 			if (execute) {
 				executorService.execute(task);
 			}

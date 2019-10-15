@@ -11,8 +11,8 @@ paladin:
       password: 123456
       type: HIKARI
     source[1]:
-      name: yiyuan
-      url: jdbc:mysql://172.16.11.35:3306/qos?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
+      name: local
+      url: jdbc:mysql://172.16.11.35:3306/qos2?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
       username: netin
       password: 123456
       
