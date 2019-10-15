@@ -85,21 +85,17 @@ public class YearIncrementDataMigrator extends CommonIncrementDataMigrator {
 	}
 
 	@Override
-	public Date getScheduleStartTime() {
-		if (scheduleStartTime == null) {
-			sqlSessionContainer.setCurrentDataSource(targetDataSource);
-			DataMigrateMapper sqlMapper = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataMigrateMapper.class);
-			List<String> current = sqlMapper.getMaxUpdateTimeByYear(targetTableName, updateTimeField);
-			if (current != null && current.size() > 0) {
-				int year = Integer.valueOf(current.get(0));
-				Calendar c = Calendar.getInstance();
-				c.set(Calendar.YEAR, year);
-				scheduleStartTime = c.getTime();
-			} else {
-				scheduleStartTime = defaultStartDate;
-			}
+	public Date getCurrentUpdateTime() {
+		sqlSessionContainer.setCurrentDataSource(targetDataSource);
+		DataMigrateMapper sqlMapper = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataMigrateMapper.class);
+		List<String> current = sqlMapper.getMaxUpdateTimeByYear(targetTableName, updateTimeField);
+		if (current != null && current.size() > 0) {
+			int year = Integer.valueOf(current.get(0));
+			Calendar c = Calendar.getInstance();
+			c.set(Calendar.YEAR, year);
+			return c.getTime();
+		} else {
+			return defaultStartDate;
 		}
-		return scheduleStartTime;
 	}
-
 }

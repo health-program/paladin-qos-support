@@ -1,9 +1,12 @@
 package com.paladin.qos.model.migration;
 
 import java.util.Date;
+
 import javax.persistence.Id;
 
-public class DataMigration {
+import com.paladin.qos.core.DataTaskConfiguration;
+
+public class DataMigration extends DataTaskConfiguration {
 
 	public final static String ORIGIN_DATA_SOURCE_TYPE_MYSQL = "mysql";
 	public final static String ORIGIN_DATA_SOURCE_TYPE_SQLSERVER = "sqlserver";
@@ -13,59 +16,6 @@ public class DataMigration {
 	public final static int TYPE_INCREMENT_UPDATE_YEAR = 11;
 	public final static int TYPE_ALL_UPDATE = 20;
 
-	/**
-	 * 固定默认策略，数据执行到当前时间
-	 */
-	public final static int FILING_STRATEGY_DEFAULT_NOW = 1;
-	/**
-	 * 固定默认策略，数据执行到当前时间的前几天，scheduleStrategyParam1参数表示为具体多少天
-	 */
-	public final static int FILING_STRATEGY_DEFAULT_DAY = 2;
-	/**
-	 * 固定默认策略，数据执行到当前时间的前几月，scheduleStrategyParam1参数表示为具体多少月
-	 */
-	public final static int FILING_STRATEGY_DEFAULT_MONTH = 3;
-	/**
-	 * 固定默认策略，数据执行到当前时间的前几年，scheduleStrategyParam1参数表示为具体多少年
-	 */
-	public final static int FILING_STRATEGY_DEFAULT_YEAR = 4;
-
-	/**
-	 * 自定义策略，需要自行扩展代码实现
-	 */
-	public final static int FILING_STRATEGY_CUSTOM = 10;
-
-	
-	/**
-	 * 不调度
-	 */
-	public final static int SCHEDULE_STRATEGY_NO = 0;
-	
-	/**
-	 * 调度策略：每天执行
-	 */
-	public final static int SCHEDULE_STRATEGY_EVERY_DAY = 1;
-	
-	/**
-	 * 调度策略：每个月哪几天执行，配合参数2：例如  1,10,20 表示每月1号、10号、20号会执行
-	 */
-	public final static int SCHEDULE_STRATEGY_FIXED_DAY_OF_MONTH = 2;
-	
-	/**
-	 * 调度策略：每年某几天执行，配合参数2：例如   2/1,3/1,4/1 表示2月1号，3月1号，4月1号会执行
-	 */
-	public final static int SCHEDULE_STRATEGY_FIXED_DAY_OF_YEAR = 3;
-	
-	/**
-	 * 调度策略：间隔几天执行，配合参数1： 例如 5 则表示每隔5天执行
-	 */
-	public final static int SCHEDULE_STRATEGY_INTERVAL_DAY = 5;
-	
-	/**
-	 * 调度策略：间隔几月执行，配合参数1： 例如 5 则表示每隔5月执行
-	 */
-	public final static int SCHEDULE_STRATEGY_INTERVAL_MONTH = 6;
-	
 	//
 	@Id
 	private String id;
@@ -106,36 +56,12 @@ public class DataMigration {
 	// 缺省开始处理日期
 	private Date defaultStartDate;
 
-	// 数据归档策略
-	private Integer filingStrategy;
-
-	// 调度任务策略参数1，配合调度任务策略用
-	private Integer filingStrategyParam1;
-
-	// 调度任务策略参数2，配合调度任务策略用
-	private Integer filingStrategyParam2;
-
-	// 是否需要实时
-	private Integer realTimeEnabled;
-
-	// 实时间隔，分钟
-	private Integer realTimeInterval;
-
-	// 调度策略
-	private Integer scheduleStrategy;
-
-	// 调度任务策略参数1，配合调度任务策略用
-	private Integer scheduleStrategyParam1;
-
-	// 调度任务策略参数2，配合调度任务策略用
-	private String scheduleStrategyParam2;
-
 	// 单独处理线程
 	private Integer separateProcessThread;
 
 	// 是否启用毫秒
 	private Integer millisecondEnabled;
-	
+
 	// 备注
 	private String notes;
 
@@ -230,22 +156,6 @@ public class DataMigration {
 		this.defaultStartDate = defaultStartDate;
 	}
 
-	public Integer getRealTimeEnabled() {
-		return realTimeEnabled;
-	}
-
-	public void setRealTimeEnabled(Integer realTimeEnabled) {
-		this.realTimeEnabled = realTimeEnabled;
-	}
-
-	public Integer getRealTimeInterval() {
-		return realTimeInterval;
-	}
-
-	public void setRealTimeInterval(Integer realTimeInterval) {
-		this.realTimeInterval = realTimeInterval;
-	}
-
 	public Integer getSeparateProcessThread() {
 		return separateProcessThread;
 	}
@@ -284,54 +194,6 @@ public class DataMigration {
 
 	public void setPrimaryKeyField(String primaryKeyField) {
 		this.primaryKeyField = primaryKeyField;
-	}
-
-	public Integer getFilingStrategy() {
-		return filingStrategy;
-	}
-
-	public void setFilingStrategy(Integer filingStrategy) {
-		this.filingStrategy = filingStrategy;
-	}
-
-	public Integer getFilingStrategyParam1() {
-		return filingStrategyParam1;
-	}
-
-	public void setFilingStrategyParam1(Integer filingStrategyParam1) {
-		this.filingStrategyParam1 = filingStrategyParam1;
-	}
-
-	public Integer getFilingStrategyParam2() {
-		return filingStrategyParam2;
-	}
-
-	public void setFilingStrategyParam2(Integer filingStrategyParam2) {
-		this.filingStrategyParam2 = filingStrategyParam2;
-	}
-
-	public Integer getScheduleStrategy() {
-		return scheduleStrategy;
-	}
-
-	public void setScheduleStrategy(Integer scheduleStrategy) {
-		this.scheduleStrategy = scheduleStrategy;
-	}
-
-	public Integer getScheduleStrategyParam1() {
-		return scheduleStrategyParam1;
-	}
-
-	public void setScheduleStrategyParam1(Integer scheduleStrategyParam1) {
-		this.scheduleStrategyParam1 = scheduleStrategyParam1;
-	}
-
-	public String getScheduleStrategyParam2() {
-		return scheduleStrategyParam2;
-	}
-
-	public void setScheduleStrategyParam2(String scheduleStrategyParam2) {
-		this.scheduleStrategyParam2 = scheduleStrategyParam2;
 	}
 
 	public Integer getMillisecondEnabled() {

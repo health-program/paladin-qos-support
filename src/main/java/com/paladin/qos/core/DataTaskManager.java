@@ -1,6 +1,5 @@
 package com.paladin.qos.core;
 
-import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -51,8 +50,11 @@ public class DataTaskManager {
 	 */
 	@Scheduled(cron = "0 0 0 * * ?")
 	public void executeScheduleDawn() {
+		long threadEndTime = System.currentTimeMillis() + 5 * 60 * 60 * 1000;
+
 		for (DataTask task : dawnTasks) {
-			if (needScheduleToday(task)) {
+			if (task.needScheduleToday()) {
+				task.setThreadEndTime(threadEndTime);
 				executorService.execute(task);
 			}
 		}
@@ -63,8 +65,11 @@ public class DataTaskManager {
 	 */
 	@Scheduled(cron = "0 0 19 * * ?")
 	public void executeScheduleNight() {
+		long threadEndTime = System.currentTimeMillis() + 5 * 60 * 60 * 1000;
+
 		for (DataTask task : nightTasks) {
-			if (needScheduleToday(task)) {
+			if (task.needScheduleToday()) {
+				task.setThreadEndTime(threadEndTime);
 				executorService.execute(task);
 			}
 		}
@@ -88,48 +93,6 @@ public class DataTaskManager {
 	public boolean needRealTime(DataTask task) {
 		DataTaskConfiguration configuration = task.getConfiguration();
 		return configuration.getRealTimeEnabled() == 1;
-	}
-
-	/**
-	 * 每日调度任务时判断是否需要执行
-	 * 
-	 * @return
-	 */
-	public boolean needScheduleToday(DataTask task) {
-		DataTaskConfiguration configuration = task.getConfiguration();
-		int scheduleStrategy = configuration.getScheduleStrategy();
-		if (scheduleStrategy == DataTaskConfiguration.SCHEDULE_STRATEGY_NO) {
-			return false;
-		} else if (scheduleStrategy == DataTaskConfiguration.SCHEDULE_STRATEGY_EVERY_DAY) {
-			return true;
-		} else if (scheduleStrategy == DataTaskConfiguration.SCHEDULE_STRATEGY_FIXED_DAY_OF_MONTH) {
-			String dayStr = configuration.getScheduleStrategyParam2();
-			String[] days = dayStr.split(",");
-			Calendar c = Calendar.getInstance();
-			String d = String.valueOf(c.get(Calendar.DAY_OF_MONTH));
-			for (String day : days) {
-				if (d.equals(day)) {
-					return true;
-				}
-			}
-			return false;
-		} else if (scheduleStrategy == DataTaskConfiguration.SCHEDULE_STRATEGY_FIXED_DAY_OF_YEAR) {
-			String dayStr = configuration.getScheduleStrategyParam2();
-			String[] days = dayStr.split(",");
-			Calendar c = Calendar.getInstance();
-			String d = String.valueOf(c.get(Calendar.MONTH) + 1) + "/" + String.valueOf(c.get(Calendar.DAY_OF_MONTH));
-			for (String day : days) {
-				if (d.equals(day)) {
-					return true;
-				}
-			}
-			return false;
-		} else if (scheduleStrategy == DataTaskConfiguration.SCHEDULE_STRATEGY_CUSTOM) {
-
-		}
-
-		throw new RuntimeException("还未实现策略：" + scheduleStrategy);
-
 	}
 
 }

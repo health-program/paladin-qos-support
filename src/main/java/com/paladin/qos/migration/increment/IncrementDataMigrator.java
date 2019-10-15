@@ -36,59 +36,12 @@ public interface IncrementDataMigrator {
 	public MigrateResult migrateData(Date updateStartTime, Date updateEndTime, int migrateNum);
 
 	/**
-	 * 获取计划迁移数据开始时间
+	 * 获取当前更新时间
 	 * 
 	 * @return
 	 */
-	public Date getScheduleStartTime();
-
-	/**
-	 * 设置调度开始时间
-	 * 
-	 * @param scheduleStartTime
-	 */
-	public void setScheduleStartTime(Date scheduleStartTime);
-
-	/**
-	 * 调度数据归档时间，处于归档时间之后的数据将会在下次调度任务中被重写
-	 * 
-	 * @return
-	 */
-	public Date getScheduleFilingDate();
-
-	/**
-	 * 每日调度任务时判断是否需要执行
-	 * 
-	 * @return
-	 */
-	public boolean needScheduleToday();
-
-	/**
-	 * 获取锁，一个数据迁移对象在多线程下只能有一个线程执行
-	 * 
-	 * @return
-	 */
-	public boolean getLock();
-
-	/**
-	 * 取消锁
-	 */
-	public void cancelLock();
-
-	/**
-	 * 获取上次实时更新时间
-	 * 
-	 * @return
-	 */
-	public long getRealTimeMigrateTime();
-
-	/**
-	 * 设置实时更新时间
-	 * 
-	 * @param time
-	 */
-	public void setRealTimeMigrateTime(long time);
-
+	public Date getCurrentUpdateTime();
+	
 	/**
 	 * 迁移结果
 	 * 
@@ -149,5 +102,7 @@ public interface IncrementDataMigrator {
 		}
 
 	}
+
+
 
 }

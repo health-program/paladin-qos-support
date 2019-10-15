@@ -2,7 +2,6 @@ package com.paladin.qos.migration.increment;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,7 +17,6 @@ import com.paladin.data.dynamic.SqlSessionContainer;
 import com.paladin.framework.utils.time.DateFormatUtil;
 import com.paladin.qos.dynamic.mapper.migration.DataMigrateMapper;
 import com.paladin.qos.model.migration.DataMigration;
-import com.paladin.qos.util.TimeUtil;
 
 import oracle.sql.TIMESTAMP;
 
@@ -75,11 +73,6 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 	 * 主键字段（可多个）
 	 */
 	protected Set<String> primaryKeyFields;
-
-	/**
-	 * 当前更新时间
-	 */
-	protected Date scheduleStartTime;
 
 	/**
 	 * 缺省开始时间
@@ -151,7 +144,6 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 	}
 
 	protected void migrateData(Date updateStartTime, Date updateEndTime, MigrateResult result, int selectDataLimit) {
-
 		if (selectDataLimit > MAX_SELECT_DATA_LIMIT) {
 			logger.error("超过最大查询限制数据！数据迁移ID：" + id + "，更新开始时间点：" + updateStartTime);
 			result.setSuccess(false);
@@ -279,112 +271,11 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 	}
 
 	@Override
-	public Date getScheduleStartTime() {
-		if (scheduleStartTime == null) {
-			sqlSessionContainer.setCurrentDataSource(targetDataSource);
-			DataMigrateMapper sqlMapper = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataMigrateMapper.class);
-			List<Date> current = sqlMapper.getMaxUpdateTime(targetTableName, updateTimeField);
-			scheduleStartTime = (current == null || current.size() == 0) ? defaultStartDate : current.get(0);
-		}
-		return scheduleStartTime;
+	public Date getCurrentUpdateTime() {
+		sqlSessionContainer.setCurrentDataSource(targetDataSource);
+		DataMigrateMapper sqlMapper = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataMigrateMapper.class);
+		List<Date> current = sqlMapper.getMaxUpdateTime(targetTableName, updateTimeField);
+		return (current == null || current.size() == 0) ? defaultStartDate : current.get(0);
 	}
 
-	@Override
-	public void setScheduleStartTime(Date scheduleStartTime) {
-		this.scheduleStartTime = scheduleStartTime;
-	}
-
-	@Override
-	public Date getScheduleFilingDate() {
-		int filingStrategy = dataMigration.getFilingStrategy();
-		if (filingStrategy == DataMigration.FILING_STRATEGY_DEFAULT_NOW) {
-			return null;
-		} else if (filingStrategy == DataMigration.FILING_STRATEGY_DEFAULT_DAY) {
-			return TimeUtil.getTodayBefore(dataMigration.getFilingStrategyParam1());
-		} else if (filingStrategy == DataMigration.FILING_STRATEGY_DEFAULT_MONTH) {
-			return TimeUtil.getTodayBeforeMonth(dataMigration.getFilingStrategyParam1());
-		} else if (filingStrategy == DataMigration.FILING_STRATEGY_DEFAULT_YEAR) {
-			return TimeUtil.getTodayBeforeYear(dataMigration.getFilingStrategyParam1());
-		} else if (filingStrategy == DataMigration.FILING_STRATEGY_CUSTOM) {
-			throw new RuntimeException("自定义归档策略需要开发者扩展重写代码");
-		}
-
-		throw new RuntimeException("不存在的归档策略代码：" + filingStrategy);
-	}
-
-	/**
-	 * 每日调度任务时判断是否需要执行
-	 * 
-	 * @return
-	 */
-	public boolean needScheduleToday() {
-
-		int scheduleStrategy = dataMigration.getScheduleStrategy();
-
-		if (scheduleStrategy == DataMigration.SCHEDULE_STRATEGY_NO) {
-			return false;
-		} else if (scheduleStrategy == DataMigration.SCHEDULE_STRATEGY_EVERY_DAY) {
-			return true;
-		} else if (scheduleStrategy == DataMigration.SCHEDULE_STRATEGY_FIXED_DAY_OF_MONTH) {
-			String dayStr = dataMigration.getScheduleStrategyParam2();
-			String[] days = dayStr.split(",");
-			Calendar c = Calendar.getInstance();
-			String d = String.valueOf(c.get(Calendar.DAY_OF_MONTH));
-			for (String day : days) {
-				if (d.equals(day)) {
-					return true;
-				}
-			}
-			return false;
-		} else if (scheduleStrategy == DataMigration.SCHEDULE_STRATEGY_FIXED_DAY_OF_YEAR) {
-			String dayStr = dataMigration.getScheduleStrategyParam2();
-			String[] days = dayStr.split(",");
-
-			Calendar c = Calendar.getInstance();
-			String d = String.valueOf(c.get(Calendar.MONTH) + 1) + "/" + String.valueOf(c.get(Calendar.DAY_OF_MONTH));
-
-			for (String day : days) {
-				if (d.equals(day)) {
-					return true;
-				}
-			}
-			return false;
-		} else {
-			throw new RuntimeException("还未实现策略：" + scheduleStrategy);
-		}
-
-	}
-
-	private Boolean lock = false;
-
-	@Override
-	public boolean getLock() {
-		synchronized (lock) {
-			if (lock) {
-				return false;
-			} else {
-				lock = true;
-				return true;
-			}
-		}
-	}
-
-	@Override
-	public void cancelLock() {
-		synchronized (lock) {
-			lock = false;
-		}
-	}
-
-	private volatile long realTimeUpdateTime;
-
-	@Override
-	public long getRealTimeMigrateTime() {
-		return realTimeUpdateTime;
-	}
-
-	@Override
-	public void setRealTimeMigrateTime(long time) {
-		realTimeUpdateTime = time;
-	}
 }
