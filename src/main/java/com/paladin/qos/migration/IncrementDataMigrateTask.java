@@ -12,13 +12,13 @@ import com.paladin.qos.migration.increment.IncrementDataMigrator;
 import com.paladin.qos.migration.increment.IncrementDataMigrator.MigrateResult;
 import com.paladin.qos.model.migration.DataMigration;
 
-public class IncrementDataMigrateIdleTask extends DataTask {
+public class IncrementDataMigrateTask extends DataTask {
 
-	private static Logger logger = LoggerFactory.getLogger(IncrementDataMigrateIdleTask.class);
+	private static Logger logger = LoggerFactory.getLogger(IncrementDataMigrateTask.class);
 
 	private IncrementDataMigrator dataMigrator;
 
-	public IncrementDataMigrateIdleTask(IncrementDataMigrator dataMigrator) {
+	public IncrementDataMigrateTask(IncrementDataMigrator dataMigrator) {
 		super(dataMigrator.getId());
 		setConfiguration(dataMigrator.getDataMigration());
 		this.dataMigrator = dataMigrator;
@@ -26,10 +26,14 @@ public class IncrementDataMigrateIdleTask extends DataTask {
 
 	@Override
 	public void doTask() {
-		try {
+		try {			
 			DataMigration dataMigration = dataMigrator.getDataMigration();
 
 			if (dataMigration.getEnabled() != 1) {
+				return;
+			}
+
+			if (isRealTime() && !doRealTime()) {
 				return;
 			}
 
@@ -64,13 +68,13 @@ public class IncrementDataMigrateIdleTask extends DataTask {
 					break;
 				}
 
-				if (isThreadFinished()) {
+				if (!isRealTime() && isThreadFinished()) {
 					break;
 				}
 
 			} while (true);
 
-			SimpleDateFormat format = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:ss:mm");
+			SimpleDateFormat format = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:ss:mm.sss");
 
 			logger.info("迁移数据任务[ID:" + getId() + "]执行" + (result.isSuccess() ? "完成" : "未完成") + "，迁移数据条数：" + count + "条，迁移开始时间："
 					+ (logStartTime == null ? "null" : format.format(logStartTime)) + "，迁移结束时间：" + (updateTime == null ? "null" : format.format(updateTime)));
@@ -79,5 +83,5 @@ public class IncrementDataMigrateIdleTask extends DataTask {
 			logger.error("数据迁移异常[ID:" + getId() + "]", e);
 		}
 	}
-
+	
 }

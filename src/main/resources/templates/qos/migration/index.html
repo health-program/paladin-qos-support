@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="/qos/header" />
+
+<body>
+    <tt:constant enumcode="data-event-type,data-unit-type" />
+    <section class="content-header">
+        <h1>数据迁移管理</h1>
+    </section>
+    <section class="content">
+        <div id="processForm">
+        </div>
+    </section>
+    <div th:include="/qos/footer" />
+    <script type="text/javascript">
+    var options = {
+        id: "model",
+        cancelBtn: false,
+        submitBtnName: '开始处理',
+        name: "数据迁移",
+        url: "/qos/migrate/execute",
+        columns: [
+            { title: "事件", name: "id", inputType: "INPUT", required: "required", colspan: 2 },
+            { title: "开始时间", name: "startTime", inputType: "DATE" },
+            { title: "结束时间", name: "endTime", inputType: "DATE" },
+            { title: "执行数量", name: "migrateNum", inputType: "INPUT" }
+        ]
+    }
+
+
+
+    $(function() {
+        var html = generateEditHtml(options);
+        $("#processForm").html(html);
+        $.initComponment($("#processForm"));
+
+        var model = new tonto.Model("model", options.columns, {
+            pattern: "edit"
+        });
+        model.setData(null);
+    });
+    </script>
+</body>
+
+</html>

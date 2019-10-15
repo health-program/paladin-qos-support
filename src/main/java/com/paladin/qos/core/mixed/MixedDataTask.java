@@ -17,7 +17,12 @@ public class MixedDataTask extends DataTask {
 			if (task == null) {
 				break;
 			}
+
 			task.run();
+
+			if (!isRealTime() && isThreadFinished()) {
+				break;
+			}
 		} while (true);
 	}
 

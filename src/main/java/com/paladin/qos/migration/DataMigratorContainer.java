@@ -95,18 +95,18 @@ public class DataMigratorContainer implements SpringContainer {
 		Map<String, List<DataTask>> dataTaskMap = new HashMap<>();
 
 		List<DataTask> realTimeTasks = new ArrayList<>();
-		List<DataTask> dawnTasks = new ArrayList<>();
+		// List<DataTask> dawnTasks = new ArrayList<>();
 		List<DataTask> nightTasks = new ArrayList<>();
 
 		for (IncrementDataMigrator migrator : incrementDataMigratorList) {
 			DataMigration dataMigration = migrator.getDataMigration();
-			DataTask task = new IncrementDataMigrateRealTimeTask(migrator);
+			DataTask task = new IncrementDataMigrateTask(migrator);
 
 			if (dataMigration.getRealTimeEnabled() == 1) {
 				realTimeTasks.add(task);
 			} else {
 				if (dataMigration.getSeparateProcessThread() == 1) {
-					dawnTasks.add(task);
+					// dawnTasks.add(task);
 					nightTasks.add(task);
 				} else {
 					String originDS = dataMigration.getOriginDataSource();
@@ -131,11 +131,11 @@ public class DataMigratorContainer implements SpringContainer {
 			String id = "migrate-mixed-" + entry.getKey();
 			MixedDataTask task = new MixedDataTask(id, new MatrixTaskStack(stacks, i));
 			i++;
-			dawnTasks.add(task);
+			// dawnTasks.add(task);
 			nightTasks.add(task);
 		}
 
-		dataTaskManager.registerTaskBeforeDawn(dawnTasks);
+		// dataTaskManager.registerTaskBeforeDawn(dawnTasks);
 		dataTaskManager.registerTaskAtNight(nightTasks);
 		dataTaskManager.registerTaskRealTime(realTimeTasks);
 	}

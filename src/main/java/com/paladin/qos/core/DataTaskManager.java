@@ -11,7 +11,9 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
+@Component
 public class DataTaskManager {
 
 	@Value("${qos.data-task-pool-size}")
@@ -19,18 +21,14 @@ public class DataTaskManager {
 
 	private ExecutorService executorService;
 
-	private CopyOnWriteArrayList<DataTask> dawnTasks;
-	private CopyOnWriteArrayList<DataTask> nightTasks;
-	private CopyOnWriteArrayList<DataTask> realTimeTasks;
+	private CopyOnWriteArrayList<DataTask> dawnTasks = new CopyOnWriteArrayList<>();
+	private CopyOnWriteArrayList<DataTask> nightTasks = new CopyOnWriteArrayList<>();
+	private CopyOnWriteArrayList<DataTask> realTimeTasks = new CopyOnWriteArrayList<>();
 
 	@PostConstruct
 	public void init() {
-		executorService = new ThreadPoolExecutor(dataTaskPoolSize, dataTaskPoolSize, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(256), // 使用有界队列，避免OOM
+		executorService = new ThreadPoolExecutor(dataTaskPoolSize, dataTaskPoolSize, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(512), // 使用有界队列，避免OOM
 				new ThreadPoolExecutor.DiscardPolicy());
-
-		dawnTasks = new CopyOnWriteArrayList<>();
-		nightTasks = new CopyOnWriteArrayList<>();
-		realTimeTasks = new CopyOnWriteArrayList<>();
 	}
 
 	public void registerTaskBeforeDawn(List<DataTask> tasks) {
@@ -46,7 +44,7 @@ public class DataTaskManager {
 	}
 
 	/**
-	 * 凌晨执行到5点
+	 * 凌晨0点执行到5点
 	 */
 	@Scheduled(cron = "0 0 0 * * ?")
 	public void executeScheduleDawn() {
@@ -61,11 +59,11 @@ public class DataTaskManager {
 	}
 
 	/**
-	 * 夜晚7点执行到24点
+	 * 夜晚7点执行到第二日凌晨5点
 	 */
 	@Scheduled(cron = "0 0 19 * * ?")
 	public void executeScheduleNight() {
-		long threadEndTime = System.currentTimeMillis() + 5 * 60 * 60 * 1000;
+		long threadEndTime = System.currentTimeMillis() + 10 * 60 * 60 * 1000;
 
 		for (DataTask task : nightTasks) {
 			if (task.needScheduleToday()) {
@@ -75,10 +73,22 @@ public class DataTaskManager {
 		}
 	}
 
+	/**
+	 * 每分钟尝试去执行
+	 */
 	@Scheduled(cron = "0 */1 * * * ?")
 	public void executeRealTime() {
 		for (DataTask task : realTimeTasks) {
-			if (needRealTime(task)) {
+			boolean execute = false;
+			try {
+				if (task.getLock()) {
+					execute = task.isRealTime() && task.doRealTime();
+				}
+			} finally {
+				task.cancelLock();
+			}
+
+			if (execute) {
 				executorService.execute(task);
 			}
 		}
@@ -93,6 +103,41 @@ public class DataTaskManager {
 	public boolean needRealTime(DataTask task) {
 		DataTaskConfiguration configuration = task.getConfiguration();
 		return configuration.getRealTimeEnabled() == 1;
+	}
+
+	public CopyOnWriteArrayList<DataTask> getDawnTasks() {
+		return dawnTasks;
+	}
+
+	public CopyOnWriteArrayList<DataTask> getNightTasks() {
+		return nightTasks;
+	}
+
+	public CopyOnWriteArrayList<DataTask> getRealTimeTasks() {
+		return realTimeTasks;
+	}
+
+	public DataTask getTask(String id) {
+
+		for (DataTask task : dawnTasks) {
+			if (task.getId().equals(id)) {
+				return task;
+			}
+		}
+
+		for (DataTask task : nightTasks) {
+			if (task.getId().equals(id)) {
+				return task;
+			}
+		}
+
+		for (DataTask task : realTimeTasks) {
+			if (task.getId().equals(id)) {
+				return task;
+			}
+		}
+
+		return null;
 	}
 
 }

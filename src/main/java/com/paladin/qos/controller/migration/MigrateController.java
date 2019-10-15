@@ -1,7 +1,5 @@
 package com.paladin.qos.controller.migration;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,24 +17,30 @@ import com.paladin.qos.migration.increment.IncrementDataMigrator.MigrateResult;
 @RequestMapping("/qos/migrate")
 public class MigrateController {
 
-	public static Date DEFAULT_START_TIME;
-
-	static {
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		try {
-			DEFAULT_START_TIME = format.parse("2019-01-01");
-		} catch (ParseException e) {
-		}
-	}
-
 	@Autowired
 	private DataMigratorContainer container;
 
-	@GetMapping("/execute/test")
+	@GetMapping("/index")
 	@ResponseBody
-	public Object execute(String id) {
+	public Object index() {
+		return "/qos/migration/index";
+	}
+
+	@RequestMapping("/execute")
+	@ResponseBody
+	public Object execute(MigrateRequest request) {
+		String id = request.getId();
+		Date startTime = request.getStartTime();
+		Date endTime = request.getEndTime();
+		int num = request.getMigrateNum();
+
 		IncrementDataMigrator migrator = container.getIncrementDataMigrator(id);
-		MigrateResult result = migrator.migrateData(DEFAULT_START_TIME, null, 500);
+
+		if (startTime == null) {
+			startTime = migrator.getCurrentUpdateTime();
+		}
+
+		MigrateResult result = migrator.migrateData(startTime, endTime, num);
 		return CommonResponse.getSuccessResponse(result);
 	}
 

@@ -63,22 +63,33 @@ public abstract class DataTask implements Runnable {
 		}
 	}
 
+	public boolean isRun() {
+		return lock;
+	}
+
 	public void run() {
 		try {
 			if (getLock()) {
 				doTask();
+				if(realTime) {
+					realTimeMillisecond = System.currentTimeMillis();
+				}
 			}
 		} finally {
 			cancelLock();
 		}
 	}
 
+	public boolean isRealTime() {
+		return realTime;
+	}
+
 	public boolean doRealTime() {
-		return realTime && System.currentTimeMillis() - realTimeMillisecond >= realTimeIntervalMillisecond;
+		return System.currentTimeMillis() - realTimeMillisecond >= realTimeIntervalMillisecond;
 	}
 
 	public boolean isThreadFinished() {
-		return realTime && threadEndTime > 0 && threadEndTime < System.currentTimeMillis();
+		return threadEndTime > 0 && threadEndTime < System.currentTimeMillis();
 	}
 
 	public abstract void doTask();
