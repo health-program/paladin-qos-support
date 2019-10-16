@@ -40,7 +40,7 @@
                         title: "实时间隔",
                         field: "realTimeInterval",
                         formatter: function(value, row, index) {
-                            return value + "分钟";
+                            return row.realTimeEnabled == 1 ? value + "分钟" : '-';
                         }
                     },
                     { title: "上次执行时间", field: "realTimeMillisecond", formatter: "datetime" },
@@ -59,9 +59,13 @@
                         }
                     },
                     {
+                        title: "执行情况",
+                        field: "executeSituation"
+                    },
+                    {
                         title: "状态",
                         field: "isRun",
-                        formatter: function(value, row, index) {                           
+                        formatter: function(value, row, index) {
                             if (row.enabled == 1) {
                                 return value ? '<span class="label label-success">运行中</span>' :
                                     '<span class="label label-info">闲置中</span>';

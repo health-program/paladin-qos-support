@@ -99,6 +99,8 @@ public abstract class DataTask implements Runnable {
 	}
 
 	public abstract void doTask();
+	
+	public abstract String getExecuteSituation();
 
 	/**
 	 * 根据归档策略获取归档的最终数据时间

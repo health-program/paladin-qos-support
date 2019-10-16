@@ -10,6 +10,7 @@ public class DataTaskVO {
 	private boolean isRun;
 	private long realTimeMillisecond;
 	private long threadEndTime;
+	private String executeSituation;
 
 	// 数据归档策略
 	private Integer filingStrategy;
@@ -35,6 +36,7 @@ public class DataTaskVO {
 		this.isRun = task.isRun();
 		this.realTimeMillisecond = task.getRealTimeMillisecond();
 		this.threadEndTime = task.getThreadEndTime();
+		this.executeSituation = task.getExecuteSituation();
 
 		DataTaskConfiguration config = task.getConfiguration();
 
@@ -153,6 +155,14 @@ public class DataTaskVO {
 
 	public void setEnabled(Integer enabled) {
 		this.enabled = enabled;
+	}
+
+	public String getExecuteSituation() {
+		return executeSituation;
+	}
+
+	public void setExecuteSituation(String executeSituation) {
+		this.executeSituation = executeSituation;
 	}
 
 }

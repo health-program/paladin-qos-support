@@ -16,6 +16,10 @@ public class IncrementDataMigrateTask extends DataTask {
 	private static Logger logger = LoggerFactory.getLogger(IncrementDataMigrateTask.class);
 
 	private IncrementDataMigrator dataMigrator;
+
+	private Date migrateTime;
+	private int migratedNum;
+
 	protected volatile Date updateTime;
 
 	public IncrementDataMigrateTask(IncrementDataMigrator dataMigrator) {
@@ -26,7 +30,10 @@ public class IncrementDataMigrateTask extends DataTask {
 
 	@Override
 	public void doTask() {
-		try {			
+		try {
+			migrateTime = new Date();
+			migratedNum = 0;
+
 			DataMigration dataMigration = dataMigrator.getDataMigration();
 
 			if (updateTime == null) {
@@ -43,6 +50,7 @@ public class IncrementDataMigrateTask extends DataTask {
 
 			int maximumMigrate = dataMigration.getMaximumMigrate();
 			int selectLimit = dataMigration.getSelectDataLimit();
+
 			int count = 0;
 
 			MigrateResult result = null;
@@ -52,6 +60,7 @@ public class IncrementDataMigrateTask extends DataTask {
 			do {
 				result = dataMigrator.migrateData(updateTime, null, selectLimit);
 				updateTime = result.getMigrateEndTime();
+				migratedNum = count;
 
 				int num = result.getMigrateNum();
 				count += num;
@@ -73,6 +82,16 @@ public class IncrementDataMigrateTask extends DataTask {
 
 		} catch (Exception e) {
 			logger.error("数据迁移异常[ID:" + getId() + "]", e);
+		}
+	}
+
+	@Override
+	public String getExecuteSituation() {
+		if (updateTime == null) {
+			return "还未执行";
+		} else {
+			SimpleDateFormat format = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:ss:mm");
+			return "在" + format.format(migrateTime) + "增量迁移数据" + migratedNum + "条，当前增量更新时间为：" + format.format(updateTime);
 		}
 	}
 

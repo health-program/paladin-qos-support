@@ -44,4 +44,9 @@ public class MixedDataTask extends DataTask {
 		// DO NOTHING
 	}
 
+	@Override
+	public String getExecuteSituation() {
+		return null;
+	}
+
 }

@@ -9,6 +9,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.paladin.framework.utils.time.DateFormatUtil;
 import com.paladin.qos.core.DataTask;
 import com.paladin.qos.model.data.DataEvent;
 import com.paladin.qos.model.data.DataUnit;
@@ -23,6 +24,8 @@ public class DataProcessTask extends DataTask {
 	private AnalysisService analysisService;
 
 	private Map<String, Long> lastProcessedDayMap;
+	private int processedNum;
+	private Date processTime;
 
 	public DataProcessTask(DataProcessor processor, AnalysisService analysisService) {
 		super(processor.getEventId());
@@ -33,6 +36,9 @@ public class DataProcessTask extends DataTask {
 
 	@Override
 	public void doTask() {
+
+		processTime = new Date();
+		processedNum = 0;
 
 		if (lastProcessedDayMap == null) {
 			lastProcessedDayMap = getLastProcessedDay();
@@ -89,6 +95,7 @@ public class DataProcessTask extends DataTask {
 				}
 				eventCount += count;
 			}
+			processedNum = eventCount;
 			logger.info("数据预处理任务[" + getId() + "]执行完毕，共处理数据：" + eventCount + "条");
 		} catch (Exception e) {
 			logger.error("数据预处理异常[ID:" + getId() + "]", e);
@@ -121,6 +128,16 @@ public class DataProcessTask extends DataTask {
 			}
 		}
 		return lastProcessedDayMap;
+	}
+
+	@Override
+	public String getExecuteSituation() {
+		if (processTime == null) {
+			return "还未执行";
+		} else {
+			String time = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:ss:mm").format(processTime);
+			return "在" + time + "预处理数据" + processedNum + "条";
+		}
 	}
 
 }

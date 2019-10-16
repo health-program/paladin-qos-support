@@ -1,8 +1,11 @@
 package com.paladin.qos.core.view;
 
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.paladin.framework.utils.time.DateFormatUtil;
 import com.paladin.qos.core.DataTask;
 
 public class DataViewCreateTask extends DataTask {
@@ -10,6 +13,8 @@ public class DataViewCreateTask extends DataTask {
 	private static Logger logger = LoggerFactory.getLogger(DataViewCreateTask.class);
 
 	private DataViewCreator creator;
+	private Date updateTime;
+	private boolean success;
 
 	public DataViewCreateTask(DataViewCreator creator) {
 		super(creator.getId());
@@ -19,8 +24,24 @@ public class DataViewCreateTask extends DataTask {
 
 	@Override
 	public void doTask() {
-		boolean success = creator.updateView();
+		success = creator.updateView();
+		updateTime = new Date();
 		logger.info("更新视图[" + creator.getId() + "]" + (success ? "成功" : "失败"));
+	}
+
+	@Override
+	public String getExecuteSituation() {
+		if (success) {
+			String time = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:ss:mm").format(updateTime);
+			return "在" + time + "更新视图成功";
+		} else {
+			if (updateTime != null) {
+				String time = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:ss:mm").format(updateTime);
+				return "在" + time + "更新视图失败";
+			} else {
+				return "还未执行";
+			}
+		}
 	}
 
 }
