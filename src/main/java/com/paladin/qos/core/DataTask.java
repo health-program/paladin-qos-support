@@ -94,8 +94,12 @@ public abstract class DataTask implements Runnable {
 		return threadEndTime > 0 && threadEndTime < System.currentTimeMillis();
 	}
 
+	public int getExecuteHours() {
+		return configuration.getExecuteHours();
+	}
+
 	public abstract void doTask();
-	
+
 	/**
 	 * 根据归档策略获取归档的最终数据时间
 	 * 
@@ -157,11 +161,27 @@ public abstract class DataTask implements Runnable {
 	}
 
 	/**
-	 * 每日调度任务时判断是否需要执行
+	 * 是否现在需要调度
 	 * 
 	 * @return
 	 */
-	public boolean needScheduleToday() {
+	public boolean needScheduleNow() {
+		if (needScheduleToday()) {
+			int hour = configuration.getScheduleHour();
+			int nowHour = TimeUtil.getNowHour();
+			if (hour == nowHour) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * 是否今天需要调度
+	 * 
+	 * @return
+	 */
+	private boolean needScheduleToday() {
 		int scheduleStrategy = configuration.getScheduleStrategy();
 		if (scheduleStrategy == DataTaskConfiguration.SCHEDULE_STRATEGY_NO) {
 			return false;
@@ -197,7 +217,9 @@ public abstract class DataTask implements Runnable {
 	}
 
 	public synchronized void setThreadEndTime(long threadEndTime) {
-		this.threadEndTime = threadEndTime;
+		if (threadEndTime > this.threadEndTime) {
+			this.threadEndTime = threadEndTime;
+		}
 	}
 
 	public long getThreadEndTime() {

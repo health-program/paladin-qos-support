@@ -67,7 +67,7 @@ public class DataViewCreatorContainer implements SpringContainer {
 			}
 		}
 
-		dataTaskManager.registerTaskAtNight(nightTasks);
+		dataTaskManager.registerTaskSchedule(nightTasks);
 		dataTaskManager.registerTaskRealTime(realTimeTasks);
 
 	}

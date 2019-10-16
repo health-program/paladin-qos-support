@@ -260,10 +260,15 @@ public class TimeUtil {
 		return new Date(millis - MILLIS_IN_DAY * pastDays);
 	}
 
-	private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	public static int getNowHour() {
+		Calendar ca = Calendar.getInstance();
+		return ca.get(Calendar.HOUR_OF_DAY);
+	}
+
+	public static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public static void main(String[] args) throws Exception {
-		System.out.println(format.format(getTodayBeforeMonth(1)));
+		
 	}
 
 }

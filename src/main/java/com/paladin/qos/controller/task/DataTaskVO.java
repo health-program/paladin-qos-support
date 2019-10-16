@@ -2,7 +2,6 @@ package com.paladin.qos.controller.task;
 
 import com.paladin.qos.core.DataTask;
 import com.paladin.qos.core.DataTaskConfiguration;
-import com.paladin.qos.core.mixed.MixedDataTask;
 
 public class DataTaskVO {
 
@@ -11,7 +10,6 @@ public class DataTaskVO {
 	private boolean isRun;
 	private long realTimeMillisecond;
 	private long threadEndTime;
-	private boolean mixed;
 
 	// 数据归档策略
 	private Integer filingStrategy;
@@ -40,21 +38,17 @@ public class DataTaskVO {
 
 		DataTaskConfiguration config = task.getConfiguration();
 
-		if (config != null) {
-			this.filingStrategy = config.getFilingStrategy();
-			this.filingStrategyParam1 = config.getFilingStrategyParam1();
-			this.filingStrategyParam2 = config.getFilingStrategyParam2();
+		this.filingStrategy = config.getFilingStrategy();
+		this.filingStrategyParam1 = config.getFilingStrategyParam1();
+		this.filingStrategyParam2 = config.getFilingStrategyParam2();
 
-			this.scheduleStrategy = config.getScheduleStrategy();
-			this.scheduleStrategyParam1 = config.getScheduleStrategyParam1();
-			this.scheduleStrategyParam2 = config.getScheduleStrategyParam2();
+		this.scheduleStrategy = config.getScheduleStrategy();
+		this.scheduleStrategyParam1 = config.getScheduleStrategyParam1();
+		this.scheduleStrategyParam2 = config.getScheduleStrategyParam2();
 
-			this.realTimeEnabled = config.getRealTimeEnabled();
-			this.realTimeInterval = config.getRealTimeInterval();
-			this.enabled = config.getEnabled();
-		}
-
-		this.mixed = task instanceof MixedDataTask;
+		this.realTimeEnabled = config.getRealTimeEnabled();
+		this.realTimeInterval = config.getRealTimeInterval();
+		this.enabled = config.getEnabled();
 	}
 
 	public String getId() {
@@ -159,14 +153,6 @@ public class DataTaskVO {
 
 	public void setEnabled(Integer enabled) {
 		this.enabled = enabled;
-	}
-
-	public boolean isMixed() {
-		return mixed;
-	}
-
-	public void setMixed(boolean mixed) {
-		this.mixed = mixed;
 	}
 
 }

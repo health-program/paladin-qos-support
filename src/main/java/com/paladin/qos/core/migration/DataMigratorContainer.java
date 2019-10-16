@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,10 +14,6 @@ import com.paladin.framework.spring.SpringBeanHelper;
 import com.paladin.framework.spring.SpringContainer;
 import com.paladin.qos.core.DataTask;
 import com.paladin.qos.core.DataTaskManager;
-import com.paladin.qos.core.mixed.DefaultTaskStack;
-import com.paladin.qos.core.mixed.MatrixTaskStack;
-import com.paladin.qos.core.mixed.MixedDataTask;
-import com.paladin.qos.core.mixed.TaskStack;
 import com.paladin.qos.model.migration.DataMigration;
 import com.paladin.qos.service.migration.DataMigrationService;
 
@@ -89,10 +84,7 @@ public class DataMigratorContainer implements SpringContainer {
 
 	private void registerTask() {
 
-		Map<String, List<DataTask>> dataTaskMap = new HashMap<>();
-
 		List<DataTask> realTimeTasks = new ArrayList<>();
-		// List<DataTask> dawnTasks = new ArrayList<>();
 		List<DataTask> nightTasks = new ArrayList<>();
 
 		for (IncrementDataMigrator migrator : incrementDataMigratorList) {
@@ -102,38 +94,11 @@ public class DataMigratorContainer implements SpringContainer {
 			if (dataMigration.getRealTimeEnabled() == 1) {
 				realTimeTasks.add(task);
 			} else {
-				if (dataMigration.getSeparateProcessThread() == 1) {
-					// dawnTasks.add(task);
-					nightTasks.add(task);
-				} else {
-					String originDS = dataMigration.getOriginDataSource();
-					List<DataTask> taskList = dataTaskMap.get(originDS);
-					if (taskList == null) {
-						taskList = new ArrayList<>();
-						dataTaskMap.put(originDS, taskList);
-					}
-					taskList.add(task);
-				}
+				nightTasks.add(task);
 			}
 		}
 
-		List<TaskStack> stacks = new ArrayList<>();
-		for (Entry<String, List<DataTask>> entry : dataTaskMap.entrySet()) {
-			TaskStack stack = new DefaultTaskStack(entry.getValue());
-			stacks.add(stack);
-		}
-
-		int i = 0;
-		for (Entry<String, List<DataTask>> entry : dataTaskMap.entrySet()) {
-			String id = "migrate-mixed-" + entry.getKey();
-			MixedDataTask task = new MixedDataTask(id, new MatrixTaskStack(stacks, i));
-			i++;
-			// dawnTasks.add(task);
-			nightTasks.add(task);
-		}
-
-		// dataTaskManager.registerTaskBeforeDawn(dawnTasks);
-		dataTaskManager.registerTaskAtNight(nightTasks);
+		dataTaskManager.registerTaskSchedule(nightTasks);
 		dataTaskManager.registerTaskRealTime(realTimeTasks);
 	}
 

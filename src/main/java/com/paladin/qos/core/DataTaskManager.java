@@ -24,8 +24,8 @@ public class DataTaskManager {
 
 	private ExecutorService executorService;
 
-	private CopyOnWriteArrayList<DataTask> nightTasks = new CopyOnWriteArrayList<>();
-	private CopyOnWriteArrayList<DataTask> realTimeTasks = new CopyOnWriteArrayList<>();
+	private List<DataTask> scheduleTasks = new CopyOnWriteArrayList<>();
+	private List<DataTask> realTimeTasks = new CopyOnWriteArrayList<>();
 
 	@PostConstruct
 	public void init() {
@@ -33,8 +33,8 @@ public class DataTaskManager {
 				new ThreadPoolExecutor.DiscardPolicy());
 	}
 
-	public void registerTaskAtNight(List<DataTask> tasks) {
-		nightTasks.addAll(tasks);
+	public void registerTaskSchedule(List<DataTask> tasks) {
+		scheduleTasks.addAll(tasks);
 	}
 
 	public void registerTaskRealTime(List<DataTask> tasks) {
@@ -42,18 +42,17 @@ public class DataTaskManager {
 	}
 
 	/**
-	 * 夜晚7点执行到第二日凌晨5点
+	 * 每小时执行
 	 */
-	@Scheduled(cron = "0 0 19 * * ?")
+	@Scheduled(cron = "0 0 0/1 * * ?")
 	public void executeScheduleNight() {
 		if (simpleMode) {
 			return;
 		}
 
-		long threadEndTime = System.currentTimeMillis() + 10 * 60 * 60 * 1000;
-
-		for (DataTask task : nightTasks) {
-			if (task.isEnabled() && !task.isRun() && task.needScheduleToday()) {
+		for (DataTask task : scheduleTasks) {
+			if (task.isEnabled() && !task.isRun() && task.needScheduleNow()) {
+				long threadEndTime = System.currentTimeMillis() + task.getExecuteHours() * 60 * 60 * 1000;
 				task.setThreadEndTime(threadEndTime);
 				executorService.execute(task);
 			}
@@ -88,7 +87,7 @@ public class DataTaskManager {
 	}
 
 	public List<DataTask> getNightTasks() {
-		return nightTasks;
+		return scheduleTasks;
 	}
 
 	public List<DataTask> getRealTimeTasks() {
@@ -97,7 +96,7 @@ public class DataTaskManager {
 
 	public DataTask getTask(String id) {
 
-		for (DataTask task : nightTasks) {
+		for (DataTask task : scheduleTasks) {
 			if (task.getId().equals(id)) {
 				return task;
 			}

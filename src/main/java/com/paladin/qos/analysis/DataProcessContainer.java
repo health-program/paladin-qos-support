@@ -17,10 +17,6 @@ import com.paladin.framework.spring.SpringBeanHelper;
 import com.paladin.framework.spring.SpringContainer;
 import com.paladin.qos.core.DataTask;
 import com.paladin.qos.core.DataTaskManager;
-import com.paladin.qos.core.mixed.DefaultTaskStack;
-import com.paladin.qos.core.mixed.MatrixTaskStack;
-import com.paladin.qos.core.mixed.MixedDataTask;
-import com.paladin.qos.core.mixed.TaskStack;
 import com.paladin.qos.model.data.DataEvent;
 import com.paladin.qos.model.data.DataUnit;
 import com.paladin.qos.service.analysis.AnalysisService;
@@ -88,10 +84,7 @@ public class DataProcessContainer implements SpringContainer {
 
 	private void registerTask() {
 
-		Map<String, List<DataTask>> dataTaskMap = new HashMap<>();
-
 		List<DataTask> realTimeTasks = new ArrayList<>();
-		// List<DataTask> dawnTasks = new ArrayList<>();
 		List<DataTask> nightTasks = new ArrayList<>();
 
 		for (DataProcessor processor : processorMap.values()) {
@@ -102,38 +95,11 @@ public class DataProcessContainer implements SpringContainer {
 			if (dataEvent.getRealTimeEnabled() == 1) {
 				realTimeTasks.add(task);
 			} else {
-				if (dataEvent.getSeparateProcessThread() == 1) {
-					// dawnTasks.add(task);
-					nightTasks.add(task);
-				} else {
-					String originDS = dataEvent.getDataSource();
-					List<DataTask> taskList = dataTaskMap.get(originDS);
-					if (taskList == null) {
-						taskList = new ArrayList<>();
-						dataTaskMap.put(originDS, taskList);
-					}
-					taskList.add(task);
-				}
+				nightTasks.add(task);							
 			}
 		}
 
-		List<TaskStack> stacks = new ArrayList<>();
-		for (Entry<String, List<DataTask>> entry : dataTaskMap.entrySet()) {
-			TaskStack stack = new DefaultTaskStack(entry.getValue());
-			stacks.add(stack);
-		}
-
-		int i = 0;
-		for (Entry<String, List<DataTask>> entry : dataTaskMap.entrySet()) {
-			String id = "event-mixed-" + entry.getKey();
-			MixedDataTask task = new MixedDataTask(id, new MatrixTaskStack(stacks, i));
-			i++;
-			// dawnTasks.add(task);
-			nightTasks.add(task);
-		}
-
-		// dataTaskManager.registerTaskBeforeDawn(dawnTasks);
-		dataTaskManager.registerTaskAtNight(nightTasks);
+		dataTaskManager.registerTaskSchedule(nightTasks);
 		dataTaskManager.registerTaskRealTime(realTimeTasks);
 	}
 

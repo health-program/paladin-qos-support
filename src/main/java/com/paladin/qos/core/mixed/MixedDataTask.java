@@ -2,6 +2,7 @@ package com.paladin.qos.core.mixed;
 
 import com.paladin.qos.core.DataTask;
 
+@Deprecated
 public class MixedDataTask extends DataTask {
 
 	private TaskStack stack;
@@ -23,15 +24,19 @@ public class MixedDataTask extends DataTask {
 				task.run();
 			}
 
-			if (!isRealTime() && isThreadFinished()) {
+			if (isThreadFinished()) {
 				break;
 			}
-		} while (true);
 
+		} while (true);
 	}
 
 	public boolean isRun() {
 		return false;
+	}
+
+	public boolean needScheduleNow() {
+		return true;
 	}
 
 	@Override

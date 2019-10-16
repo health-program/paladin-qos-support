@@ -51,6 +51,12 @@ public class DataTaskConfiguration {
 
 	// 调度任务策略参数2，配合调度任务策略用
 	private String scheduleStrategyParam2;
+	
+	// 调度小时数，几点开始调度
+	private Integer scheduleHour;
+	
+	// 执行小时数，持续执行多久
+	private Integer executeHours;
 
 	// 是否需要实时
 	private Integer realTimeEnabled;
@@ -139,6 +145,22 @@ public class DataTaskConfiguration {
 
 	public void setEnabled(Integer enabled) {
 		this.enabled = enabled;
+	}
+
+	public Integer getScheduleHour() {
+		return scheduleHour;
+	}
+
+	public void setScheduleHour(Integer scheduleHour) {
+		this.scheduleHour = scheduleHour;
+	}
+
+	public Integer getExecuteHours() {
+		return executeHours;
+	}
+
+	public void setExecuteHours(Integer executeHours) {
+		this.executeHours = executeHours;
 	}
 
 }
