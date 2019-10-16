@@ -95,7 +95,7 @@ public abstract class DataTask implements Runnable {
 	}
 
 	public abstract void doTask();
-
+	
 	/**
 	 * 根据归档策略获取归档的最终数据时间
 	 * 
@@ -196,7 +196,19 @@ public abstract class DataTask implements Runnable {
 		throw new RuntimeException("还未实现策略：" + scheduleStrategy);
 	}
 
-	public void setThreadEndTime(long threadEndTime) {
+	public synchronized void setThreadEndTime(long threadEndTime) {
 		this.threadEndTime = threadEndTime;
+	}
+
+	public long getThreadEndTime() {
+		return threadEndTime;
+	}
+
+	public long getRealTimeMillisecond() {
+		return realTimeMillisecond;
+	}
+
+	public long getRealTimeIntervalMillisecond() {
+		return realTimeIntervalMillisecond;
 	}
 }

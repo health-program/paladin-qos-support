@@ -1,9 +1,7 @@
 package com.paladin.qos.controller.task;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,23 +19,27 @@ public class DataTaskController {
 	@Autowired
 	private DataTaskManager taskManager;
 
-	@GetMapping("/info")
+	@GetMapping("/index")
+	public String index() {
+		return "/qos/task/index";
+	}
+
+	@GetMapping("/list")
 	@ResponseBody
 	public Object getTaskStatus() {
-		Map<String, List<DataTaskVO>> result = new HashMap<>();
+		List<DataTaskVO> result = new ArrayList<>();
 
-		result.put("night", convertVO(taskManager.getNightTasks()));
-		result.put("realtime", convertVO(taskManager.getRealTimeTasks()));
+		result.addAll(convertVO(taskManager.getNightTasks()));
+		result.addAll(convertVO(taskManager.getRealTimeTasks()));
 
 		return CommonResponse.getSuccessResponse(result);
 	}
 
 	@GetMapping("/execute")
 	@ResponseBody
-	public Object executeTask(String id) {
-		DataTask task = taskManager.getTask(id);
-		task.run();
-		return CommonResponse.getSuccessResponse();
+	public Object executeTask(String id, int hour) {
+		long endTime = System.currentTimeMillis() + hour * 60 * 60 * 1000;
+		return CommonResponse.getSuccessResponse(taskManager.executeTask(id, endTime));
 	}
 
 	private List<DataTaskVO> convertVO(List<DataTask> tasks) {

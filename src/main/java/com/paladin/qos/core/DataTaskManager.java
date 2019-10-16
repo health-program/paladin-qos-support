@@ -53,7 +53,7 @@ public class DataTaskManager {
 		long threadEndTime = System.currentTimeMillis() + 10 * 60 * 60 * 1000;
 
 		for (DataTask task : nightTasks) {
-			if (task.isEnabled() && task.needScheduleToday()) {
+			if (task.isEnabled() && !task.isRun() && task.needScheduleToday()) {
 				task.setThreadEndTime(threadEndTime);
 				executorService.execute(task);
 			}
@@ -77,22 +77,21 @@ public class DataTaskManager {
 		}
 	}
 
-	/**
-	 * 是否需要实时
-	 * 
-	 * @param task
-	 * @return
-	 */
-	public boolean needRealTime(DataTask task) {
-		DataTaskConfiguration configuration = task.getConfiguration();
-		return configuration.getRealTimeEnabled() == 1;
+	public boolean executeTask(String taskId, long threadEndTime) {
+		DataTask task = getTask(taskId);
+		if (task != null && task.isEnabled() && !task.isRun()) {
+			task.setThreadEndTime(threadEndTime);
+			executorService.execute(task);
+			return true;
+		}
+		return false;
 	}
 
-	public CopyOnWriteArrayList<DataTask> getNightTasks() {
+	public List<DataTask> getNightTasks() {
 		return nightTasks;
 	}
 
-	public CopyOnWriteArrayList<DataTask> getRealTimeTasks() {
+	public List<DataTask> getRealTimeTasks() {
 		return realTimeTasks;
 	}
 

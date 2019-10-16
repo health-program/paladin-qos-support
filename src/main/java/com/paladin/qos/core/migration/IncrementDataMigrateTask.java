@@ -75,5 +75,5 @@ public class IncrementDataMigrateTask extends DataTask {
 			logger.error("数据迁移异常[ID:" + getId() + "]", e);
 		}
 	}
-	
+
 }
