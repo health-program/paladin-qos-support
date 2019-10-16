@@ -79,7 +79,6 @@ public class DataConstantContainer implements VersionContainer {
 
 		for (DataUnit unit : units) {
 			String id = unit.getId();
-			units.add(unit);
 			unitMap.put(id, unit);
 		}
 
