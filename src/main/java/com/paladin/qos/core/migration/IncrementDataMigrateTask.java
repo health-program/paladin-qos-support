@@ -16,6 +16,7 @@ public class IncrementDataMigrateTask extends DataTask {
 	private static Logger logger = LoggerFactory.getLogger(IncrementDataMigrateTask.class);
 
 	private IncrementDataMigrator dataMigrator;
+	protected volatile Date updateTime;
 
 	public IncrementDataMigrateTask(IncrementDataMigrator dataMigrator) {
 		super(dataMigrator.getId());
@@ -27,14 +28,6 @@ public class IncrementDataMigrateTask extends DataTask {
 	public void doTask() {
 		try {			
 			DataMigration dataMigration = dataMigrator.getDataMigration();
-
-			if (dataMigration.getEnabled() != 1) {
-				return;
-			}
-
-			if (isRealTime() && !doRealTime()) {
-				return;
-			}
 
 			if (updateTime == null) {
 				updateTime = dataMigrator.getCurrentUpdateTime();

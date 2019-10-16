@@ -15,8 +15,6 @@ public abstract class DataTask implements Runnable {
 	private boolean realTime;
 	private long realTimeIntervalMillisecond;
 
-	protected volatile Date updateTime;
-
 	public DataTask(String id) {
 		this.id = id;
 	}
@@ -44,7 +42,7 @@ public abstract class DataTask implements Runnable {
 	//
 	// --------------------------------------------------------------
 
-	private Boolean lock = false;
+	private volatile Boolean lock = false;
 
 	private boolean getLock() {
 		synchronized (lock) {
@@ -68,16 +66,20 @@ public abstract class DataTask implements Runnable {
 	}
 
 	public void run() {
-		try {
-			if (getLock()) {
+		if (getLock()) {
+			try {
 				doTask();
 				if (realTime) {
 					realTimeMillisecond = System.currentTimeMillis();
 				}
+			} finally {
+				cancelLock();
 			}
-		} finally {
-			cancelLock();
 		}
+	}
+
+	public boolean isEnabled() {
+		return configuration.getEnabled() == 1;
 	}
 
 	public boolean isRealTime() {
@@ -109,21 +111,22 @@ public abstract class DataTask implements Runnable {
 			return TimeUtil.getTodayBeforeMonth(configuration.getFilingStrategyParam1());
 		} else if (filingStrategy == DataTaskConfiguration.FILING_STRATEGY_UNTIL_YEAR) {
 			return TimeUtil.getTodayBeforeYear(configuration.getFilingStrategyParam1());
-		} else if (filingStrategy == DataTaskConfiguration.SCHEDULE_STRATEGY_FIXED_DAY_OF_MONTH) {
+		} else if (filingStrategy == DataTaskConfiguration.FILING_STRATEGY_FIXED_DAY_OF_MONTH) {
 			int day = configuration.getFilingStrategyParam1();
 			Calendar c = Calendar.getInstance();
 			int currentDay = c.get(Calendar.DAY_OF_MONTH);
 			if (currentDay > day) {
-				// 该月归档日
-				c.set(Calendar.DAY_OF_MONTH, day);
+				// 如果超过归档日，则应该归档到上月底
+				c.set(Calendar.DAY_OF_MONTH, 1);
+
 			} else {
 				// 上月归档日前一天
-				c.set(Calendar.DAY_OF_MONTH, day);
+				c.set(Calendar.DAY_OF_MONTH, 1);
 				c.add(Calendar.MONTH, -1);
 			}
 			c.add(Calendar.DAY_OF_MONTH, -1);
 			return TimeUtil.toDayTime(c.getTime());
-		} else if (filingStrategy == DataTaskConfiguration.SCHEDULE_STRATEGY_FIXED_DAY_OF_YEAR) {
+		} else if (filingStrategy == DataTaskConfiguration.FILING_STRATEGY_FIXED_DAY_OF_YEAR) {
 			// 归档日为每年某天
 			String dayStr = configuration.getFilingStrategyParam2();
 			String[] ss = dayStr.split("/");
@@ -136,11 +139,11 @@ public abstract class DataTask implements Runnable {
 			int cd = c.get(Calendar.DAY_OF_MONTH);
 
 			if (cm > m || (cm == m && cd > d)) {
-				c.set(Calendar.MONTH, m - 1);
-				c.set(Calendar.DAY_OF_MONTH, d);
+				c.set(Calendar.MONTH, 0);
+				c.set(Calendar.DAY_OF_MONTH, 1);
 			} else {
-				c.set(Calendar.MONTH, m - 1);
-				c.set(Calendar.DAY_OF_MONTH, d);
+				c.set(Calendar.MONTH, 0);
+				c.set(Calendar.DAY_OF_MONTH, 1);
 				c.add(Calendar.YEAR, -1);
 			}
 

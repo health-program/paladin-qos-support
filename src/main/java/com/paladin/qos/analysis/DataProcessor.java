@@ -2,9 +2,13 @@ package com.paladin.qos.analysis;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.paladin.qos.model.data.DataEvent;
+import com.paladin.qos.model.data.DataUnit;
 
 /**
  * 数据处理器，对数据进行时间维度和机构维度的数据预处理，提高统计效率
@@ -16,12 +20,52 @@ public abstract class DataProcessor {
 
 	private static Logger logger = LoggerFactory.getLogger(DataProcessor.class);
 
+	private DataEvent dataEvent;
+	private List<DataUnit> targetUnits;
+	
+	
 	/**
 	 * 处理器处理的事件ID
 	 * 
 	 * @return
 	 */
 	public abstract String getEventId();
+	
+	/**
+	 * 设置事件配置
+	 * 
+	 * @param dataEvent
+	 */
+	public void setDataEvent(DataEvent dataEvent) {
+		this.dataEvent = dataEvent;
+	}
+
+	/**
+	 * 获取事件配置
+	 * 
+	 * @return
+	 */
+	public DataEvent getDataEvent() {
+		return dataEvent;
+	}
+	
+	/**
+	 * 获取目标单位
+	 * 
+	 * @return
+	 */
+	public List<DataUnit> getTargetUnits() {
+		return targetUnits;
+	}
+
+	/**
+	 * 设置目标单位
+	 * 
+	 * @param targetUnits
+	 */
+	public void setTargetUnits(List<DataUnit> targetUnits) {
+		this.targetUnits = targetUnits;
+	}
 
 	/**
 	 * 处理数据，开始结束时间应当已经处理过（按照timeType），例如开始时间2019-8-13 00:00:00，结束时间为2019-8-14
@@ -91,5 +135,9 @@ public abstract class DataProcessor {
 	 * @return
 	 */
 	public abstract long getEventNum(Date startTime, Date endTime, String unitId);
+
+
+
+
 
 }

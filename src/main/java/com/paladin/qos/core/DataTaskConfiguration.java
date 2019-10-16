@@ -33,7 +33,7 @@ public class DataTaskConfiguration {
 	public final static int SCHEDULE_STRATEGY_CUSTOM = 10;
 
 	private String id;
-	
+
 	// 数据归档策略
 	private Integer filingStrategy;
 
@@ -42,7 +42,7 @@ public class DataTaskConfiguration {
 
 	// 调度任务策略参数2，配合调度任务策略用
 	private String filingStrategyParam2;
-	
+
 	// 调度策略
 	private Integer scheduleStrategy;
 
@@ -51,12 +51,15 @@ public class DataTaskConfiguration {
 
 	// 调度任务策略参数2，配合调度任务策略用
 	private String scheduleStrategyParam2;
-	
+
 	// 是否需要实时
 	private Integer realTimeEnabled;
 
 	// 实时间隔，分钟
 	private Integer realTimeInterval;
+
+	// 是否启用
+	private Integer enabled;
 
 	public Integer getFilingStrategy() {
 		return filingStrategy;
@@ -128,6 +131,14 @@ public class DataTaskConfiguration {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public Integer getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Integer enabled) {
+		this.enabled = enabled;
 	}
 
 }

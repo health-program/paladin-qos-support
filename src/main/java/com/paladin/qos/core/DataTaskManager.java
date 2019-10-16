@@ -24,7 +24,6 @@ public class DataTaskManager {
 
 	private ExecutorService executorService;
 
-	private CopyOnWriteArrayList<DataTask> dawnTasks = new CopyOnWriteArrayList<>();
 	private CopyOnWriteArrayList<DataTask> nightTasks = new CopyOnWriteArrayList<>();
 	private CopyOnWriteArrayList<DataTask> realTimeTasks = new CopyOnWriteArrayList<>();
 
@@ -34,35 +33,12 @@ public class DataTaskManager {
 				new ThreadPoolExecutor.DiscardPolicy());
 	}
 
-	public void registerTaskBeforeDawn(List<DataTask> tasks) {
-		dawnTasks.addAll(tasks);
-	}
-
 	public void registerTaskAtNight(List<DataTask> tasks) {
 		nightTasks.addAll(tasks);
 	}
 
 	public void registerTaskRealTime(List<DataTask> tasks) {
 		realTimeTasks.addAll(tasks);
-	}
-
-	/**
-	 * 凌晨0点执行到5点
-	 */
-	@Scheduled(cron = "0 0 0 * * ?")
-	public void executeScheduleDawn() {
-		if (simpleMode) {
-			return;
-		}
-
-		long threadEndTime = System.currentTimeMillis() + 5 * 60 * 60 * 1000;
-
-		for (DataTask task : dawnTasks) {
-			if (task.needScheduleToday()) {
-				task.setThreadEndTime(threadEndTime);
-				executorService.execute(task);
-			}
-		}
 	}
 
 	/**
@@ -77,7 +53,7 @@ public class DataTaskManager {
 		long threadEndTime = System.currentTimeMillis() + 10 * 60 * 60 * 1000;
 
 		for (DataTask task : nightTasks) {
-			if (task.needScheduleToday()) {
+			if (task.isEnabled() && task.needScheduleToday()) {
 				task.setThreadEndTime(threadEndTime);
 				executorService.execute(task);
 			}
@@ -89,12 +65,12 @@ public class DataTaskManager {
 	 */
 	@Scheduled(cron = "0 */1 * * * ?")
 	public void executeRealTime() {
-//		if (simpleMode) {
-//			return;
-//		}
+		if (simpleMode) {
+			return;
+		}
 
 		for (DataTask task : realTimeTasks) {
-			boolean execute = !task.isRun() && task.isRealTime() && task.doRealTime();
+			boolean execute = task.isEnabled() && !task.isRun() && task.isRealTime() && task.doRealTime();
 			if (execute) {
 				executorService.execute(task);
 			}
@@ -112,10 +88,6 @@ public class DataTaskManager {
 		return configuration.getRealTimeEnabled() == 1;
 	}
 
-	public CopyOnWriteArrayList<DataTask> getDawnTasks() {
-		return dawnTasks;
-	}
-
 	public CopyOnWriteArrayList<DataTask> getNightTasks() {
 		return nightTasks;
 	}
@@ -125,12 +97,6 @@ public class DataTaskManager {
 	}
 
 	public DataTask getTask(String id) {
-
-		for (DataTask task : dawnTasks) {
-			if (task.getId().equals(id)) {
-				return task;
-			}
-		}
 
 		for (DataTask task : nightTasks) {
 			if (task.getId().equals(id)) {

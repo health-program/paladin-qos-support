@@ -23,4 +23,8 @@ public class DefaultTaskStack implements TaskStack {
 		index++;
 		return task;
 	}
+
+	public TaskStack clone() {
+		return new DefaultTaskStack(tasks);
+	}
 }

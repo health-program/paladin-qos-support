@@ -12,18 +12,26 @@ public class MixedDataTask extends DataTask {
 	}
 
 	public void run() {
+		TaskStack stackCopy = stack.clone();
 		do {
-			DataTask task = stack.pop();
+			DataTask task = stackCopy.pop();
 			if (task == null) {
 				break;
 			}
 
-			task.run();
+			if (!task.isRun()) {
+				task.run();
+			}
 
 			if (!isRealTime() && isThreadFinished()) {
 				break;
 			}
 		} while (true);
+
+	}
+
+	public boolean isRun() {
+		return false;
 	}
 
 	@Override

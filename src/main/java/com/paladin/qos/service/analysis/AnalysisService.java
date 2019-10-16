@@ -7,17 +7,22 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.paladin.framework.core.exception.BusinessException;
+import com.paladin.framework.utils.uuid.UUIDUtil;
 import com.paladin.qos.analysis.DataByUnit;
 import com.paladin.qos.analysis.DataConstantContainer;
 import com.paladin.qos.analysis.DataProcessContainer;
-import com.paladin.qos.analysis.DataProcessEvent;
-import com.paladin.qos.analysis.DataProcessUnit;
 import com.paladin.qos.analysis.DataProcessor;
+import com.paladin.qos.analysis.Metadata;
 import com.paladin.qos.mapper.analysis.AnalysisMapper;
+import com.paladin.qos.model.data.DataEvent;
+import com.paladin.qos.model.data.DataProcessException;
+import com.paladin.qos.model.data.DataProcessedDay;
 import com.paladin.qos.model.data.DataUnit;
 import com.paladin.qos.service.analysis.data.AnalysisUnit;
 import com.paladin.qos.service.analysis.data.DataCountDay;
@@ -34,10 +39,14 @@ import com.paladin.qos.service.analysis.data.DataResult;
 import com.paladin.qos.service.analysis.data.TestResult;
 import com.paladin.qos.service.analysis.data.ValidateEventResult;
 import com.paladin.qos.service.analysis.data.ValidateUnitResult;
+import com.paladin.qos.service.data.DataProcessExceptionService;
+import com.paladin.qos.service.data.DataProcessedDayService;
 import com.paladin.qos.util.TimeUtil;
 
 @Service
 public class AnalysisService {
+
+	private static Logger logger = LoggerFactory.getLogger(AnalysisService.class);
 
 	public final static int DATA_TYPE_DAY = 1;
 	public final static int DATA_TYPE_MONTH = 2;
@@ -50,6 +59,12 @@ public class AnalysisService {
 
 	@Autowired
 	private DataProcessContainer dataProcessContainer;
+
+	@Autowired
+	private DataProcessedDayService dataProcessedDayService;
+
+	@Autowired
+	private DataProcessExceptionService dataProcessExceptionService;
 
 	// ----------------------------------->查找某事件某医院在时间段内按时间粒度统计数据<-----------------------------------
 
@@ -83,7 +98,7 @@ public class AnalysisService {
 
 	// ----------------------------------->查找某事件单个或所有医院在时间段内按时间粒度统计<-----------------------------------
 
-	private List<DataProcessUnit> getUnitByType(int unitType) {
+	private List<DataUnit> getUnitByType(int unitType) {
 		if (unitType == DataUnit.TYPE_HOSPITAL) {
 			return DataConstantContainer.getHospitalList();
 		} else if (unitType == DataUnit.TYPE_COMMUNITY) {
@@ -131,13 +146,13 @@ public class AnalysisService {
 	 * @param endDate
 	 * @return
 	 */
-	public DataResult<DataPointDay> getDataSetOfDay(String eventId, List<DataProcessUnit> units, Date startDate, Date endDate) {
+	public DataResult<DataPointDay> getDataSetOfDay(String eventId, List<DataUnit> units, Date startDate, Date endDate) {
 		if (units == null) {
 			return null;
 		}
 
 		List<DataPointUnit<DataPointDay>> unitPoints = new ArrayList<>(units.size());
-		for (DataProcessUnit unit : units) {
+		for (DataUnit unit : units) {
 			unitPoints.add(getDataPointUnitOfDay(eventId, unit.getId(), startDate, endDate));
 		}
 
@@ -180,13 +195,13 @@ public class AnalysisService {
 	 * @param endDate
 	 * @return
 	 */
-	public DataResult<DataPointMonth> getDataSetOfMonth(String eventId, List<DataProcessUnit> units, Date startDate, Date endDate) {
+	public DataResult<DataPointMonth> getDataSetOfMonth(String eventId, List<DataUnit> units, Date startDate, Date endDate) {
 		if (units == null) {
 			return null;
 		}
 
 		List<DataPointUnit<DataPointMonth>> unitPoints = new ArrayList<>(units.size());
-		for (DataProcessUnit unit : units) {
+		for (DataUnit unit : units) {
 			unitPoints.add(getDataPointUnitOfMonth(eventId, unit.getId(), startDate, endDate));
 		}
 		return new DataResult<DataPointMonth>(eventId, DATA_TYPE_MONTH, unitPoints);
@@ -228,13 +243,13 @@ public class AnalysisService {
 	 * @param endYear
 	 * @return
 	 */
-	public DataResult<DataPointYear> getDataSetOfYear(String eventId, List<DataProcessUnit> units, int startYear, int endYear) {
+	public DataResult<DataPointYear> getDataSetOfYear(String eventId, List<DataUnit> units, int startYear, int endYear) {
 		if (units == null) {
 			return null;
 		}
 
 		List<DataPointUnit<DataPointYear>> unitPoints = new ArrayList<>(units.size());
-		for (DataProcessUnit unit : units) {
+		for (DataUnit unit : units) {
 			unitPoints.add(getDataPointUnitOfYear(eventId, unit.getId(), startYear, endYear));
 		}
 		return new DataResult<DataPointYear>(eventId, DATA_TYPE_YEAR, unitPoints);
@@ -637,19 +652,29 @@ public class AnalysisService {
 			throw new BusinessException("请传入正确时间段");
 		}
 
-		List<DataProcessEvent> events = DataConstantContainer.getEventList();
+		List<DataEvent> events = DataConstantContainer.getEventList();
 		List<ValidateEventResult> results = new ArrayList<>(events.size());
 
-		for (DataProcessEvent event : events) {
+		for (DataEvent event : events) {
 			String eventId = event.getId();
 
-			List<DataProcessUnit> units = event.getTargetUnits();
+			List<DataUnit> units = null;
+			int targetType = event.getTargetType();
+
+			if (targetType == DataEvent.TARGET_TYPE_ALL) {
+				units = DataConstantContainer.getUnitList();
+			} else if (targetType == DataEvent.TARGET_TYPE_HOSPITAL) {
+				units = DataConstantContainer.getHospitalList();
+			} else if (targetType == DataEvent.TARGET_TYPE_COMMUNITY) {
+				units = DataConstantContainer.getCommunityList();
+			}
+
 			if (units == null) {
 				return null;
 			}
 
 			List<ValidateUnitResult> unitResults = new ArrayList<>();
-			for (DataProcessUnit unit : units) {
+			for (DataUnit unit : units) {
 				ValidateUnitResult unitResult = validateProcessedData(eventId, unit.getId(), serialNumbers);
 				if (unitResult != null) {
 					unitResults.add(unitResult);
@@ -707,7 +732,7 @@ public class AnalysisService {
 	 * @param event
 	 * @return
 	 */
-	public TestResult testProcessor(DataProcessEvent event) {
+	public TestResult testProcessor(DataEvent event) {
 		if (event != null) {
 			String eventId = event.getId();
 
@@ -717,7 +742,7 @@ public class AnalysisService {
 			DataProcessor processor = dataProcessContainer.getDataProcessor(eventId);
 			if (processor != null) {
 
-				List<DataProcessUnit> units = event.getTargetUnits();
+				List<DataUnit> units = processor.getTargetUnits();
 				if (units == null) {
 					return null;
 				}
@@ -728,7 +753,7 @@ public class AnalysisService {
 				long begin = System.currentTimeMillis();
 
 				try {
-					for (DataProcessUnit unit : units) {
+					for (DataUnit unit : units) {
 						String unitId = unit.getId();
 						processor.getTotalNum(startTime, endTime, unitId);
 						processor.getEventNum(startTime, endTime, unitId);
@@ -760,9 +785,9 @@ public class AnalysisService {
 	 * @return
 	 */
 	public List<TestResult> testProcessors() {
-		List<DataProcessEvent> events = DataConstantContainer.getEventList();
+		List<DataEvent> events = DataConstantContainer.getEventList();
 		List<TestResult> results = new ArrayList<>(events.size());
-		for (DataProcessEvent event : events) {
+		for (DataEvent event : events) {
 
 			TestResult result = testProcessor(event);
 			if (result != null) {
@@ -770,6 +795,167 @@ public class AnalysisService {
 			}
 		}
 		return results;
+	}
+
+	/**
+	 * 保存一天的处理数据
+	 * 
+	 * @param start
+	 * @param end
+	 * @param unitId
+	 * @param processor
+	 * @param confirmed
+	 * @return
+	 */
+	public boolean processDataForOneDay(Date start, Date end, String unitId, DataProcessor processor, boolean confirmed) {
+		try {
+			Metadata rateMetadata = processor.processByDay(start, end, unitId);
+			if (rateMetadata != null) {
+				saveProcessedDataForDay(rateMetadata, confirmed);
+				return true;
+			}
+		} catch (Exception ex) {
+			logger.error("处理数据失败！日期：" + start + "，事件：" + processor.getEventId() + "，医院：" + unitId, ex);
+			DataProcessException exception = new DataProcessException();
+			exception.setId(UUIDUtil.createUUID());
+			exception.setCreateTime(new Date());
+			exception.setEventId(processor.getEventId());
+			exception.setException(ex.getMessage());
+			exception.setProcessDay(start);
+			exception.setUnitId(unitId);
+			try {
+				dataProcessExceptionService.save(exception);
+			} catch (Exception ex2) {
+				logger.error("持久化处理数据异常错误", ex2);
+			}
+		}
+		return false;
+	}
+
+	private void saveProcessedDataForDay(Metadata rateMetadata, boolean confirmed) {
+
+		// 根据日期与事件创建唯一ID
+		int year = rateMetadata.getYear();
+		int month = rateMetadata.getMonth();
+		int day = rateMetadata.getDay();
+		String eventId = rateMetadata.getEventId();
+		String unitId = rateMetadata.getUnitValue();
+
+		StringBuilder sb = new StringBuilder(eventId);
+		sb.append('_').append(unitId).append('_');
+		sb.append(year);
+		if (month < 10) {
+			sb.append('0');
+		}
+		sb.append(month);
+		if (day < 10) {
+			sb.append('0');
+		}
+		sb.append(day);
+
+		String id = sb.toString();
+
+		DataProcessedDay model = new DataProcessedDay();
+		model.setId(id);
+		model.setEventId(eventId);
+		model.setDay(day);
+		model.setMonth(month);
+		model.setYear(year);
+		model.setWeekMonth(rateMetadata.getWeekMonth());
+		model.setWeekYear(rateMetadata.getWeekYear());
+
+		int serialNumber = year * 10000 + month * 100 + day;
+		model.setSerialNumber(serialNumber);
+
+		long totalNum = rateMetadata.getTotalNum();
+		long eventNum = rateMetadata.getEventNum();
+
+		DataUnit unit = DataConstantContainer.getUnit(unitId);
+
+		model.setUnitId(unitId);
+		model.setUnitType(unit.getType());
+
+		model.setTotalNum(totalNum);
+		model.setEventNum(eventNum);
+		model.setConfirmed(confirmed ? 1 : 0);
+		model.setUpdateTime(new Date());
+
+		if (!dataProcessedDayService.updateOrSave(model)) {
+			throw new RuntimeException("持久化日粒度数据失败！");
+		}
+	}
+
+	// ---------------------------------------------------------------------
+	//
+	// 由于处理数据可能时间较长，所以使用线程处理，并轮休查询进度
+	//
+	// ---------------------------------------------------------------------
+
+	private DataProcessThread processThread;
+
+	public synchronized boolean processDataByThread(Date startTime, Date endTime, List<DataEvent> events, List<DataUnit> units) {
+		if (processThread != null && processThread.isAlive()) {
+			return false;
+		} else {
+			List<DataProcessor> processors = new ArrayList<>(events.size());
+			for (DataEvent event : events) {
+				DataProcessor processor = dataProcessContainer.getDataProcessor(event.getId());
+				if (processor != null) {
+					processors.add(processor);
+				} else {
+					logger.info("找不到事件[" + event.getId() + "]对应处理器");
+				}
+			}
+
+			processThread = new DataProcessThread(this, processors, units, startTime, endTime);
+			processThread.start();
+			return true;
+		}
+	}
+
+	public ProcessStatus getProcessDataStatus() {
+		if (processThread == null) {
+			return new ProcessStatus(0, 0, ProcessStatus.STATUS_NON);
+		} else {
+			return new ProcessStatus(processThread.getTotal(), processThread.getProcessedCount(),
+					processThread.isFinished() ? ProcessStatus.STATUS_PROCESSED : ProcessStatus.STATUS_PROCESSING);
+		}
+	}
+
+	public void shutdownProcessThread() {
+		if (processThread != null) {
+			processThread.shutdown();
+		}
+	}
+
+	public static class ProcessStatus {
+
+		public final static int STATUS_NON = -1;
+		public final static int STATUS_PROCESSING = 1;
+		public final static int STATUS_PROCESSED = 2;
+
+		private int total;
+		private int current;
+		private int status;
+
+		public ProcessStatus(int total, int current, int status) {
+			this.total = total;
+			this.current = current;
+			this.status = status;
+		}
+
+		public int getTotal() {
+			return total;
+		}
+
+		public int getCurrent() {
+			return current;
+		}
+
+		public int getStatus() {
+			return status;
+		}
+
 	}
 
 }

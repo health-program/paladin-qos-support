@@ -3,15 +3,15 @@ package com.paladin.qos.analysis.impl.fuyou;
 import java.util.Date;
 
 import com.paladin.qos.analysis.DataConstantContainer;
-import com.paladin.qos.analysis.DataProcessUnit;
 import com.paladin.qos.analysis.DataProcessor;
 import com.paladin.qos.analysis.Metadata;
+import com.paladin.qos.model.data.DataUnit;
 
 public abstract class FuyouDataProcessor extends DataProcessor{
 
 	private String getMappingUnitId(String unitId) {		
-		DataProcessUnit unit = DataConstantContainer.getUnit(unitId);
-		return unit == null ? null : unit.getSource().getFuyouCode();
+		DataUnit unit = DataConstantContainer.getUnit(unitId);
+		return unit == null ? null : unit.getFuyouCode();
 	}
 
 	public Metadata processByDay(Date startTime, Date endTime, String unitId) {

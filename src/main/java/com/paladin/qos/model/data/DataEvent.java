@@ -4,7 +4,16 @@ import java.util.Date;
 
 import javax.persistence.Id;
 
-public class DataEvent {
+import com.paladin.qos.core.DataTaskConfiguration;
+
+public class DataEvent extends DataTaskConfiguration {
+
+	public static final int EVENT_TYPE_RATE = 1;
+	public static final int EVENT_TYPE_COUNT = 2;
+
+	public static final int TARGET_TYPE_ALL = 1;
+	public static final int TARGET_TYPE_HOSPITAL = 2;
+	public static final int TARGET_TYPE_COMMUNITY = 3;
 
 	//
 	@Id
@@ -24,31 +33,15 @@ public class DataEvent {
 
 	// 内容说明
 	private String content;
-	
+
 	// 处理开始时间
 	private Date processStartDate;
 
-	// 处理前多少天/月/年数据
-	private Integer processBefore;
+	// 最大迁移条数
+	private Integer maximumProcess;
 
-	// 处理前天？月？年类型
-	private Integer processBeforeType;
-
-	// 是否需要实时
-	private Integer realTimeEnabled;
-
-	// 实时间隔时间，分钟
-	private Integer realTimeInterval;
-
-	// sql 执行速度
-	private Integer sqlSpeed;
-	
 	// 是否单独处理线程
 	private Integer separateProcessThread;
-	
-	// 是否启用
-	private Integer enabled;
-	
 
 	public String getId() {
 		return id;
@@ -66,20 +59,12 @@ public class DataEvent {
 		this.name = name;
 	}
 
-	public String getContent() {
-		return content;
+	public Integer getEventType() {
+		return eventType;
 	}
 
-	public void setContent(String content) {
-		this.content = content;
-	}
-
-	public Integer getEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(Integer enabled) {
-		this.enabled = enabled;
+	public void setEventType(Integer eventType) {
+		this.eventType = eventType;
 	}
 
 	public Integer getTargetType() {
@@ -90,30 +75,6 @@ public class DataEvent {
 		this.targetType = targetType;
 	}
 
-	public Integer getEventType() {
-		return eventType;
-	}
-
-	public void setEventType(Integer eventType) {
-		this.eventType = eventType;
-	}
-
-	public Integer getRealTimeInterval() {
-		return realTimeInterval;
-	}
-
-	public void setRealTimeInterval(Integer realTimeInterval) {
-		this.realTimeInterval = realTimeInterval;
-	}
-
-	public Integer getRealTimeEnabled() {
-		return realTimeEnabled;
-	}
-
-	public void setRealTimeEnabled(Integer realTimeEnabled) {
-		this.realTimeEnabled = realTimeEnabled;
-	}
-
 	public String getDataSource() {
 		return dataSource;
 	}
@@ -122,28 +83,20 @@ public class DataEvent {
 		this.dataSource = dataSource;
 	}
 
-	public Integer getProcessBefore() {
-		return processBefore;
+	public String getContent() {
+		return content;
 	}
 
-	public void setProcessBefore(Integer processBefore) {
-		this.processBefore = processBefore;
+	public void setContent(String content) {
+		this.content = content;
 	}
 
-	public Integer getProcessBeforeType() {
-		return processBeforeType;
+	public Date getProcessStartDate() {
+		return processStartDate;
 	}
 
-	public void setProcessBeforeType(Integer processBeforeType) {
-		this.processBeforeType = processBeforeType;
-	}
-
-	public Integer getSqlSpeed() {
-		return sqlSpeed;
-	}
-
-	public void setSqlSpeed(Integer sqlSpeed) {
-		this.sqlSpeed = sqlSpeed;
+	public void setProcessStartDate(Date processStartDate) {
+		this.processStartDate = processStartDate;
 	}
 
 	public Integer getSeparateProcessThread() {
@@ -154,12 +107,12 @@ public class DataEvent {
 		this.separateProcessThread = separateProcessThread;
 	}
 
-	public Date getProcessStartDate() {
-		return processStartDate;
+	public Integer getMaximumProcess() {
+		return maximumProcess;
 	}
 
-	public void setProcessStartDate(Date processStartDate) {
-		this.processStartDate = processStartDate;
+	public void setMaximumProcess(Integer maximumProcess) {
+		this.maximumProcess = maximumProcess;
 	}
 
 }

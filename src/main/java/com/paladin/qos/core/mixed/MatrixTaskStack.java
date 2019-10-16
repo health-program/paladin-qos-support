@@ -10,9 +10,12 @@ public class MatrixTaskStack implements TaskStack {
 	private int startIndex;
 	private int visitCount;
 
+	private int originIndex;
+
 	public MatrixTaskStack(List<TaskStack> stacks, int startIndex) {
 		this.stacks = stacks;
 		this.startIndex = startIndex;
+		this.originIndex = startIndex;
 		this.visitCount = 0;
 	}
 
@@ -30,6 +33,10 @@ public class MatrixTaskStack implements TaskStack {
 			}
 		}
 		return null;
+	}
+
+	public TaskStack clone() {
+		return new MatrixTaskStack(stacks, originIndex);
 	}
 
 }

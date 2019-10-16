@@ -7,8 +7,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import com.paladin.qos.analysis.DataProcessEvent;
-
 public class TimeUtil {
 
 	public static final int SECONDS_IN_DAY = 60 * 60 * 24;
@@ -260,34 +258,6 @@ public class TimeUtil {
 	public static Date getDateBefore(long millis, int pastDays) {
 		millis = millis - ((millis + timeZone.getOffset(millis)) % MILLIS_IN_DAY);
 		return new Date(millis - MILLIS_IN_DAY * pastDays);
-	}
-
-	/**
-	 * 获取统计处理截止归档时间
-	 * 
-	 * @param event
-	 * @return
-	 */
-	public static Date getFilingDate(DataProcessEvent event) {
-		int num = event.getProcessBefore();
-		int type = event.getProcessBeforeType();
-
-		if (type == DataProcessEvent.PROCESS_BEFORE_TYPE_DAY) {
-			return getTodayBefore(num);
-		} else if (type == DataProcessEvent.PROCESS_BEFORE_TYPE_MONTH) {
-			return getTodayBeforeMonth(num);
-		} else if (type == DataProcessEvent.PROCESS_BEFORE_TYPE_YEAR) {
-			return getTodayBeforeYear(num);
-		} else if (type == DataProcessEvent.PROCESS_BEFORE_TYPE_SPECIAL_ONE) {
-			Calendar ca = Calendar.getInstance();
-			int day = ca.get(Calendar.DAY_OF_MONTH);
-			if (day < num) {
-				return getTodayBeforeMonth(1);
-			} else {
-				return getTodayBeforeMonth(2);
-			}
-		}
-		return null;
 	}
 
 	private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

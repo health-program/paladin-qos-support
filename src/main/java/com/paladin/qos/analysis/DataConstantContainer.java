@@ -24,8 +24,6 @@ public class DataConstantContainer implements VersionContainer {
 
 	private final static String container_id = "data_constant_container";
 
-	private final static long DEFAULT_REAL_TIME_INTERVAL = 5 * 60 * 1000;
-
 	@Override
 	public String getId() {
 		return container_id;
@@ -53,92 +51,55 @@ public class DataConstantContainer implements VersionContainer {
 	private DataEventService dataEventService;
 	@Autowired
 	private DataUnitService dataUnitService;
-	@Autowired
-	private DataProcessManager dataProcessManager;
 
-	private static Map<String, DataProcessEvent> eventMap;
-	private static Map<String, DataProcessUnit> unitMap;
+	private static Map<String, DataEvent> eventMap;
+	private static Map<String, DataUnit> unitMap;
 
-	private static List<DataProcessEvent> events;
-	private static List<DataProcessUnit> units;
-	private static List<DataProcessUnit> hospitals;
-	private static List<DataProcessUnit> communities;
+	private static List<DataEvent> events;
+	private static List<DataUnit> units;
+	private static List<DataUnit> hospitals;
+	private static List<DataUnit> communities;
 
 	public boolean initialize() {
-		List<DataEvent> dataEvents = dataEventService.findAll();
-		List<DataUnit> dataUnits = dataUnitService.findAll();
+		List<DataEvent> events = dataEventService.findAll();
+		List<DataUnit> units = dataUnitService.findAll();
 
-		List<DataProcessEvent> events = new ArrayList<>();
-		List<DataProcessUnit> units = new ArrayList<>();
-
-		Map<String, DataProcessEvent> eventMap = new HashMap<>();
-		Map<String, DataProcessUnit> unitMap = new HashMap<>();
+		Map<String, DataEvent> eventMap = new HashMap<>();
+		Map<String, DataUnit> unitMap = new HashMap<>();
 
 		List<KeyValue> eventKeyValues = new ArrayList<>();
 
-		for (DataEvent dataEvent : dataEvents) {
-			String id = dataEvent.getId();
-			String name = dataEvent.getName();
-			Integer enabled = dataEvent.getEnabled();
-			Integer realTimeEnabled = dataEvent.getRealTimeEnabled();
-			Integer realTimeInterval = dataEvent.getRealTimeInterval();
-			Integer separateProcessThread = dataEvent.getSeparateProcessThread();
-
-			DataProcessEvent event = new DataProcessEvent();
-			event.setId(id);
-			event.setName(name);
-			event.setEnabled(enabled != null && enabled.intValue() == 1);
-			event.setEventType(dataEvent.getEventType());
-			event.setDataSource(dataEvent.getDataSource());
-			event.setTargetType(dataEvent.getTargetType());
-			event.setRealTimeEnabled(realTimeEnabled != null && realTimeEnabled.intValue() == 1);
-			event.setRealTimeInterval(realTimeInterval == null ? DEFAULT_REAL_TIME_INTERVAL : realTimeInterval * 60 * 1000);
-			event.setProcessBefore(dataEvent.getProcessBefore());
-			event.setProcessBeforeType(dataEvent.getProcessBeforeType());
-			event.setSqlSpeed(dataEvent.getSqlSpeed());
-			event.setSeparateProcessThread(separateProcessThread != null && separateProcessThread.intValue() == 1);
-			event.setProcessStartDate(dataEvent.getProcessStartDate());
-
-			events.add(event);
+		for (DataEvent event : events) {
+			String id = event.getId();
+			String name = event.getName();
 
 			eventKeyValues.add(new KeyValue(id, name));
 			eventMap.put(id, event);
 		}
 
-		for (DataUnit dataUnit : dataUnits) {
-			String id = dataUnit.getId();
-			String name = dataUnit.getName();
-			Integer type = dataUnit.getType();
-			Integer orderNum = dataUnit.getOrderNum();
-
-			DataProcessUnit unit = new DataProcessUnit();
-			unit.setId(id);
-			unit.setName(name);
-			unit.setType(type);
-			unit.setSource(dataUnit);
-			unit.setOrderNum(orderNum == null ? 999999 : orderNum.intValue());
-
+		for (DataUnit unit : units) {
+			String id = unit.getId();
 			units.add(unit);
 			unitMap.put(id, unit);
 		}
 
-		units.sort(new Comparator<DataProcessUnit>() {
+		units.sort(new Comparator<DataUnit>() {
 			@Override
-			public int compare(DataProcessUnit o1, DataProcessUnit o2) {
+			public int compare(DataUnit o1, DataUnit o2) {
 				int i1 = o1.getOrderNum();
 				int i2 = o2.getOrderNum();
 				return i1 > i2 ? 1 : -1;
 			}
 		});
 
-		List<DataProcessUnit> hospitals = new ArrayList<>();
-		List<DataProcessUnit> communities = new ArrayList<>();
+		List<DataUnit> hospitals = new ArrayList<>();
+		List<DataUnit> communities = new ArrayList<>();
 
 		List<KeyValue> unitKeyValues = new ArrayList<>();
 		List<KeyValue> hospitalKeyValues = new ArrayList<>();
 		List<KeyValue> communityKeyValues = new ArrayList<>();
 
-		for (DataProcessUnit unit : units) {
+		for (DataUnit unit : units) {
 			String id = unit.getId();
 			String name = unit.getName();
 			int type = unit.getType();
@@ -158,17 +119,6 @@ public class DataConstantContainer implements VersionContainer {
 		constantsContainer.putConstant(TYPE_HOSPITAL, hospitalKeyValues);
 		constantsContainer.putConstant(TYPE_COMMUNITY, communityKeyValues);
 
-		for (DataProcessEvent event : events) {
-			int targetType = event.getTargetType();
-			if (targetType == DataProcessEvent.TARGET_TYPE_ALL) {
-				event.setTargetUnits(units);
-			} else if (targetType == DataProcessEvent.TARGET_TYPE_HOSPITAL) {
-				event.setTargetUnits(hospitals);
-			} else if (targetType == DataProcessEvent.TARGET_TYPE_COMMUNITY) {
-				event.setTargetUnits(communities);
-			}
-		}
-
 		DataConstantContainer.events = Collections.unmodifiableList(events);
 		DataConstantContainer.units = Collections.unmodifiableList(units);
 
@@ -178,7 +128,6 @@ public class DataConstantContainer implements VersionContainer {
 		DataConstantContainer.hospitals = Collections.unmodifiableList(hospitals);
 		DataConstantContainer.communities = Collections.unmodifiableList(communities);
 
-		dataProcessManager.readLastProcessedDay(null);
 		return true;
 	}
 
@@ -186,13 +135,13 @@ public class DataConstantContainer implements VersionContainer {
 		VersionContainerManager.versionChanged(container_id);
 	}
 
-	public static List<DataProcessEvent> getEventList() {
+	public static List<DataEvent> getEventList() {
 		return events;
 	}
 
-	public static List<DataProcessEvent> getEventListByDataSource(String dataSouce) {
-		List<DataProcessEvent> events = new ArrayList<>();
-		for (DataProcessEvent event : DataConstantContainer.events) {
+	public static List<DataEvent> getEventListByDataSource(String dataSouce) {
+		List<DataEvent> events = new ArrayList<>();
+		for (DataEvent event : DataConstantContainer.events) {
 			if (event.getDataSource().equals(dataSouce)) {
 				events.add(event);
 			}
@@ -200,33 +149,33 @@ public class DataConstantContainer implements VersionContainer {
 		return events;
 	}
 
-	public static List<DataProcessUnit> getUnitList() {
+	public static List<DataUnit> getUnitList() {
 		return units;
 	}
 
-	public static List<DataProcessUnit> getHospitalList() {
+	public static List<DataUnit> getHospitalList() {
 		return hospitals;
 	}
 
-	public static List<DataProcessUnit> getCommunityList() {
+	public static List<DataUnit> getCommunityList() {
 		return communities;
 	}
 
-	public static DataProcessUnit getUnit(String id) {
+	public static DataUnit getUnit(String id) {
 		return unitMap.get(id);
 	}
 
-	public static DataProcessEvent getEvent(String id) {
+	public static DataEvent getEvent(String id) {
 		return eventMap.get(id);
 	}
 
 	public static String getUnitName(String id) {
-		DataProcessUnit unit = unitMap.get(id);
+		DataUnit unit = unitMap.get(id);
 		return unit == null ? "未知单位" : unit.getName();
 	}
 
 	public static String getEventName(String id) {
-		DataProcessEvent event = eventMap.get(id);
+		DataEvent event = eventMap.get(id);
 		return event == null ? "未知统计事件" : event.getName();
 	}
 

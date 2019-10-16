@@ -26,7 +26,6 @@ public class DataTaskController {
 	public Object getTaskStatus() {
 		Map<String, List<DataTaskVO>> result = new HashMap<>();
 
-		result.put("dawn", convertVO(taskManager.getDawnTasks()));
 		result.put("night", convertVO(taskManager.getNightTasks()));
 		result.put("realtime", convertVO(taskManager.getRealTimeTasks()));
 

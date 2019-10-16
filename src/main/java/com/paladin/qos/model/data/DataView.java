@@ -25,8 +25,6 @@ public class DataView extends DataTaskConfiguration {
 	// 备注
 	private String notes;
 
-	// 是否启用
-	private Integer enabled;
 
 	public String getId() {
 		return id;
@@ -66,14 +64,6 @@ public class DataView extends DataTaskConfiguration {
 
 	public void setNotes(String notes) {
 		this.notes = notes;
-	}
-
-	public Integer getEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(Integer enabled) {
-		this.enabled = enabled;
 	}
 
 	public String getTargetDataSource() {

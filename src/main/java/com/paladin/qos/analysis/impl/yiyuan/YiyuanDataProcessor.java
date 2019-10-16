@@ -2,15 +2,15 @@ package com.paladin.qos.analysis.impl.yiyuan;
 
 import com.paladin.framework.core.exception.SystemException;
 import com.paladin.qos.analysis.DataConstantContainer;
-import com.paladin.qos.analysis.DataProcessUnit;
 import com.paladin.qos.analysis.DataProcessor;
+import com.paladin.qos.model.data.DataUnit;
 
 public abstract class YiyuanDataProcessor extends DataProcessor {
 
 	protected String getDataSourceByUnit(String unitId) {
-		DataProcessUnit unit = DataConstantContainer.getUnit(unitId);
+		DataUnit unit = DataConstantContainer.getUnit(unitId);
 		if (unit != null) {
-			String dbCode = unit.getSource().getDbCode();
+			String dbCode = unit.getDbCode();
 			if (dbCode != null && dbCode.length() > 0) {
 				return dbCode;
 			}
