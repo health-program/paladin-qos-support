@@ -46,6 +46,9 @@ public class DataMigration extends DataTaskConfiguration {
 
 	// 主键字段
 	private String primaryKeyField;
+	
+	// 查询列
+	private String selectColumns;
 
 	// 每次查询条数限制
 	private Integer selectDataLimit;
@@ -191,6 +194,14 @@ public class DataMigration extends DataTaskConfiguration {
 
 	public void setMillisecondEnabled(Integer millisecondEnabled) {
 		this.millisecondEnabled = millisecondEnabled;
+	}
+
+	public String getSelectColumns() {
+		return selectColumns;
+	}
+
+	public void setSelectColumns(String selectColumns) {
+		this.selectColumns = selectColumns;
 	}
 
 }

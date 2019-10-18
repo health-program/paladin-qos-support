@@ -3,7 +3,7 @@
 <mapper namespace="com.paladin.qos.dynamic.mapper.core.DataMigrateMapper">
 
 	<select id="selectDataForMySql" resultType="Map">
-		SELECT * FROM ${tableName} 
+		SELECT ${selectColumns} FROM ${tableName} 
 		WHERE ${updateTimeField} &gt;= #{startTime}
 		<if test="endTime != null">
 			AND ${updateTimeField} &lt;= #{endTime}
@@ -12,7 +12,7 @@
 	</select>
 	
 	<select id="selectDataForSqlServer" resultType="Map">
-		SELECT TOP ${limit} * FROM ${tableName} 
+		SELECT TOP ${limit} ${selectColumns} FROM ${tableName} 
 		WHERE ${updateTimeField} &gt;= #{startTime}
 		<if test="endTime != null">
 			AND ${updateTimeField} &lt;= #{endTime}
@@ -22,7 +22,7 @@
 	
 	<select id="selectDataForOracle" resultType="Map">
 		SELECT * FROM (
-		SELECT * FROM ${tableName} 
+		SELECT ${selectColumns} FROM ${tableName} 
 		WHERE ${updateTimeField} &gt;= to_date('${startTime}','yyyy-mm-dd hh24:mi:ss')
 		<if test="endTime != null">
 			AND ${updateTimeField} &lt;= to_date('${endTime}','yyyy-mm-dd hh24:mi:ss')
@@ -33,7 +33,7 @@
 	
 	<select id="selectDataForOracleToMillisecond" resultType="Map">
 		SELECT * FROM (
-		SELECT * FROM ${tableName} 
+		SELECT ${selectColumns} FROM ${tableName} 
 		WHERE ${updateTimeField} &gt;= to_timestamp('${startTime}','yyyy-mm-dd hh24:mi:ss.ff')
 		<if test="endTime != null">
 			AND ${updateTimeField} &lt;= to_timestamp('${endTime}','yyyy-mm-dd hh24:mi:ss.ff')

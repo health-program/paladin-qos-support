@@ -81,7 +81,7 @@ public class YearIncrementDataMigrator extends CommonIncrementDataMigrator {
 			startYear++;
 		} while (startYear < endYear);
 
-		return mapper.selectDataByYear(originTableName, updateTimeField, years);
+		return mapper.selectDataByYear(originTableName, updateTimeField, selectColumns, years);
 	}
 
 	@Override

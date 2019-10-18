@@ -75,6 +75,11 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 	protected Set<String> primaryKeyFields;
 
 	/**
+	 * 查询列
+	 */
+	protected String selectColumns;
+
+	/**
 	 * 缺省开始时间
 	 */
 	protected Date defaultStartDate;
@@ -109,6 +114,11 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 		this.updateTimeField = dataMigration.getUpdateTimeField();
 		this.defaultStartDate = dataMigration.getDefaultStartDate();
 		this.millisecondEnabled = dataMigration.getMillisecondEnabled() == 1;
+		this.selectColumns = dataMigration.getSelectColumns();
+
+		if (this.selectColumns == null || this.selectColumns.length() == 0) {
+			this.selectColumns = "*";
+		}
 
 		String primaryKeyField = dataMigration.getPrimaryKeyField();
 		String[] keyFields = primaryKeyField.split(",");
@@ -197,12 +207,12 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 		String endTime = updateEndTime != null ? format.format(updateEndTime) : null;
 
 		if (DataMigration.ORIGIN_DATA_SOURCE_TYPE_MYSQL.equals(originDataSourceType)) {
-			return mapper.selectDataForMySql(originTableName, updateTimeField, startTime, endTime, limit);
+			return mapper.selectDataForMySql(originTableName, updateTimeField, selectColumns, startTime, endTime, limit);
 		} else if (DataMigration.ORIGIN_DATA_SOURCE_TYPE_SQLSERVER.equals(originDataSourceType)) {
-			return mapper.selectDataForSqlServer(originTableName, updateTimeField, startTime, endTime, limit);
+			return mapper.selectDataForSqlServer(originTableName, updateTimeField, selectColumns, startTime, endTime, limit);
 		} else if (DataMigration.ORIGIN_DATA_SOURCE_TYPE_ORACLE.equals(originDataSourceType)) {
-			return millisecondEnabled ? mapper.selectDataForOracleToMillisecond(originTableName, updateTimeField, startTime, endTime, limit)
-					: mapper.selectDataForOracle(originTableName, updateTimeField, startTime, endTime, limit);
+			return millisecondEnabled ? mapper.selectDataForOracleToMillisecond(originTableName, updateTimeField, selectColumns, startTime, endTime, limit)
+					: mapper.selectDataForOracle(originTableName, updateTimeField, selectColumns, startTime, endTime, limit);
 		}
 
 		throw new RuntimeException("不存在类型[" + originDataSourceType + "]数据库");
