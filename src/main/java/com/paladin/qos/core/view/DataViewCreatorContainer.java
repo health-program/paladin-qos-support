@@ -52,14 +52,13 @@ public class DataViewCreatorContainer implements SpringContainer {
 	}
 
 	private void registerTask() {
-
 		List<DataTask> realTimeTasks = new ArrayList<>();
 		List<DataTask> nightTasks = new ArrayList<>();
 
 		for (DataViewCreator creator : creatorList) {
 			DataViewCreateTask task = new DataViewCreateTask(creator);
-			DataView dataView = creator.getDataView();
-
+			DataView dataView = creator.getDataView();			
+			
 			if (dataView.getRealTimeEnabled() == 1) {
 				realTimeTasks.add(task);
 			} else {
@@ -69,7 +68,6 @@ public class DataViewCreatorContainer implements SpringContainer {
 
 		dataTaskManager.registerTaskSchedule(nightTasks);
 		dataTaskManager.registerTaskRealTime(realTimeTasks);
-
 	}
 
 	public DataViewCreator getDataViewCreator(String id) {

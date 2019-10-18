@@ -1,8 +1,10 @@
 package com.paladin.qos.core;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -24,8 +26,11 @@ public class DataTaskManager {
 
 	private ExecutorService executorService;
 
-	private List<DataTask> scheduleTasks = new CopyOnWriteArrayList<>();
-	private List<DataTask> realTimeTasks = new CopyOnWriteArrayList<>();
+	private volatile List<DataTask> scheduleTasks = new ArrayList<>();
+	private Map<String, DataTask> scheduleTaskMap = new ConcurrentHashMap<>();
+
+	private volatile List<DataTask> realTimeTasks = new ArrayList<>();
+	private Map<String, DataTask> realTimeTaskMap = new ConcurrentHashMap<>();
 
 	@PostConstruct
 	public void init() {
@@ -34,11 +39,18 @@ public class DataTaskManager {
 	}
 
 	public void registerTaskSchedule(List<DataTask> tasks) {
-		scheduleTasks.addAll(tasks);
+		for (DataTask task : tasks) {
+			scheduleTaskMap.put(task.getId(), task);
+		}
+		scheduleTasks = new ArrayList<>(scheduleTaskMap.values());
 	}
 
 	public void registerTaskRealTime(List<DataTask> tasks) {
 		realTimeTasks.addAll(tasks);
+		for (DataTask task : tasks) {
+			realTimeTaskMap.put(task.getId(), task);
+		}
+		realTimeTasks = new ArrayList<>(realTimeTaskMap.values());
 	}
 
 	/**
