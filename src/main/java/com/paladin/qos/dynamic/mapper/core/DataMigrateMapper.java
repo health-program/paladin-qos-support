@@ -15,19 +15,38 @@ public interface DataMigrateMapper {
 
 	public List<Date> getMaxUpdateTime(@Param("tableName") String tableName, @Param("updateTimeField") String updateTimeField);
 
+	public List<Date> getMaxUpdateTime2(@Param("tableName") String tableName, @Param("updateTimeField") String updateTimeField,
+			@Param("createTimeField") String createTimeField);
+
 	public List<String> getMaxUpdateTimeByYear(@Param("tableName") String tableName, @Param("updateTimeField") String updateTimeField);
 
 	public List<Map<String, Object>> selectDataForMySql(@Param("tableName") String tableName, @Param("updateTimeField") String updateTimeField,
 			@Param("selectColumns") String selectColumns, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("limit") int limit);
 
+	public List<Map<String, Object>> selectDataForMySql2(@Param("tableName") String tableName, @Param("updateTimeField") String updateTimeField,
+			@Param("createTimeField") String createTimeField, @Param("selectColumns") String selectColumns, @Param("startTime") String startTime,
+			@Param("endTime") String endTime, @Param("limit") int limit);
+
 	public List<Map<String, Object>> selectDataForSqlServer(@Param("tableName") String tableName, @Param("updateTimeField") String updateTimeField,
 			@Param("selectColumns") String selectColumns, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("limit") int limit);
+
+	public List<Map<String, Object>> selectDataForSqlServer2(@Param("tableName") String tableName, @Param("updateTimeField") String updateTimeField,
+			@Param("createTimeField") String createTimeField, @Param("selectColumns") String selectColumns, @Param("startTime") String startTime,
+			@Param("endTime") String endTime, @Param("limit") int limit);
 
 	public List<Map<String, Object>> selectDataForOracle(@Param("tableName") String tableName, @Param("updateTimeField") String updateTimeField,
 			@Param("selectColumns") String selectColumns, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("limit") int limit);
 
+	public List<Map<String, Object>> selectDataForOracle2(@Param("tableName") String tableName, @Param("updateTimeField") String updateTimeField,
+			@Param("createTimeField") String createTimeField, @Param("selectColumns") String selectColumns, @Param("startTime") String startTime,
+			@Param("endTime") String endTime, @Param("limit") int limit);
+
 	public List<Map<String, Object>> selectDataForOracleToMillisecond(@Param("tableName") String tableName, @Param("updateTimeField") String updateTimeField,
 			@Param("selectColumns") String selectColumns, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("limit") int limit);
+
+	public List<Map<String, Object>> selectDataForOracleToMillisecond2(@Param("tableName") String tableName, @Param("updateTimeField") String updateTimeField,
+			@Param("createTimeField") String createTimeField, @Param("selectColumns") String selectColumns, @Param("startTime") String startTime,
+			@Param("endTime") String endTime, @Param("limit") int limit);
 
 	public List<Map<String, Object>> selectDataByYear(@Param("tableName") String tableName, @Param("updateTimeField") String updateTimeField,
 			@Param("selectColumns") String selectColumns, @Param("years") List<String> years);

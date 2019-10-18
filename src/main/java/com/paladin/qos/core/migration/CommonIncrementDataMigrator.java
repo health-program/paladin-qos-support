@@ -90,13 +90,27 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 	protected boolean millisecondEnabled = false;
 
 	/**
+	 * 当useCreateTime为true时，代表更新字段可能为空，此时应该使用创建时间作为更新时间处理
+	 */
+	protected String createTimeField;
+	protected boolean useCreateTime = false;
+
+	/**
 	 * 数据迁移描述
 	 */
 	protected DataMigration dataMigration;
 
 	public CommonIncrementDataMigrator(DataMigration dataMigration, SqlSessionContainer sqlSessionContainer) {
+		this.id = dataMigration.getId();
 		this.setDataMigration(dataMigration);
 		this.sqlSessionContainer = sqlSessionContainer;
+	}
+
+	public CommonIncrementDataMigrator(String id, DataMigration dataMigration, boolean useCreateTime, SqlSessionContainer sqlSessionContainer) {
+		this.id = id;
+		this.setDataMigration(dataMigration);
+		this.sqlSessionContainer = sqlSessionContainer;
+		this.useCreateTime = useCreateTime;
 	}
 
 	@Override
@@ -105,7 +119,6 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 	}
 
 	public void setDataMigration(DataMigration dataMigration) {
-		this.id = dataMigration.getId();
 		this.originDataSource = dataMigration.getOriginDataSource();
 		this.originDataSourceType = dataMigration.getOriginDataSourceType();
 		this.originTableName = dataMigration.getOriginTableName();
@@ -115,6 +128,7 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 		this.defaultStartDate = dataMigration.getDefaultStartDate();
 		this.millisecondEnabled = dataMigration.getMillisecondEnabled() == 1;
 		this.selectColumns = dataMigration.getSelectColumns();
+		this.createTimeField = dataMigration.getCreateTimeField();
 
 		if (this.selectColumns == null || this.selectColumns.length() == 0) {
 			this.selectColumns = "*";
@@ -206,20 +220,32 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 		String startTime = format.format(updateStartTime);
 		String endTime = updateEndTime != null ? format.format(updateEndTime) : null;
 
-		if (DataMigration.ORIGIN_DATA_SOURCE_TYPE_MYSQL.equals(originDataSourceType)) {
-			return mapper.selectDataForMySql(originTableName, updateTimeField, selectColumns, startTime, endTime, limit);
-		} else if (DataMigration.ORIGIN_DATA_SOURCE_TYPE_SQLSERVER.equals(originDataSourceType)) {
-			return mapper.selectDataForSqlServer(originTableName, updateTimeField, selectColumns, startTime, endTime, limit);
-		} else if (DataMigration.ORIGIN_DATA_SOURCE_TYPE_ORACLE.equals(originDataSourceType)) {
-			return millisecondEnabled ? mapper.selectDataForOracleToMillisecond(originTableName, updateTimeField, selectColumns, startTime, endTime, limit)
-					: mapper.selectDataForOracle(originTableName, updateTimeField, selectColumns, startTime, endTime, limit);
+		if (useCreateTime) {
+			if (DataMigration.ORIGIN_DATA_SOURCE_TYPE_MYSQL.equals(originDataSourceType)) {
+				return mapper.selectDataForMySql2(originTableName, updateTimeField, createTimeField, selectColumns, startTime, endTime, limit);
+			} else if (DataMigration.ORIGIN_DATA_SOURCE_TYPE_SQLSERVER.equals(originDataSourceType)) {
+				return mapper.selectDataForSqlServer2(originTableName, updateTimeField, createTimeField, selectColumns, startTime, endTime, limit);
+			} else if (DataMigration.ORIGIN_DATA_SOURCE_TYPE_ORACLE.equals(originDataSourceType)) {
+				return millisecondEnabled
+						? mapper.selectDataForOracleToMillisecond2(originTableName, updateTimeField, createTimeField, selectColumns, startTime, endTime, limit)
+						: mapper.selectDataForOracle2(originTableName, updateTimeField, createTimeField, selectColumns, startTime, endTime, limit);
+			}
+		} else {
+			if (DataMigration.ORIGIN_DATA_SOURCE_TYPE_MYSQL.equals(originDataSourceType)) {
+				return mapper.selectDataForMySql(originTableName, updateTimeField, selectColumns, startTime, endTime, limit);
+			} else if (DataMigration.ORIGIN_DATA_SOURCE_TYPE_SQLSERVER.equals(originDataSourceType)) {
+				return mapper.selectDataForSqlServer(originTableName, updateTimeField, selectColumns, startTime, endTime, limit);
+			} else if (DataMigration.ORIGIN_DATA_SOURCE_TYPE_ORACLE.equals(originDataSourceType)) {
+				return millisecondEnabled ? mapper.selectDataForOracleToMillisecond(originTableName, updateTimeField, selectColumns, startTime, endTime, limit)
+						: mapper.selectDataForOracle(originTableName, updateTimeField, selectColumns, startTime, endTime, limit);
+			}
 		}
 
 		throw new RuntimeException("不存在类型[" + originDataSourceType + "]数据库");
 	}
 
 	protected Date getDataUpdateTime(Map<String, Object> data) {
-		Object date = data.get(updateTimeField);
+		Object date = data.get(useCreateTime ? createTimeField : updateTimeField);
 		if (date != null) {
 			if (date instanceof TIMESTAMP) {
 				try {
@@ -284,8 +310,13 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 	public Date getCurrentUpdateTime() {
 		sqlSessionContainer.setCurrentDataSource(targetDataSource);
 		DataMigrateMapper sqlMapper = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataMigrateMapper.class);
-		List<Date> current = sqlMapper.getMaxUpdateTime(targetTableName, updateTimeField);
-		return (current == null || current.size() == 0) ? defaultStartDate : current.get(0);
+		if (useCreateTime) {
+			List<Date> current = sqlMapper.getMaxUpdateTime2(targetTableName, updateTimeField, createTimeField);
+			return (current == null || current.size() == 0) ? defaultStartDate : current.get(0);
+		} else {
+			List<Date> current = sqlMapper.getMaxUpdateTime(targetTableName, updateTimeField);
+			return (current == null || current.size() == 0) ? defaultStartDate : current.get(0);
+		}
 	}
 
 }

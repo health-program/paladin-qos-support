@@ -49,8 +49,10 @@ public class DataMigratorContainer implements SpringContainer {
 		for (DataMigration dataMigration : dataMigrations) {
 			int type = dataMigration.getType();
 			String id = dataMigration.getId();
+			int updateTimeNullable = dataMigration.getUpdateTimeNullable();
 
 			if (type == DataMigration.TYPE_INCREMENT_UPDATE) {
+
 				if (!migratorIdMap.containsKey(id)) {
 					IncrementDataMigrator migrator = new CommonIncrementDataMigrator(dataMigration, sqlSessionContainer);
 					migratorIdMap.put(migrator.getId(), migrator);
@@ -58,6 +60,18 @@ public class DataMigratorContainer implements SpringContainer {
 					IncrementDataMigrator migrator = migratorIdMap.get(id);
 					migrator.setDataMigration(dataMigration);
 				}
+
+				if (updateTimeNullable == 1) {
+					String id2 = id + "-2";
+					if (!migratorIdMap.containsKey(id2)) {
+						IncrementDataMigrator migrator = new CommonIncrementDataMigrator(id2, dataMigration, true, sqlSessionContainer);
+						migratorIdMap.put(migrator.getId(), migrator);
+					} else {
+						IncrementDataMigrator migrator = migratorIdMap.get(id);
+						migrator.setDataMigration(dataMigration);
+					}
+				}
+
 			} else if (type == DataMigration.TYPE_INCREMENT_UPDATE_YEAR) {
 				if (!migratorIdMap.containsKey(id)) {
 					IncrementDataMigrator migrator = new YearIncrementDataMigrator(dataMigration, sqlSessionContainer);

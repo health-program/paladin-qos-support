@@ -43,6 +43,12 @@ public class DataMigration extends DataTaskConfiguration {
 
 	// 更新时间字段
 	private String updateTimeField;
+	
+	// 创建时间时间字段
+	private String createTimeField;
+	
+	// 更新时间
+	private Integer updateTimeNullable;
 
 	// 主键字段
 	private String primaryKeyField;
@@ -202,6 +208,22 @@ public class DataMigration extends DataTaskConfiguration {
 
 	public void setSelectColumns(String selectColumns) {
 		this.selectColumns = selectColumns;
+	}
+
+	public String getCreateTimeField() {
+		return createTimeField;
+	}
+
+	public void setCreateTimeField(String createTimeField) {
+		this.createTimeField = createTimeField;
+	}
+
+	public Integer getUpdateTimeNullable() {
+		return updateTimeNullable;
+	}
+
+	public void setUpdateTimeNullable(Integer updateTimeNullable) {
+		this.updateTimeNullable = updateTimeNullable;
 	}
 
 }

@@ -11,6 +11,16 @@
 		ORDER BY ${updateTimeField} ASC LIMIT ${limit}
 	</select>
 	
+	<select id="selectDataForMySql2" resultType="Map">
+		SELECT ${selectColumns} FROM ${tableName} 
+		WHERE ${updateTimeField} IS NULL 
+		AND ${createTimeField} &gt;= #{startTime}
+		<if test="endTime != null">
+			AND ${createTimeField} &lt;= #{endTime}
+		</if>
+		ORDER BY ${createTimeField} ASC LIMIT ${limit}
+	</select>
+	
 	<select id="selectDataForSqlServer" resultType="Map">
 		SELECT TOP ${limit} ${selectColumns} FROM ${tableName} 
 		WHERE ${updateTimeField} &gt;= #{startTime}
@@ -18,6 +28,16 @@
 			AND ${updateTimeField} &lt;= #{endTime}
 		</if>
 		ORDER BY ${updateTimeField} ASC
+	</select>
+	
+	<select id="selectDataForSqlServer2" resultType="Map">
+		SELECT TOP ${limit} ${selectColumns} FROM ${tableName} 
+		WHERE ${updateTimeField} IS NULL 
+		AND ${createTimeField} &gt;= #{startTime}
+		<if test="endTime != null">
+			AND ${createTimeField} &lt;= #{endTime}
+		</if>
+		ORDER BY ${createTimeField} ASC
 	</select>
 	
 	<select id="selectDataForOracle" resultType="Map">
@@ -31,6 +51,18 @@
 		) WHERE rownum &lt;= ${limit}		
 	</select>
 	
+	<select id="selectDataForOracle2" resultType="Map">
+		SELECT * FROM (
+		SELECT ${selectColumns} FROM ${tableName} 
+		WHERE ${updateTimeField} IS NULL 
+		AND ${createTimeField} &gt;= to_date('${startTime}','yyyy-mm-dd hh24:mi:ss')
+		<if test="endTime != null">
+			AND ${createTimeField} &lt;= to_date('${endTime}','yyyy-mm-dd hh24:mi:ss')
+		</if>
+		ORDER BY ${createTimeField} ASC
+		) WHERE rownum &lt;= ${limit}		
+	</select>
+	
 	<select id="selectDataForOracleToMillisecond" resultType="Map">
 		SELECT * FROM (
 		SELECT ${selectColumns} FROM ${tableName} 
@@ -39,6 +71,18 @@
 			AND ${updateTimeField} &lt;= to_timestamp('${endTime}','yyyy-mm-dd hh24:mi:ss.ff')
 		</if>		
 		ORDER BY ${updateTimeField} ASC
+		) WHERE rownum &lt;= ${limit}
+	</select>
+	
+	<select id="selectDataForOracleToMillisecond2" resultType="Map">
+		SELECT * FROM (
+		SELECT ${selectColumns} FROM ${tableName} 
+		WHERE ${updateTimeField} IS NULL
+		AND ${createTimeField} &gt;= to_timestamp('${startTime}','yyyy-mm-dd hh24:mi:ss.ff')
+		<if test="endTime != null">
+			AND ${createTimeField} &lt;= to_timestamp('${endTime}','yyyy-mm-dd hh24:mi:ss.ff')
+		</if>		
+		ORDER BY ${createTimeField} ASC
 		) WHERE rownum &lt;= ${limit}
 	</select>
 	
@@ -68,6 +112,10 @@
 
 	<select id="getMaxUpdateTime" resultType="Date">
 		SELECT ${updateTimeField} FROM ${tableName} ORDER BY ${updateTimeField} DESC LIMIT 1
+	</select>
+	
+	<select id="getMaxUpdateTime2" resultType="Date">
+		SELECT ${createTimeField} FROM ${tableName} WHERE ${updateTimeField} IS NULL ORDER BY ${createTimeField} DESC LIMIT 1
 	</select>
 	
 	<select id="getMaxUpdateTimeByYear" resultType="String">
