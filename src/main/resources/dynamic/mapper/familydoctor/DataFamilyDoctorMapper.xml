@@ -58,7 +58,7 @@
 	    and r.orgcode =#{unitId}	
 	    and r.idcardno in
 	    <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
-	        #{item}
+	        #{item,jdbcType=VARCHAR}
 	    </foreach>	       
 	</select>
 	
@@ -77,7 +77,7 @@
         and r.orgcode = #{unitId}
         and r.idcardno in
         <foreach collection="idCard" item="item" index="index" open="(" separator="," close=")">
-	        #{item}
+	        #{item,jdbcType=VARCHAR}
 	    </foreach>
     </select>
     
@@ -88,7 +88,7 @@
     	and organ_code = #{unitId}
     	and cardno in
     	<foreach collection="idCard" item="item" index="index" open="(" separator="," close=")">
-            #{item}
+            #{item,jdbcType=VARCHAR}
         </foreach>
     </select>
     
@@ -109,7 +109,7 @@
         and r.ORGCODE =#{unitId}
         and r.docname in
         <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
-            #{item}
+            #{item,jdbcType=VARCHAR}
         </foreach>
     </select>
     
