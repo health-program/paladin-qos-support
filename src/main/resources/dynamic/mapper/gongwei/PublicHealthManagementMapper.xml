@@ -199,9 +199,9 @@
         JOIN phis_chss.v_fhc_check_attach1 ca on c.chid=ca.linkid
         where
         ca.createdtime
-        <![CDATA[>= ]]> #{startDate}+0
+        <![CDATA[>= ]]> #{startDate}
         AND ca.createdtime
-        <![CDATA[< ]]> #{endDate}+0
+        <![CDATA[< ]]> #{endDate}
         group by c.code
         )
         AND managedcentercode = #{unitId}
@@ -220,9 +220,9 @@
         and fbgdl1
         <![CDATA[<>]]>0
         AND createdtime
-        <![CDATA[>= ]]> #{startDate}+0
+        <![CDATA[>= ]]> #{startDate}
         AND createdtime
-        <![CDATA[< ]]> #{endDate}+0
+        <![CDATA[< ]]> #{endDate}
         )
         AND managedcentercode = #{unitId}
     </select>

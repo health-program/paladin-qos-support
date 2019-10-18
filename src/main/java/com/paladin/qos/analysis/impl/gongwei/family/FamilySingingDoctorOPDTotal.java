@@ -1,5 +1,6 @@
 package com.paladin.qos.analysis.impl.gongwei.family;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -41,10 +42,19 @@ public class FamilySingingDoctorOPDTotal extends GongWeiDataProcessor {
 
 		List<String> idcards = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).singingAgencyOPDpersonNum(startTime, endTime,
 				gongweiUnitId);
-
+		
+		//过滤idcards中的空值或空字符串
+		List<String> newidCards = new ArrayList<String>();
+		for(String idcard:idcards){
+			if(StringUtil.isNotEmpty(idcard)){
+				newidCards.add(idcard);
+			}
+		}
+		
+		
 		long tatal = 0;
-		if (idcards != null && idcards.size() > 0) {
-			int listSize = idcards.size();
+		if (newidCards != null && newidCards.size() > 0) {
+			int listSize = newidCards.size();
 			for (int i = 0, j = 0; i < listSize; i = j) {
 				j += 500;
 
@@ -52,7 +62,7 @@ public class FamilySingingDoctorOPDTotal extends GongWeiDataProcessor {
 					j = listSize;
 				}
 
-				List<String> newList = idcards.subList(i, j);
+				List<String> newList = newidCards.subList(i, j);
 
 				if (newList.size() == 0) {
 					break;
@@ -77,9 +87,17 @@ public class FamilySingingDoctorOPDTotal extends GongWeiDataProcessor {
 		sqlSessionContainer.setCurrentDataSource(DSConstant.DS_GONGWEI);
 		List<String> vo = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).singingDoctorOPDtotal(startTime, endTime,
 				gongweiUnitId);
+		
+		//过滤vo中的空值或空字符串
+		List<String> newidCards = new ArrayList<String>();
+		for(String idcard:vo){
+			if(StringUtil.isNotEmpty(idcard)){
+				newidCards.add(idcard);
+			}
+		}
 
-		if (vo != null && vo.size() > 0) {
-			int listSize = vo.size();
+		if (newidCards != null && newidCards.size() > 0) {
+			int listSize = newidCards.size();
 
 			for (int i = 0, j = 0; i < listSize; i = j) {
 				j += 500;
@@ -88,7 +106,7 @@ public class FamilySingingDoctorOPDTotal extends GongWeiDataProcessor {
 					j = listSize;
 				}
 
-				List<String> newList = vo.subList(i, j);
+				List<String> newList = newidCards.subList(i, j);
 
 				if (newList.size() == 0) {
 					break;

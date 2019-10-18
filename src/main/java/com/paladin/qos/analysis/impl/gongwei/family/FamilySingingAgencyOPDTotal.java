@@ -46,19 +46,27 @@ public class FamilySingingAgencyOPDTotal extends GongWeiDataProcessor {
 
 		List<String> idcards = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).singingAgencyOPDTotal(startTime, endTime,
 				gongweiUnitId);
+		
+		//过滤idcards中的空值或空字符串
+		List<String> newidCards = new ArrayList<String>();
+		for(String idcard:idcards){
+			if(StringUtil.isNotEmpty(idcard)){
+				newidCards.add(idcard);
+			}
+		}
 
-		if (idcards != null && idcards.size() > 0) {
+		if (newidCards != null && newidCards.size() > 0) {
 
 			List<String> registerOPDtotal1 = new ArrayList<String>();
 
-			int listSize = idcards.size();
+			int listSize = newidCards.size();
 			for (int i = 0, j = 0; i < listSize; i = j) {
 				j += 500;
 				if (j > listSize) {
 					j = listSize;
 				}
 
-				List<String> newList = idcards.subList(i, j);
+				List<String> newList = newidCards.subList(i, j);
 				if (newList.size() == 0) {
 					break;
 				}
@@ -109,9 +117,17 @@ public class FamilySingingAgencyOPDTotal extends GongWeiDataProcessor {
 		List<String> idcards = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).singingAgencyOPDpersonNum(startTime, endTime,
 				gongweiUnitId);
 
+		//过滤idcards中的空值或空字符串
+		List<String> newidCards = new ArrayList<String>();
+		for(String idcard:idcards){
+			if(StringUtil.isNotEmpty(idcard)){
+				newidCards.add(idcard);
+			}
+		}
+		
 		long tatal = 0;
-		if (idcards != null && idcards.size() > 0) {
-			int listSize = idcards.size();
+		if (newidCards != null && newidCards.size() > 0) {
+			int listSize = newidCards.size();
 			for (int i = 0, j = 0; i < listSize; i = j) {
 				j += 500;
 
@@ -119,7 +135,7 @@ public class FamilySingingAgencyOPDTotal extends GongWeiDataProcessor {
 					j = listSize;
 				}
 
-				List<String> newList = idcards.subList(i, j);
+				List<String> newList = newidCards.subList(i, j);
 
 				if (newList.size() == 0) {
 					break;
