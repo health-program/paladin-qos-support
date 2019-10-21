@@ -63,7 +63,7 @@ public class DataViewCreator {
 
 	private String getDataJson() {
 		sqlSessionContainer.setCurrentDataSource(originDataSource);
-		DataViewCreateMapper mapper = sqlSessionContainer.getSqlSession().getMapper(DataViewCreateMapper.class);
+		DataViewCreateMapper mapper = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataViewCreateMapper.class);
 
 		List<Map<String, Object>> viewData = mapper.selectView(selectSql);
 
@@ -76,7 +76,7 @@ public class DataViewCreator {
 
 	private boolean insertOrUpdateData(String viewJson) {
 		sqlSessionContainer.setCurrentDataSource(targetDataSource);
-		DataViewCreateMapper mapper = sqlSessionContainer.getSqlSession().getMapper(DataViewCreateMapper.class);
+		DataViewCreateMapper mapper = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataViewCreateMapper.class);
 		if (mapper.updateViewData(id, viewJson) <= 0) {
 			return mapper.insertViewData(id, viewJson) > 0;
 		}

@@ -55,6 +55,7 @@ public class SqlSessionContainer implements SpringContainer {
 	 * 
 	 * @return
 	 */
+	@Deprecated
 	public SqlSession getSqlSession() {
 		return sqlSessionFactory.openSession();
 	}
