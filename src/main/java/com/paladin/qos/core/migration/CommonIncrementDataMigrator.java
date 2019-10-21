@@ -190,11 +190,15 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 
 			for (Map<String, Object> data : datas) {
 				Map<String, Object> needData = processData(data);
-				boolean success = insertOrUpdateData(needData);
-				if (success) {
+				int code = insertOrUpdateData(needData);
+				if (code > 0) {
 					Date time = getDataUpdateTime(needData);
 					result.setMigrateEndTime(time);
-					result.setMigrateNum(result.getMigrateNum() + 1);
+					if (code == 1) {
+						result.setInsertedNum(result.getInsertedNum() + 1);
+					} else {
+						result.setUpdatedNum(result.getUpdatedNum() + 1);
+					}
 				} else {
 					logger.error("更新或插入数据失败！数据迁移ID：" + id + "，更新开始时间点：" + updateStartTime);
 					result.setSuccess(false);
@@ -215,7 +219,7 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 	protected List<Map<String, Object>> getData(Date updateStartTime, Date updateEndTime, int limit) {
 		sqlSessionContainer.setCurrentDataSource(originDataSource);
 		DataMigrateMapper mapper = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataMigrateMapper.class);
-		SimpleDateFormat format = DateFormatUtil.getThreadSafeFormat(millisecondEnabled ? "yyyy-MM-dd HH:ss:mm.sss" : "yyyy-MM-dd HH:ss:mm");
+		SimpleDateFormat format = DateFormatUtil.getThreadSafeFormat(millisecondEnabled ? "yyyy-MM-dd HH:mm:ss.sss" : "yyyy-MM-dd HH:mm:ss");
 
 		String startTime = format.format(updateStartTime);
 		String endTime = updateEndTime != null ? format.format(updateEndTime) : null;
@@ -282,7 +286,7 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 	 * @param dataMap
 	 * @return
 	 */
-	protected boolean insertOrUpdateData(Map<String, Object> dataMap) {
+	protected int insertOrUpdateData(Map<String, Object> dataMap) {
 		sqlSessionContainer.setCurrentDataSource(targetDataSource);
 		DataMigrateMapper sqlMapper = sqlSessionContainer.getSqlSessionTemplate().getMapper(DataMigrateMapper.class);
 
@@ -292,17 +296,17 @@ public class CommonIncrementDataMigrator implements IncrementDataMigrator {
 			Object value = dataMap.get(primaryKey);
 			if (value == null) {
 				logger.error("主键不能为空！数据迁移ID：" + id);
-				return false;
+				return 0;
 			}
 			primaryMap.put(primaryKey, value);
 			dataMap.remove(primaryKey);
 		}
 
 		if (sqlMapper.updateData(targetTableName, dataMap, primaryMap) > 0) {
-			return true;
+			return 2;
 		} else {
 			dataMap.putAll(primaryMap);
-			return sqlMapper.insertData(targetTableName, dataMap) > 0;
+			return sqlMapper.insertData(targetTableName, dataMap) > 0 ? 1 : 0;
 		}
 	}
 

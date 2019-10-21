@@ -44,14 +44,19 @@ public class YearIncrementDataMigrator extends CommonIncrementDataMigrator {
 		if (datas != null) {
 			for (Map<String, Object> data : datas) {
 				Map<String, Object> needData = processData(data);
-				boolean success = insertOrUpdateData(needData);
-				if (!success) {
+				int code = insertOrUpdateData(needData);
+				if (code > 0) {
+					if (code == 1) {
+						result.setInsertedNum(result.getInsertedNum() + 1);
+					} else {
+						result.setUpdatedNum(result.getUpdatedNum() + 1);
+					}
+				} else {
 					logger.error("更新或插入数据失败！数据迁移ID：" + id + "，更新开始时间点：" + updateStartTime);
 					result.setSuccess(false);
 					return;
 				}
 			}
-			result.setMigrateNum(result.getMigrateNum() + datas.size());
 		}
 
 		Calendar c = Calendar.getInstance();

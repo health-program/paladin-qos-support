@@ -18,7 +18,8 @@ public class IncrementDataMigrateTask extends DataTask {
 	private IncrementDataMigrator dataMigrator;
 
 	private Date migrateTime;
-	private int migratedNum;
+	private int updatedNum;
+	private int insertedNum;
 
 	protected volatile Date updateTime;
 
@@ -32,7 +33,8 @@ public class IncrementDataMigrateTask extends DataTask {
 	public void doTask() {
 		try {
 			migrateTime = new Date();
-			migratedNum = 0;
+			updatedNum = 0;
+			insertedNum = 0;
 
 			DataMigration dataMigration = dataMigrator.getDataMigration();
 
@@ -51,8 +53,6 @@ public class IncrementDataMigrateTask extends DataTask {
 			int maximumMigrate = dataMigration.getMaximumMigrate();
 			int selectLimit = dataMigration.getSelectDataLimit();
 
-			int count = 0;
-
 			MigrateResult result = null;
 
 			Date logStartTime = updateTime;
@@ -60,12 +60,16 @@ public class IncrementDataMigrateTask extends DataTask {
 			do {
 				result = dataMigrator.migrateData(updateTime, null, selectLimit);
 				updateTime = result.getMigrateEndTime();
-				migratedNum = count;
 
-				int num = result.getMigrateNum();
-				count += num;
+				int updateN = result.getUpdatedNum();
+				int insertN = result.getInsertedNum();
 
-				if (!result.isSuccess() || num < selectLimit || (maximumMigrate > 0 && count >= maximumMigrate)) {
+				updatedNum += updateN;
+				insertedNum += insertN;
+
+				int num = updateN + insertN;
+
+				if (!result.isSuccess() || num < selectLimit || (maximumMigrate > 0 && (updatedNum + insertedNum) >= maximumMigrate)) {
 					break;
 				}
 
@@ -75,9 +79,9 @@ public class IncrementDataMigrateTask extends DataTask {
 
 			} while (true);
 
-			SimpleDateFormat format = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:ss:mm.sss");
+			SimpleDateFormat format = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:mm:ss.sss");
 
-			logger.info("迁移数据任务[ID:" + getId() + "]执行" + (result.isSuccess() ? "完成" : "未完成") + "，迁移数据条数：" + count + "条，迁移开始时间："
+			logger.info("迁移数据任务[ID:" + getId() + "]执行" + (result.isSuccess() ? "完成" : "未完成") + "，迁移数据条数[更新：" + updatedNum + "条，新增：" + insertedNum + "条]，迁移开始时间："
 					+ (logStartTime == null ? "null" : format.format(logStartTime)) + "，迁移结束时间：" + (updateTime == null ? "null" : format.format(updateTime)));
 
 		} catch (Exception e) {
@@ -90,8 +94,8 @@ public class IncrementDataMigrateTask extends DataTask {
 		if (updateTime == null) {
 			return "还未执行";
 		} else {
-			SimpleDateFormat format = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:ss:mm");
-			return "在" + format.format(migrateTime) + "增量迁移数据" + migratedNum + "条，当前增量更新时间为：" + format.format(updateTime);
+			SimpleDateFormat format = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:mm:ss");
+			return "在" + format.format(migrateTime) + "增量迁移数据[更新：" + updatedNum + "条，新增：" + insertedNum + "条]条，当前增量更新时间为：" + format.format(updateTime);
 		}
 	}
 

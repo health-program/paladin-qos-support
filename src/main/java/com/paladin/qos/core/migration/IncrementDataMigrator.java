@@ -51,23 +51,17 @@ public interface IncrementDataMigrator {
 	public static class MigrateResult {
 
 		private boolean success;
-		private int migrateNum;
+		private int updatedNum;
+		private int insertedNum;
 		private Date migrateBeginTime;
 		private Date migrateEndTime;
 
 		public MigrateResult(Date migrateBeginTime) {
 			this.success = true;
-			this.migrateNum = 0;
 			this.migrateBeginTime = migrateBeginTime;
 			this.migrateEndTime = migrateBeginTime;
 		}
 
-		public MigrateResult(boolean success, int migrateNum, Date migrateBeginTime, Date migrateEndTime) {
-			this.success = success;
-			this.migrateNum = migrateNum;
-			this.migrateBeginTime = migrateBeginTime;
-			this.migrateEndTime = migrateEndTime;
-		}
 
 		public boolean isSuccess() {
 			return success;
@@ -75,14 +69,6 @@ public interface IncrementDataMigrator {
 
 		public void setSuccess(boolean success) {
 			this.success = success;
-		}
-
-		public int getMigrateNum() {
-			return migrateNum;
-		}
-
-		public void setMigrateNum(int migrateNum) {
-			this.migrateNum = migrateNum;
 		}
 
 		public Date getMigrateBeginTime() {
@@ -99,6 +85,22 @@ public interface IncrementDataMigrator {
 
 		public void setMigrateEndTime(Date migrateEndTime) {
 			this.migrateEndTime = migrateEndTime;
+		}
+
+		public int getUpdatedNum() {
+			return updatedNum;
+		}
+
+		public void setUpdatedNum(int updatedNum) {
+			this.updatedNum = updatedNum;
+		}
+
+		public int getInsertedNum() {
+			return insertedNum;
+		}
+
+		public void setInsertedNum(int insertedNum) {
+			this.insertedNum = insertedNum;
 		}
 
 	}

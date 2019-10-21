@@ -32,11 +32,11 @@ public class DataViewCreateTask extends DataTask {
 	@Override
 	public String getExecuteSituation() {
 		if (success) {
-			String time = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:ss:mm").format(updateTime);
+			String time = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:mm:ss").format(updateTime);
 			return "在" + time + "更新视图成功";
 		} else {
 			if (updateTime != null) {
-				String time = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:ss:mm").format(updateTime);
+				String time = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:mm:ss").format(updateTime);
 				return "在" + time + "更新视图失败";
 			} else {
 				return "还未执行";

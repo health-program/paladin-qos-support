@@ -135,7 +135,7 @@ public class DataProcessTask extends DataTask {
 		if (processTime == null) {
 			return "还未执行";
 		} else {
-			String time = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:ss:mm").format(processTime);
+			String time = DateFormatUtil.getThreadSafeFormat("yyyy-MM-dd HH:mm:ss").format(processTime);
 			return "在" + time + "预处理数据" + processedNum + "条";
 		}
 	}
