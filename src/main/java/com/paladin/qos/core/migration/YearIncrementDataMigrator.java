@@ -79,7 +79,7 @@ public class YearIncrementDataMigrator extends CommonIncrementDataMigrator {
 		List<String> years = new ArrayList<>();
 
 		int startYear = TimeUtil.getYear(updateStartTime);
-		int endYear = TimeUtil.getYear(updateStartTime);
+		int endYear = TimeUtil.getYear(updateEndTime);
 
 		do {
 			years.add(String.valueOf(startYear));
