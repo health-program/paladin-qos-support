@@ -17,41 +17,41 @@
 	<!-- 门急诊人次数 -->
 	<select id="OPDTotal" resultType="long">
 		select count(1) from RegisterRecord 
-		where REC_DT &gt;= #{startTime}+0 and REC_DT &lt; #{endTime}+0 and organ_code =#{unitId}
+		where REC_DT &gt;= #{startTime}+0 and REC_DT &lt; #{endTime}+0 
 	</select>
 	
 	<!-- 门急诊使用药品数 -->
 	<select id="OPDDrugxyTotal" resultType="long">
 		select count(1) from WM_PrescriptionDetails where (OP_EM_HP_MARK ='1' OR OP_EM_HP_MARK='2') and 
-		RX_DT &gt;= #{startTime}+0 and RX_DT &lt; #{endTime}+0 and organ_code =#{unitId}
+		RX_DT &gt;= #{startTime}+0 and RX_DT &lt; #{endTime}+0 
 	</select>
 	<select id="OPDDrugzyTotal" resultType="long">
 		select count(1) from CM_PrescriptionDetails where (OP_EM_HP_MARK ='1' OR OP_EM_HP_MARK='2') and
-		RX_DT &gt;= #{startTime}+0 and RX_DT &lt; #{endTime}+0 and organ_code =#{unitId}
+		RX_DT &gt;= #{startTime}+0 and RX_DT &lt; #{endTime}+0  
 	</select>
 	
 	<!-- 门急诊药品总费用(元) -->
 	<select id="OPDMoneyTotal" resultType="long">
-		select coalesce(sum(cost_02),0) from ED_Outpa_Inpa_Charge_Stat 
-		where stat_date &gt;= #{startTime}+0 and stat_date &lt; #{endTime}+0 and organ_code =#{unitId}
+		select coalesce(sum(cost_01),0) from ED_Outpa_Inpa_Charge_Stat 
+		where stat_date &gt;= #{startTime}+0 and stat_date &lt; #{endTime}+0 
 	</select>
 	
 	<!-- 住院人次 -->
 	<select id="HospitalizationNumber" resultType="long">
 		select count(1) from inhospitalrecord 
-		where HP_DATE &gt;= #{startTime}+0 and HP_DATE &lt; #{endTime}+0 and organ_code =#{unitId}
+		where HP_DATE &gt;= #{startTime}+0 and HP_DATE &lt; #{endTime}+0 
 	</select>
 	
 	<!-- 住院患者使用药品数 -->
 	<select id="HospitalizationDrugTotal" resultType="long">
 		select count(1) from DoctorAdviceRecord 
-		where IF_DRUG ='1' and ODRISU_DT &gt;= #{startTime}+0 and ODRISU_DT &lt; #{endTime}+0 and organ_code =#{unitId}
+		where IF_DRUG ='1' and ODRISU_DT &gt;= #{startTime}+0 and ODRISU_DT &lt; #{endTime}+0 
 	</select>
 	
 	<!-- 住院药品总费用(元) -->
 	<select id="HospitalizationMoneyTotal" resultType="long">
 		select coalesce(sum(cost_02),0) from ED_Outpa_Inpa_Charge_Stat 
-		where stat_date &gt;= #{startTime}+0 and stat_date &lt; #{endTime}+0 and organ_code =#{unitId}
+		where stat_date &gt;= #{startTime}+0 and stat_date &lt; #{endTime}+0 
 	</select>
 
 	<!-- 实际开放床日数 -->

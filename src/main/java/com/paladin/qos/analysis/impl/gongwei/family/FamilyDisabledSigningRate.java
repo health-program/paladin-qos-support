@@ -47,6 +47,6 @@ public class FamilyDisabledSigningRate extends GongWeiDataProcessor {
 		if (StringUtil.isEmpty(unit)) {
 			return 0;
 		}
-		return sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).personalizedHealthPushNum(startTime, endTime, unit);
+		return sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).disabledSigningRate(startTime, endTime, unit);
 	}
 }
