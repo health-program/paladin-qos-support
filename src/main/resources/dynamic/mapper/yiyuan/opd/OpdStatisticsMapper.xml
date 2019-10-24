@@ -113,7 +113,7 @@
 		where APP_MARK='1' and REC_DT &gt;= #{startTime}+0 and REC_DT &lt; #{endTime}+0 
 	</select>
 	<!-- 总诊疗人次数 -->
-	<select id="getAppointmentNum" resultType="long">
+	<select id="getTreatmentNum" resultType="long">
 		select count(1) from RegisterRecord 
 		where REC_DT &gt;= #{startTime}+0 and REC_DT &lt; #{endTime}+0 
 	</select>
@@ -129,13 +129,15 @@
 		where TEST_DT &gt;= #{startTime}+0 and REC_DT &lt; #{endTime}+0 
 	</select>
 	<!-- 住院人数 -->
+	<select id="getTotalPeople" resultType="long">
 	select count(1) from OutHospitalRecord 
 	where OUT_HP_DT &gt;= #{startTime}+0 and REC_DT &lt; #{endTime}+0 
+	</select>
 	<!-- 住院天数 -->
 	<select id="getTotaldays" resultType="long">
 		select sum(t.days) from 
 		(select sum(ceil(OUT_HP_DT - IN_HP_DT)) as days from OutHospitalRecord
 		where OUT_HP_DT&gt;= #{startTime}+0 and OUT_HP_DT &lt; #{endTime}+0 
 		group by OUT_HOS_ID) t
-
+   </select>
 </mapper>
