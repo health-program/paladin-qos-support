@@ -121,17 +121,17 @@
 	<!-- 检查人次数 -->
 	<select id="getCheckNum" resultType="long">
 		select count(1) from ExaminationDetails 
-		where CHK_DT &gt;= #{startTime}+0 and REC_DT &lt; #{endTime}+0 
+		where CHK_DT &gt;= #{startTime}+0 and CHK_DT &lt; #{endTime}+0 
 	</select>
 	<!-- 检验人次数 -->
 	<select id="getTestNum" resultType="long">
 		select count(1) from LAR_EXAM_INFO 
-		where TEST_DT &gt;= #{startTime}+0 and REC_DT &lt; #{endTime}+0 
+		where TEST_DT &gt;= #{startTime}+0 and TEST_DT &lt; #{endTime}+0 
 	</select>
 	<!-- 住院人数 -->
 	<select id="getTotalPeople" resultType="long">
 	select count(1) from OutHospitalRecord 
-	where OUT_HP_DT &gt;= #{startTime}+0 and REC_DT &lt; #{endTime}+0 
+	where OUT_HP_DT &gt;= #{startTime}+0 and OUT_HP_DT &lt; #{endTime}+0 
 	</select>
 	<!-- 住院天数 -->
 	<select id="getTotaldays" resultType="long">
