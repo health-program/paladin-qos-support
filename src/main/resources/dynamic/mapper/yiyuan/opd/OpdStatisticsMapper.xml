@@ -135,8 +135,8 @@
 	</select>
 	<!-- 住院天数 -->
 	<select id="getTotaldays" resultType="long">
-		select sum(t.days) from 
-		(select sum(ceil(OUT_HP_DT - IN_HP_DT)) as days from OutHospitalRecord
+		select nvl(sum(t.days),0) from 
+		(select nvl(sum(ceil(OUT_HP_DT - IN_HP_DT)),0) as days from OutHospitalRecord
 		where OUT_HP_DT&gt;= #{startTime}+0 and OUT_HP_DT &lt; #{endTime}+0 
 		group by OUT_HOS_ID) t
    </select>
