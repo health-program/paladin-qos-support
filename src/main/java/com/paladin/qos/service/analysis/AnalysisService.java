@@ -592,7 +592,7 @@ public class AnalysisService {
 				@Override
 				public int compare(DataByUnit o1, DataByUnit o2) {
 					String uid1 = o1.getUnitId();
-					String uid2 = o1.getUnitId();
+					String uid2 = o2.getUnitId();
 					return DataConstantContainer.getUnit(uid1).getOrderNum() > DataConstantContainer.getUnit(uid2).getOrderNum() ? 1 : -1;
 				}
 			});

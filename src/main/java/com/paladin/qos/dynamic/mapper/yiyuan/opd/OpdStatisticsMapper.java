@@ -57,18 +57,18 @@ public interface OpdStatisticsMapper {
     public long medicalIncome(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
     /**预约挂号数量*/
-	public long getAppointmentNum(Date startTime, Date endTime);
+	public long getAppointmentNum(@Param("startTime") Date startTime,  @Param("endTime") Date endTime);
 
 	/**总诊疗人次数*/
-	public long getTreatmentNum(Date startTime, Date endTime);
+	public long getTreatmentNum( @Param("startTime") Date startTime,@Param("endTime") Date endTime);
 
 	/**检查人次数*/
-	public long getCheckNum(Date startTime, Date endTime);
+	public long getCheckNum(@Param("startTime")Date startTime, @Param("endTime") Date  endTime);
     /**检验人次数*/
-	public long getTestNum(Date startTime, Date endTime);
+	public long getTestNum(@Param("startTime")Date startTime, @Param("endTime") Date  endTime);
 
-	public long getTotaldays(Date startTime, Date endTime);
+	public long getTotaldays(@Param("startTime")Date startTime, @Param("endTime") Date  endTime);
 
-	public long getTotalPeople(Date startTime, Date endTime);
+	public long getTotalPeople(@Param("startTime")Date startTime, @Param("endTime") Date  endTime);
 
 }
