@@ -38,15 +38,15 @@ public class DataSourceConfig {
 	
 	// ------------- hikari ---------------
 	
-	private int maximumPoolSize = 5;
+	private int maximumPoolSize = 15;
 	
-	private int minimumIdle = 5;
+	private int minimumIdle = 15;
 	
 	private int idleTimeout = 600000;
 	
 	private int maxLifetime = 1800000;
 	
-	private int connectionTimeout = 30000;
+	private int connectionTimeout = 120000;
 	
 	// ------------- druid ---------------
 	
