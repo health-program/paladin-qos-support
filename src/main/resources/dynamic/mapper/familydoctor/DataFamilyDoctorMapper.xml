@@ -236,7 +236,7 @@
         and CREATEDUNITCODE = #{unitId}-->
 
         SELECT COUNT(1)
-        FROM phis_chss.v_fha_person_sign_visit pv
+        FROM phis_chss.v_fha_person_sign_visit_temp pv
         LEFT JOIN phis_chss.v_fha_person_main pm
         ON pv.CODE=pm.CODE AND pv.stateid = '1' AND pm.stateid = '1'
         WHERE pv.ccffw IS NOT NULL and pv.CREATEDTIME &gt;= #{startTime}+0  and pv.CREATEDTIME &lt; #{endTime}+0 and pm.MANAGEDCENTERCODE = #{unitId}
