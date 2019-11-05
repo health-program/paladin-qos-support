@@ -32,8 +32,9 @@
 	
 	<!-- 门急诊药品总费用(元) -->
 	<select id="OPDMoneyTotal" resultType="long">
-		select coalesce(sum(cost_01),0) from ED_Outpa_Inpa_Charge_Stat 
-		where stat_date &gt;= #{startTime}+0 and stat_date &lt; #{endTime}+0 
+		select coalesce(sum(PROJ_MON),0) from CostDetails where OP_EM_HP_MARK in ('1','2') and CHARGE_REFUND = '1'
+        and FIN_CAT_CODE in ('1001','1002','1003')
+        and RCD_DT &gt;= #{startTime}+0 and stat_date &lt; #{endTime}+0 
 	</select>
 	
 	<!-- 住院人次 -->
@@ -50,8 +51,9 @@
 	
 	<!-- 住院药品总费用(元) -->
 	<select id="HospitalizationMoneyTotal" resultType="long">
-		select coalesce(sum(cost_02),0) from ED_Outpa_Inpa_Charge_Stat 
-		where stat_date &gt;= #{startTime}+0 and stat_date &lt; #{endTime}+0 
+		select coalesce(sum(PROJ_MON),0) from CostDetails where OP_EM_HP_MARK ='3' and CHARGE_REFUND = '1'
+         and FIN_CAT_CODE in ('1001','1002','1003')
+         and RCD_DT &gt;= #{startTime}+0 and stat_date &lt; #{endTime}+0 
 	</select>
 
 	<!-- 实际开放床日数 -->
@@ -84,20 +86,23 @@
 	
 	<!-- 药品收入 -->
 	<select id="drugIncome" resultType="long">
-	 select  COALESCE (SUM(COST_01_10) ,0)+COALESCE (SUM(COST_02_10) ,0)from ED_Outpa_Inpa_Charge_Stat 
-     where STAT_DATE  &gt;= #{startTime}+0 and STAT_DATE &lt; #{endTime}+0
+	 select coalesce(sum(PROJ_MON),0) from CostDetails where  CHARGE_REFUND = '1'
+     and FIN_CAT_CODE in ('1001','1002','1003')
+     and RCD_DT &gt;= #{startTime}+0 and stat_date &lt; #{endTime}+0
 	</select>
 	
 	<!-- 其他收入 -->
 	<select id="otherIncome" resultType="long">
-	 select  COALESCE (SUM(COST_99) ,0)+COALESCE (SUM(COST_02_99) ,0)from ED_Outpa_Inpa_Charge_Stat 
-     where STAT_DATE  &gt;= #{startTime}+0 and STAT_DATE &lt; #{endTime}+0 
+	 select coalesce(sum(PROJ_MON),0) from CostDetails where  CHARGE_REFUND = '1'
+     and FIN_CAT_CODE = '9900'
+     and RCD_DT &gt;= #{startTime}+0 and stat_date &lt; #{endTime}+0 
 	</select>
 	
 	<!-- 医疗收入 -->
 	<select id="medicalIncome" resultType="long">
-	  select COALESCE(sum(TOTAL_COST) ,0)-((COALESCE (SUM(COST_99) ,0)+COALESCE (SUM(COST_02_99) ,0))+(COALESCE (SUM(COST_01_10) ,0)+COALESCE (SUM(COST_02_10) ,0))) 
-	  from ED_Outpa_Inpa_Charge_Stat where STAT_DATE  &gt;= #{startTime}+0 and STAT_DATE &lt; #{endTime}+0  
+	  select coalesce(sum(PROJ_MON),0) from CostDetails where  CHARGE_REFUND = '1'
+      and FIN_CAT_CODE in ('0100','0200','0300','0400','0500','0600','0700','0800','0900')
+      and RCD_DT &gt;= #{startTime}+0 and stat_date &lt; #{endTime}+0 
 	</select>
 	
 	<!-- 患者列表（查询当前时间前2天的数据） -->
