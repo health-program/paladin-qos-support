@@ -85,6 +85,16 @@ paladin:
       username: di_ehr467170468
       password: neusoft
     source[16]:
+      name: yiyuan-aadata
+      url: jdbc:sqlserver://10.1.51.12:1433;database=AADATA
+      username: sa
+      password: qq.123
+    source[17]:
+      name: yiyuan-check
+      url: jdbc:sqlserver://10.1.51.12:1433;database=CHECK
+      username: sa
+      password: qq.123
+    source[18]:
       name: local
       url: jdbc:mysql://10.9.1.42:3306/qos?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
       username: root
