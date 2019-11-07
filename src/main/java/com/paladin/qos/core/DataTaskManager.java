@@ -88,6 +88,13 @@ public class DataTaskManager {
 		}
 	}
 
+	/**
+	 * 执行任务
+	 * 
+	 * @param taskId
+	 * @param threadEndTime
+	 * @return
+	 */
 	public boolean executeTask(String taskId, long threadEndTime) {
 		DataTask task = getTask(taskId);
 		if (task != null && task.isEnabled() && !task.isRun()) {
@@ -98,12 +105,42 @@ public class DataTaskManager {
 		return false;
 	}
 
-	public List<DataTask> getNightTasks() {
-		return scheduleTasks;
+	public List<DataTask> findScheduleTasks(int level, Object label) {
+		return findTasks(scheduleTasks, level, label);
 	}
 
-	public List<DataTask> getRealTimeTasks() {
-		return realTimeTasks;
+	public List<DataTask> findRealTimeTasks(int level, Object label) {
+		return findTasks(realTimeTasks, level, label);
+	}
+
+	private List<DataTask> findTasks(List<DataTask> dataTasks, Integer level, Object label) {
+		List<DataTask> tasks = new ArrayList<>(dataTasks.size());
+		for (DataTask task : dataTasks) {
+			if (level != null) {
+				if (level != task.getLevel()) {
+					continue;
+				}
+			}
+			if (label != null) {
+				List<Object> labels = task.getLabels();
+				boolean has = false;
+
+				if (labels != null) {
+					for (Object lab : labels) {
+						if (label.equals(lab)) {
+							has = true;
+							break;
+						}
+					}
+				}
+
+				if (!has) {
+					continue;
+				}
+			}
+			tasks.add(task);
+		}
+		return tasks;
 	}
 
 	public DataTask getTask(String id) {

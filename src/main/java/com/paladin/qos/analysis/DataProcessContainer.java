@@ -95,8 +95,12 @@ public class DataProcessContainer implements SpringContainer {
 			if (dataEvent.getRealTimeEnabled() == 1) {
 				realTimeTasks.add(task);
 			} else {
-				nightTasks.add(task);							
+				nightTasks.add(task);
 			}
+
+			// 注册修复任务
+			DataProcessRepairTask repairTask = new DataProcessRepairTask(processor, analysisService);
+			nightTasks.add(repairTask);
 		}
 
 		dataTaskManager.registerTaskSchedule(nightTasks);

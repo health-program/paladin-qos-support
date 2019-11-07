@@ -1,12 +1,15 @@
 package com.paladin.qos.core.view;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.paladin.framework.utils.time.DateFormatUtil;
 import com.paladin.qos.core.DataTask;
+import com.paladin.qos.model.data.DataView;
 
 public class DataViewCreateTask extends DataTask {
 
@@ -17,8 +20,14 @@ public class DataViewCreateTask extends DataTask {
 	private boolean success;
 
 	public DataViewCreateTask(DataViewCreator creator) {
-		super(creator.getId());
-		this.setConfiguration(creator.getDataView());
+		super(creator.getId(), DataTask.LEVEL_MAJOR);
+		DataView view = creator.getDataView();
+
+		this.setConfiguration(view);
+		List<Object> labels = new ArrayList<>();
+		labels.add(view.getName());
+		labels.add(view.getOriginDataSource());
+		this.setLabels(labels);
 		this.creator = creator;
 	}
 

@@ -2,8 +2,10 @@ package com.paladin.qos.analysis;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -28,8 +30,15 @@ public class DataProcessTask extends DataTask {
 	private Date processTime;
 
 	public DataProcessTask(DataProcessor processor, AnalysisService analysisService) {
-		super(processor.getEventId());
-		this.setConfiguration(processor.getDataEvent());
+		super(processor.getEventId(), DataTask.LEVEL_MAJOR);
+		DataEvent event = processor.getDataEvent();
+
+		this.setConfiguration(event);
+		List<Object> labels = new ArrayList<>();
+		labels.add(event.getName());
+		labels.add(event.getDataSource());
+		this.setLabels(labels);
+
 		this.processor = processor;
 		this.analysisService = analysisService;
 	}

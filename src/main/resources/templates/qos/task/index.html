@@ -9,6 +9,37 @@
     </section>
     <section class="content">
         <div class="box box-widget">
+            <div class="box-body">
+                <form id="searchbar" class="form-horizontal form-search">
+                    <div class="form-group">
+                        <div class="col-md-2">
+                            <input type="text" class="form-control" name="label" placeholder="请输入查询内容" />
+                        </div>
+                        <div class="col-md-2">
+                            <select name="type" class="form-control">
+                                <option value="">全部任务</option>
+                                <option value="schedule">定时任务</option>
+                                <option value="realtime">实时任务</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select name="level" class="form-control">
+                                <option value="99">主要</option>
+                                <option value="1">次要</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="pull-right">
+                                <button type="button" style="width:100px" class="btn btn-primary tonto-btn-search" onclick="table.refresh()"><i class="fa fa-search"></i>查询</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 表单仅有一个text-input时回车会提交表单，这里添加一个无用的防止回车提交 -->
+                    <input type="text" style="display:none">
+                </form>
+            </div>
+        </div>
+        <div class="box box-widget">
             <div id="result" class="box-body">
                 <table id="dataGrid"></table>
                 <div id="toolbar">
@@ -90,6 +121,7 @@
             ],
             url: '/qos/data/task/list',
             pagination: false,
+            searchbar: '#searchbar',
             toolbar: "#toolbar"
         });
 

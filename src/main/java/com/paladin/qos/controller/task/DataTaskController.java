@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.paladin.framework.web.response.CommonResponse;
@@ -26,11 +27,18 @@ public class DataTaskController {
 
 	@GetMapping("/list")
 	@ResponseBody
-	public Object getTaskStatus() {
-		List<DataTaskVO> result = new ArrayList<>();
-
-		result.addAll(convertVO(taskManager.getNightTasks()));
-		result.addAll(convertVO(taskManager.getRealTimeTasks()));
+	public Object getRealTimeTaskStatus(@RequestParam(required = false) String type, @RequestParam(required = false) Integer level,
+			@RequestParam(required = false) String label) {
+		List<DataTaskVO> result = null;
+		if ("schedule".equals(type)) {
+			result = convertVO(taskManager.findScheduleTasks(level, label));
+		} else if ("realtime".equals(type)) {
+			result = convertVO(taskManager.findRealTimeTasks(level, label));
+		} else {
+			result = new ArrayList<>();
+			result.addAll(convertVO(taskManager.findScheduleTasks(level, label)));
+			result.addAll(convertVO(taskManager.findRealTimeTasks(level, label)));
+		}
 
 		return CommonResponse.getSuccessResponse(result);
 	}

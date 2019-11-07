@@ -1,7 +1,9 @@
 package com.paladin.qos.core.migration;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +26,15 @@ public class IncrementDataMigrateTask extends DataTask {
 	protected volatile Date updateTime;
 
 	public IncrementDataMigrateTask(IncrementDataMigrator dataMigrator) {
-		super(dataMigrator.getId());
-		setConfiguration(dataMigrator.getDataMigration());
+		super(dataMigrator.getId(), DataTask.LEVEL_MAJOR);
+		DataMigration migration = dataMigrator.getDataMigration();
+
+		setConfiguration(migration);
+		List<Object> labels = new ArrayList<>();
+		labels.add(migration.getName());
+		labels.add(migration.getOriginDataSource());
+		this.setLabels(labels);
+
 		this.dataMigrator = dataMigrator;
 	}
 

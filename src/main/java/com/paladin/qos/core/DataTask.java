@@ -2,12 +2,19 @@ package com.paladin.qos.core;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import com.paladin.qos.util.TimeUtil;
 
 public abstract class DataTask implements Runnable {
 
+	public static int LEVEL_MAJOR = 99;
+	public static int LEVEL_MINOR = 1;
+
 	private String id;
+	private int level;
+	private List<Object> labels;
+
 	private DataTaskConfiguration configuration;
 	private long threadEndTime;
 
@@ -16,7 +23,12 @@ public abstract class DataTask implements Runnable {
 	private long realTimeIntervalMillisecond;
 
 	public DataTask(String id) {
+		this(id, LEVEL_MAJOR);
+	}
+
+	public DataTask(String id, int level) {
 		this.id = id;
+		this.level = level;
 	}
 
 	public String getId() {
@@ -99,7 +111,7 @@ public abstract class DataTask implements Runnable {
 	}
 
 	public abstract void doTask();
-	
+
 	public abstract String getExecuteSituation();
 
 	/**
@@ -235,4 +247,21 @@ public abstract class DataTask implements Runnable {
 	public long getRealTimeIntervalMillisecond() {
 		return realTimeIntervalMillisecond;
 	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
+	}
+
+	public List<Object> getLabels() {
+		return labels;
+	}
+
+	public void setLabels(List<Object> labels) {
+		this.labels = labels;
+	}
+
 }
