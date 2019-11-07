@@ -4,14 +4,26 @@
 
 	<!-- 门诊人次数 -->
 	<select id="outpatientNum" resultType="long">
-		select count(1) from RegisterRecord 
-		where OP_EM_MARK='1' and REC_DT &gt;= #{startTime}+0 and REC_DT &lt; #{endTime}+0 
+		select count(1) from MedicalRecord
+        where OP_EM_MARK = '1' and SEE_DOC_DT &gt;= #{startTime}+0 and SEE_DOC_DT &lt; #{endTime}+0 
+	</select>
+	
+	<!-- 一二三中门诊人次数 -->
+	<select id="outpatientNumFour" resultType="long">
+		select count(1) from MedicalRecord_bf
+        where OP_EM_MARK = '1' and SEE_DOC_DT &gt;= #{startTime}+0 and SEE_DOC_DT &lt; #{endTime}+0 
 	</select>
 
 	<!-- 急诊人次数 -->
 	<select id="emergencyNum" resultType="long">
-		select count(1) from RegisterRecord 
-		where OP_EM_MARK='2' and REC_DT &gt;= #{startTime}+0 and REC_DT &lt; #{endTime}+0 
+		select count(1) from MedicalRecord
+        where OP_EM_MARK = '2' and SEE_DOC_DT &gt;= #{startTime}+0 and SEE_DOC_DT &lt; #{endTime}+0  
+	</select>
+	
+	<!-- 一二三中急诊人次数 -->
+	<select id="emergencyNumFour" resultType="long">
+		select count(1) from MedicalRecord_bf
+        where OP_EM_MARK = '2' and SEE_DOC_DT &gt;= #{startTime}+0 and SEE_DOC_DT &lt; #{endTime}+0  
 	</select>
 
 	<!-- 门急诊人次数 -->
