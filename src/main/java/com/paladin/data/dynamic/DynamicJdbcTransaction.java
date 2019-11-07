@@ -26,20 +26,21 @@ public class DynamicJdbcTransaction implements Transaction {
 		level = desiredLevel;
 		autoCommmit = desiredAutoCommit;
 	}
-	
+
 	protected JdbcTransaction getCurrentTransaction() {
-		DataSourceFacade facade = dataSource.getCurrentDataSourceFacade();
-		if (facade == null) {
+		DataSource realSource = dataSource.getCurrentDataSource();
+		String name = dataSource.getCurrentDataSourceName();
+
+		if (dataSource == null) {
 			throw new SystemException("找不到当前数据库");
 		}
 
-		String name = facade.getName();
 		JdbcTransaction transaction = jdbcTransactionMap.get(name);
 		if (transaction == null) {
-			transaction = new JdbcTransaction(facade.getRealDataSource(), level, autoCommmit);
+			transaction = new JdbcTransaction(realSource, level, autoCommmit);
 			jdbcTransactionMap.put(name, transaction);
 		}
-		
+
 		return transaction;
 	}
 
@@ -50,21 +51,21 @@ public class DynamicJdbcTransaction implements Transaction {
 
 	@Override
 	public void commit() throws SQLException {
-		for(JdbcTransaction transaction : jdbcTransactionMap.values()) {
+		for (JdbcTransaction transaction : jdbcTransactionMap.values()) {
 			transaction.commit();
 		}
 	}
 
 	@Override
 	public void rollback() throws SQLException {
-		for(JdbcTransaction transaction : jdbcTransactionMap.values()) {
+		for (JdbcTransaction transaction : jdbcTransactionMap.values()) {
 			transaction.rollback();
 		}
 	}
 
 	@Override
 	public void close() throws SQLException {
-		for(JdbcTransaction transaction : jdbcTransactionMap.values()) {
+		for (JdbcTransaction transaction : jdbcTransactionMap.values()) {
 			transaction.close();
 		}
 	}

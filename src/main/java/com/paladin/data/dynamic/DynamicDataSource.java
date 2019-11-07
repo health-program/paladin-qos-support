@@ -21,9 +21,8 @@ public class DynamicDataSource implements DataSource {
 		return current != null ? DataSourceContainer.getRealDataSource(current) : null;
 	}
 	
-	public DataSourceFacade getCurrentDataSourceFacade() {
-		String current = currentDatesource.get();
-		return current != null ? DataSourceContainer.getDataSource(current) : null;
+	public String getCurrentDataSourceName() {
+		return currentDatesource.get();
 	}
 
 	@Override

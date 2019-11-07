@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "paladin.dynamic")
 public class DynamicDataSourceProperties {
 
+	private String localSourceName = "local";
+
 	private List<DataSourceConfig> source;
 
 	public List<DataSourceConfig> getSource() {
@@ -17,6 +19,14 @@ public class DynamicDataSourceProperties {
 
 	public void setSource(List<DataSourceConfig> source) {
 		this.source = source;
+	}
+
+	public String getLocalSourceName() {
+		return localSourceName;
+	}
+
+	public void setLocalSourceName(String localSourceName) {
+		this.localSourceName = localSourceName;
 	}
 
 }
