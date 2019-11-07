@@ -31,7 +31,12 @@ public class OPDTotal extends YiyuanDataProcessor {
 	@Override
 	public long getTotalNum(Date startTime, Date endTime, String unitId) {
 		sqlSessionContainer.setCurrentDataSource(getDataSourceByUnit(unitId));
-		return sqlSessionContainer.getSqlSessionTemplate().getMapper(OpdStatisticsMapper.class).OPDTotal(startTime, endTime, unitId);
+		if(unitId.equals("320583467170249")||unitId.equals("320583467170257")||unitId.equals("320583467170513")||unitId.equals("320583467170265")){
+			return sqlSessionContainer.getSqlSessionTemplate().getMapper(OpdStatisticsMapper.class).OPDTotalFour(startTime, endTime, unitId);
+		}else{
+			return sqlSessionContainer.getSqlSessionTemplate().getMapper(OpdStatisticsMapper.class).OPDTotal(startTime, endTime, unitId);
+		}
+		
 	}
 
 	@Override
