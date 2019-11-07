@@ -82,6 +82,9 @@ public class SqlSessionContainer implements SpringContainer {
 			pageProperties.setProperty("supportMethodsArguments", "true");
 			pageProperties.setProperty("returnPageInfo", "check");
 			pageProperties.setProperty("params", "count=countSql");
+			
+			// 动态数据源分页方言
+			pageProperties.setProperty("autoRuntimeDialect", "true");	
 			pageHelper.setProperties(pageProperties);
 
 			plugins.add(pageHelper);
