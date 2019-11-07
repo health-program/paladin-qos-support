@@ -12,12 +12,18 @@ public interface OpdStatisticsMapper {
     
     /**急诊人次*/
     public long emergencyNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    /**一二三中急诊人次*/
+    public long emergencyNumFour(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
     
     /**门诊人次*/
     public long outpatientNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    /**一二三中门诊人次*/
+    public long outpatientNumFour(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
     /**门急诊总人次*/
     public long OPDTotal(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+    /**一二三中门急诊总人次*/
+    public long OPDTotalFour(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
     
     /**门急诊使用药品数*/
     public long OPDDrugxyTotal(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
@@ -70,5 +76,9 @@ public interface OpdStatisticsMapper {
 	public long getTotaldays(@Param("startTime")Date startTime, @Param("endTime") Date  endTime);
 
 	public long getTotalPeople(@Param("startTime")Date startTime, @Param("endTime") Date  endTime);
+	
+
+	
+
 
 }
