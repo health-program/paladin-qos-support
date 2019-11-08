@@ -3,7 +3,6 @@ package com.paladin.qos.analysis.impl.gongwei.family;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.github.pagehelper.util.StringUtil;
 import com.paladin.data.dynamic.SqlSessionContainer;
@@ -17,7 +16,7 @@ import com.paladin.qos.dynamic.mapper.familydoctor.DataFamilyDoctorMapper;
  * @author MyKite
  * @version 2019年9月11日 下午4:25:25
  */
-@Component
+@Deprecated
 public class FamilyHypertensionSigningRate extends GongWeiDataProcessor {
 
 	@Autowired

@@ -3,7 +3,6 @@ package com.paladin.qos.analysis.impl.shejike;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.paladin.data.dynamic.SqlSessionContainer;
 import com.paladin.qos.analysis.DataProcessor;
@@ -16,7 +15,7 @@ import com.paladin.qos.dynamic.mapper.shejike.SheJiKeMapper;
  * @author FM
  *
  */
-@Component
+@Deprecated
 public class AverageNumber extends DataProcessor {
 	@Autowired
 	private SqlSessionContainer sqlSessionContainer;
