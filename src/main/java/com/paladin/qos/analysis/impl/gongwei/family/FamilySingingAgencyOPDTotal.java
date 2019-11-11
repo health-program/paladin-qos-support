@@ -36,7 +36,7 @@ public class FamilySingingAgencyOPDTotal extends GongWeiDataProcessor {
 
 	@Override
 	public long getTotalNum(Date startTime, Date endTime, String unitId) {
-		long tatol = 0;
+		long total = 0;
 		sqlSessionContainer.setCurrentDataSource(DSConstant.DS_GONGWEI);
 
 		String gongweiUnitId = getMappingUnitId(unitId);
@@ -96,14 +96,30 @@ public class FamilySingingAgencyOPDTotal extends GongWeiDataProcessor {
 							}
 
 							sqlSessionContainer.setCurrentDataSource(dbCode);
-							tatol += sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).hospitalOPDTotal(startTime, endTime,
-									unitId, newList1);
+							total += sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).hospitalOPDTotal(startTime, endTime,
+									 newList1);
 						}
 					}
 				}
+
+				for (int i = 0, j = 0; i < listSize; i = j) {
+					j += 500;
+					if (j > listSize) {
+						j = listSize;
+					}
+
+					List<String> newList1 = registerOPDtotal1.subList(i, j);
+					if (newList1.size() == 0) {
+						break;
+					}
+
+					sqlSessionContainer.setCurrentDataSource(DSConstant.DS_JCYL);
+					total += sqlSessionContainer.getSqlSessionTemplate().getMapper(DataFamilyDoctorMapper.class).registerTotal(startTime, endTime,
+							newList1);
+				}
 			}
 		}
-		return tatol;
+		return total;
 	}
 
 	@Override

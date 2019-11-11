@@ -44,7 +44,10 @@ public interface DataFamilyDoctorMapper {
 	public List<String> registerOPDtotal(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId,
 			@Param("idCard") List<String> idCard);
 
-	public long hospitalOPDTotal(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId,
+	public long registerTotal(@Param("startTime") Date startTime, @Param("endTime") Date endTime,
+								 @Param("idCard") List<String> idCard);
+
+	public long hospitalOPDTotal(@Param("startTime") Date startTime, @Param("endTime") Date endTime,
 			@Param("idCard") List<String> idCard);
 
 	/** 签约医生门诊就诊率 */
