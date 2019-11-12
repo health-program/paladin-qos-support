@@ -25,6 +25,7 @@ public class DataViewCreateTask extends DataTask {
 
 		this.setConfiguration(view);
 		List<Object> labels = new ArrayList<>();
+		labels.add(creator.getId());
 		labels.add(view.getName());
 		labels.add(view.getOriginDataSource());
 		this.setLabels(labels);

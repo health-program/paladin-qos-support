@@ -61,6 +61,7 @@ public class DataProcessRepairTask extends DataTask {
 		this.repairTime = 0L;
 
 		List<Object> labels = new ArrayList<>();
+		labels.add(processor.getEventId());
 		labels.add(dataEvent.getName());
 		labels.add(dataEvent.getDataSource());
 		this.setLabels(labels);

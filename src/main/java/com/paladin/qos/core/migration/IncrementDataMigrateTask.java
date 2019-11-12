@@ -31,6 +31,7 @@ public class IncrementDataMigrateTask extends DataTask {
 
 		setConfiguration(migration);
 		List<Object> labels = new ArrayList<>();
+		labels.add(dataMigrator.getId());
 		labels.add(migration.getName());
 		labels.add(migration.getOriginDataSource());
 		this.setLabels(labels);

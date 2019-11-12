@@ -35,6 +35,7 @@ public class DataProcessTask extends DataTask {
 
 		this.setConfiguration(event);
 		List<Object> labels = new ArrayList<>();
+		labels.add(processor.getEventId());
 		labels.add(event.getName());
 		labels.add(event.getDataSource());
 		this.setLabels(labels);
