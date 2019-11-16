@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.paladin.qos.dynamic.mapper.yiyuan.KeyOperationBrainSurgeryMapper">
+
+	<select id="getTotalCost"  resultType="java.lang.Double">
+		select COALESCE (SUM(proj_mon) ,0)
+		from  CostDetails
+		where rcd_dt <![CDATA[>= ]]> #{startDate}+0
+		and  rcd_dt <![CDATA[< ]]> #{endDate}+0
+		and ORGAN_CODE = #{unitId}
+	</select>
+
+	<select id="getProduceCost" resultType="java.lang.Double">
+		select COALESCE (SUM(proj_mon) ,0)
+		from  CostDetails
+		where fin_cat_code='0900'
+		and  rcd_dt <![CDATA[>= ]]> #{startDate}+0
+		and  rcd_dt <![CDATA[< ]]> #{endDate}+0
+		and ORGAN_CODE = #{unitId}
+	</select>
+
+	<select id="getOperationCost" resultType="java.lang.Double">
+		select COALESCE (SUM(proj_mon) ,0)
+		from  CostDetails
+		where fin_cat_code='0700'
+		and  rcd_dt <![CDATA[>= ]]> #{startDate}+0
+		and  rcd_dt <![CDATA[< ]]> #{endDate}+0
+		and ORGAN_CODE = #{unitId}
+	</select>
+
+
+</mapper>
