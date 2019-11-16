@@ -16,13 +16,19 @@ public interface SheJiKeMapper {
 
 	// 住院人次数
 	long getInhospitalNumber(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
-
+	// 住院人次数（医保）
+	long getInhospitalNumberMedicare(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	// 住院人次数（自费）
+	long getInhospitalNumberSelf(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
 	// 在院人次数
 	long getOnhospitalNumber(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
 
 	// 出院人次数
 	long getOuthospitalNumber(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
-
+	// 出院人次数（医保）
+	long getOuthospitalNumberMedicare(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	// 出院人次数（自费）
+	long getOuthospitalNumberSelf(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
 	// 门诊人次数
 	long getOutpatientNumber(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
 
@@ -108,4 +114,20 @@ public interface SheJiKeMapper {
 
 	//自费挂号人数
 	long getSelfPay(Date startTime, Date endTime, String unitId);
+
+	//检查人次数
+	long getCheckNumber(Date startTime, Date endTime, String unitId);
+	//检查人次数（窗口）
+	long getCheckNumberWin(Date startTime, Date endTime, String unitId);
+	//检查人次数（自助）
+	long getCheckNumberSelf(Date startTime, Date endTime, String unitId);
+
+	//检验人次数
+	long getTestNumber(Date startTime, Date endTime, String unitId);
+	//检验人次数
+	long getTestNumberWin(Date startTime, Date endTime, String unitId);
+	//检验人次数
+	long getTestNumberSelf(Date startTime, Date endTime, String unitId);
+	
+
 }
