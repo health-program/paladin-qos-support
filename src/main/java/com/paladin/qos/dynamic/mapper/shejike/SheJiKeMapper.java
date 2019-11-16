@@ -129,5 +129,26 @@ public interface SheJiKeMapper {
 	//检验人次数
 	long getTestNumberSelf(Date startTime, Date endTime, String unitId);
 	
-
+	long getPatientsNumberMedicare(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	long getPatientsNumberSelf(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	long getPatientsNumberFirst(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	long getPatientsNumberSecond(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	long getPatientsNumberWindowPre(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	long getPatientsNumberPhone(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	long getPatientsNumberWindow(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	long getPatientsNumberFee(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	long getPatientsNumberStation(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	long getPatientsNumberMachine(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	
+	
+	double getTotalMoneyMedicare(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	double getTotalMoneySelf(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	double getTotalMoneyFirst(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	double getTotalMoneySecond(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	double getTotalMoneyWindowPre(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	double getTotalMoneyPhone(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	double getTotalMoneyWindow(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	double getTotalMoneyFee(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	double getTotalMoneyStation(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+	double getTotalMoneyMachine(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
 }

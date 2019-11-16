@@ -27,6 +27,100 @@
         and a.REGDATE &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
+     <!-- 门急诊总人数 ^医保 -->
+    <select id="getPatientsNumberMedicare" resultType="Long">
+        select count(*) from phis_webhis.V_OPR_REGISTER a
+        where a.REGSTATUS = '0'
+        and a.paykindcode = '3001'
+        and a.REGDATE &gt;= #{startTime}+0
+        and a.REGDATE &lt; #{endTime}+0
+        and a.ORGCODE = #{unitId}
+    </select>
+     <!-- 门急诊总人数 ^自费 -->
+    <select id="getPatientsNumberSelf" resultType="Long">
+        select count(*) from phis_webhis.V_OPR_REGISTER a
+        where a.REGSTATUS = '0'
+        and a.paykindcode = '1001'
+        and a.REGDATE &gt;= #{startTime}+0
+        and a.REGDATE &lt; #{endTime}+0
+        and a.ORGCODE = #{unitId}
+    </select>
+    <!-- 门急诊总人数 ^初诊 -->
+    <select id="getPatientsNumberFirst" resultType="Long">
+        select count(*) from phis_webhis.V_OPR_REGISTER a
+        where a.REGSTATUS = '0'
+        and a.ynfr != '1'
+        and a.REGDATE &gt;= #{startTime}+0
+        and a.REGDATE &lt; #{endTime}+0
+        and a.ORGCODE = #{unitId}
+    </select>
+    <!-- 门急诊总人数 ^复诊 -->
+    <select id="getPatientsNumberSecond" resultType="Long">
+        select count(*) from phis_webhis.V_OPR_REGISTER a
+        where a.REGSTATUS = '0'
+        and ynfr = '1'
+        and a.REGDATE &gt;= #{startTime}+0
+        and a.REGDATE &lt; #{endTime}+0
+        and a.ORGCODE = #{unitId}
+    </select>
+    
+    <!-- 门急诊总人数 ^窗口预约 -->
+    <select id="getPatientsNumberWindowPre" resultType="Long">
+        select count(*) from phis_webhis.V_OPR_REGISTER a
+        where a.REGSTATUS = '0'
+        and a.REGSOURCE = '1'
+        and a.REGDATE &gt;= #{startTime}+0
+        and a.REGDATE &lt; #{endTime}+0
+        and a.ORGCODE = #{unitId}
+    </select>
+    <!-- 门急诊总人数 ^电话预约 -->
+    <select id="getPatientsNumberPhone" resultType="Long">
+        select count(*) from phis_webhis.V_OPR_REGISTER a
+        where a.REGSTATUS = '0'
+        and a.REGSOURCE = '2'
+        and a.REGDATE &gt;= #{startTime}+0
+        and a.REGDATE &lt; #{endTime}+0
+        and a.ORGCODE = #{unitId}
+    </select>
+    <!-- 门急诊总人数 ^窗口挂号 -->
+    <select id="getPatientsNumberWindow" resultType="Long">
+        select count(*) from phis_webhis.V_OPR_REGISTER a
+        where a.REGSTATUS = '0'
+        and a.REGSOURCE = '3'
+        and a.REGDATE &gt;= #{startTime}+0
+        and a.REGDATE &lt; #{endTime}+0
+        and a.ORGCODE = #{unitId}
+    </select>
+    <!-- 门急诊总人数 ^门诊收费 -->
+    <select id="getPatientsNumberFee" resultType="Long">
+        select count(*) from phis_webhis.V_OPR_REGISTER a
+        where a.REGSTATUS = '0'
+        and a.REGSOURCE = '4'
+        and a.REGDATE &gt;= #{startTime}+0
+        and a.REGDATE &lt; #{endTime}+0
+        and a.ORGCODE = #{unitId}
+    </select>
+    <!-- 门急诊总人数 ^医生站 -->
+    <select id="getPatientsNumberStation" resultType="Long">
+        select count(*) from phis_webhis.V_OPR_REGISTER a
+        where a.REGSTATUS = '0'
+        and a.REGSOURCE = '5'
+        and a.REGDATE &gt;= #{startTime}+0
+        and a.REGDATE &lt; #{endTime}+0
+        and a.ORGCODE = #{unitId}
+    </select>
+    <!-- 门急诊总人数 ^自主挂号机 -->
+    <select id="getPatientsNumberMachine" resultType="Long">
+        select count(*) from phis_webhis.V_OPR_REGISTER a
+        where a.REGSTATUS = '0'
+        and a.REGSOURCE = '6'
+        and a.REGDATE &gt;= #{startTime}+0
+        and a.REGDATE &lt; #{endTime}+0
+        and a.ORGCODE = #{unitId}
+    </select>
+    
+    
+    
     <!-- 出诊医生数 **11s -->
     <select id="getVisitDoctorNumber" resultType="Long">
         select count(distinct(DOCTCODE)) from phis_webhis.V_OPM_RECIPE_INFO a
@@ -165,6 +259,110 @@
         and a.feedate &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
     </select>
+    
+    <!-- 合计总收入!!^ 医保-->
+    <select id="getTotalMoneyMedicare" resultType="double">
+        select nvl(SUM(TOTCOST),'0') as totalMoney from phis_webhis.V_OPB_FEEDETAIL a
+        left join phis_webhis.V_OPR_REGISTER b on a.regid = b.regid
+        where a.ITEMSTATUS = '0'
+        and b.paykindcode = '3001'
+        and a.feedate &gt;= #{startTime}+0
+        and a.feedate &lt; #{endTime}+0
+        and a.ORGCODE = #{unitId}
+    </select>
+    <!-- 合计总收入!!^ 自费-->
+    <select id="getTotalMoneySelf" resultType="double">
+        select nvl(SUM(TOTCOST),'0') as totalMoney from phis_webhis.V_OPB_FEEDETAIL a
+        left join phis_webhis.V_OPR_REGISTER b on a.regid = b.regid
+        where a.ITEMSTATUS = '0'
+        and b.paykindcode = '1001'
+        and a.feedate &gt;= #{startTime}+0
+        and a.feedate &lt; #{endTime}+0
+        and a.ORGCODE = #{unitId}
+    </select>
+    <!-- 合计总收入!!^ 初诊-->
+    <select id="getTotalMoneyFirst" resultType="double">
+        select nvl(SUM(TOTCOST),'0') as totalMoney from phis_webhis.V_OPB_FEEDETAIL a
+        left join phis_webhis.V_OPR_REGISTER b on a.regid = b.regid
+        where a.ITEMSTATUS = '0'
+        and b.ynfr != '1'
+        and a.feedate &gt;= #{startTime}+0
+        and a.feedate &lt; #{endTime}+0
+        and a.ORGCODE = #{unitId}
+    </select>
+    <!-- 合计总收入!!^ 复诊-->
+    <select id="getTotalMoneySecond" resultType="double">
+        select nvl(SUM(TOTCOST),'0') as totalMoney from phis_webhis.V_OPB_FEEDETAIL a
+        left join phis_webhis.V_OPR_REGISTER b on a.regid = b.regid
+        where a.ITEMSTATUS = '0'
+        and b.ynfr = '1'
+        and a.feedate &gt;= #{startTime}+0
+        and a.feedate &lt; #{endTime}+0
+        and a.ORGCODE = #{unitId}
+    </select>
+    <!-- 合计总收入!!^ 窗口预约-->
+    <select id="getTotalMoneyWindowPre" resultType="double">
+        select nvl(SUM(TOTCOST),'0') as totalMoney from phis_webhis.V_OPB_FEEDETAIL a
+        left join phis_webhis.V_OPR_REGISTER b on a.regid = b.regid
+        where a.ITEMSTATUS = '0'
+        and b.REGSOURCE = '1'
+        and a.feedate &gt;= #{startTime}+0
+        and a.feedate &lt; #{endTime}+0
+        and a.ORGCODE = #{unitId}
+    </select>
+    <!-- 合计总收入!!^ 电话预约-->
+    <select id="getTotalMoneyPhone" resultType="double">
+        select nvl(SUM(TOTCOST),'0') as totalMoney from phis_webhis.V_OPB_FEEDETAIL a
+        left join phis_webhis.V_OPR_REGISTER b on a.regid = b.regid
+        where a.ITEMSTATUS = '0'
+        and b.REGSOURCE = '2'
+        and a.feedate &gt;= #{startTime}+0
+        and a.feedate &lt; #{endTime}+0
+        and a.ORGCODE = #{unitId}
+    </select>
+    <!-- 合计总收入!!^ 窗口挂号-->
+    <select id="getTotalMoneyWindow" resultType="double">
+        select nvl(SUM(TOTCOST),'0') as totalMoney from phis_webhis.V_OPB_FEEDETAIL a
+        left join phis_webhis.V_OPR_REGISTER b on a.regid = b.regid
+        where a.ITEMSTATUS = '0'
+        and b.REGSOURCE = '3'
+        and a.feedate &gt;= #{startTime}+0
+        and a.feedate &lt; #{endTime}+0
+        and a.ORGCODE = #{unitId}
+    </select>
+    <!-- 合计总收入!!^ 门诊收费-->
+    <select id="getTotalMoneyFee" resultType="double">
+        select nvl(SUM(TOTCOST),'0') as totalMoney from phis_webhis.V_OPB_FEEDETAIL a
+        left join phis_webhis.V_OPR_REGISTER b on a.regid = b.regid
+        where a.ITEMSTATUS = '0'
+        and b.REGSOURCE = '4'
+        and a.feedate &gt;= #{startTime}+0
+        and a.feedate &lt; #{endTime}+0
+        and a.ORGCODE = #{unitId}
+    </select>
+     <!-- 合计总收入!!^ 医生站-->
+    <select id="getTotalMoneyStation" resultType="double">
+        select nvl(SUM(TOTCOST),'0') as totalMoney from phis_webhis.V_OPB_FEEDETAIL a
+        left join phis_webhis.V_OPR_REGISTER b on a.regid = b.regid
+        where a.ITEMSTATUS = '0'
+        and b.REGSOURCE = '5'
+        and a.feedate &gt;= #{startTime}+0
+        and a.feedate &lt; #{endTime}+0
+        and a.ORGCODE = #{unitId}
+    </select>
+     <!-- 合计总收入!!^ 自主挂号机-->
+    <select id="getTotalMoneyMachine" resultType="double">
+        select nvl(SUM(TOTCOST),'0') as totalMoney from phis_webhis.V_OPB_FEEDETAIL a
+        left join phis_webhis.V_OPR_REGISTER b on a.regid = b.regid
+        where a.ITEMSTATUS = '0'
+        and b.REGSOURCE = '6'
+        and a.feedate &gt;= #{startTime}+0
+        and a.feedate &lt; #{endTime}+0
+        and a.ORGCODE = #{unitId}
+    </select>
+    
+    
+    
     <!-- 医疗收入!! ^ -->
     <select id="getMedicalMoney" resultType="double">
         select NVL(SUM(TOTCOST),'0') as medicalMoney from
