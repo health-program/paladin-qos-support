@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+        namespace="com.paladin.qos.dynamic.mapper.yiyuan.EssentialDrugAnalysisMapper">
+
+    <select id="getTotalNum" resultType="long">
+        select COALESCE(sum(TOTAL_FEE),0) from WM_PrescriptionDetails  left join  CostRecord  on  WM_PrescriptionDetails.OP_EM_HP_NO  = CostRecord.OP_EM_HP_NO
+        where  WM_PrescriptionDetails.RX_DT >=  #{startTime}  AND   WM_PrescriptionDetails.RX_DT <![CDATA[< ]]> #{endTime}
+        AND   WM_PrescriptionDetails.ORGAN_CODE = #{code}
+    </select>
+
+
+    <select id="getEventNum" resultType="long">
+        select COALESCE(sum(TOTAL_FEE),0) from WM_PrescriptionDetails  left join  CostRecord  on  WM_PrescriptionDetails.OP_EM_HP_NO  = CostRecord.OP_EM_HP_NO
+        where WM_PrescriptionDetails.IF_BASE_DRUG = '1' AND WM_PrescriptionDetails.RX_DT >=  #{startTime}  AND   WM_PrescriptionDetails.RX_DT <![CDATA[< ]]> #{endTime}
+        AND   WM_PrescriptionDetails.ORGAN_CODE = #{code}
+    </select>
+
+
+</mapper>
