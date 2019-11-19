@@ -1,32 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.paladin.qos.dynamic.mapper.yiyuan.KeyOperationBrainSurgeryMapper">
+<mapper namespace="com.paladin.qos.dynamic.mapper.yiyuan.CostDetailMapper">
 
 	<select id="getTotalCost"  resultType="java.lang.Double">
 		select COALESCE (SUM(proj_mon) ,0)
 		from  CostDetails
-		where rcd_dt <![CDATA[>= ]]> #{startDate}+0
-		and  rcd_dt <![CDATA[< ]]> #{endDate}+0
-		and ORGAN_CODE = #{unitId}
+		where rcd_dt <![CDATA[>= ]]> #{startTime}+0
+		and  rcd_dt <![CDATA[< ]]> #{endTime}+0
 	</select>
 
 	<select id="getProduceCost" resultType="java.lang.Double">
 		select COALESCE (SUM(proj_mon) ,0)
 		from  CostDetails
 		where fin_cat_code='0900'
-		and  rcd_dt <![CDATA[>= ]]> #{startDate}+0
-		and  rcd_dt <![CDATA[< ]]> #{endDate}+0
-		and ORGAN_CODE = #{unitId}
+		and  rcd_dt <![CDATA[>= ]]> #{startTime}+0
+		and  rcd_dt <![CDATA[< ]]> #{endTime}+0
 	</select>
 
 	<select id="getOperationCost" resultType="java.lang.Double">
 		select COALESCE (SUM(proj_mon) ,0)
 		from  CostDetails
 		where fin_cat_code='0700'
-		and  rcd_dt <![CDATA[>= ]]> #{startDate}+0
-		and  rcd_dt <![CDATA[< ]]> #{endDate}+0
-		and ORGAN_CODE = #{unitId}
+		and  rcd_dt <![CDATA[>= ]]> #{startTime}+0
+		and  rcd_dt <![CDATA[< ]]> #{endTime}+0
 	</select>
 
+	<!--门诊医保总收入-->
+	<select id="getOutpatientCost" resultType="java.lang.Double">
+		select COALESCE (SUM(proj_mon) ,0)
+		from  CostDetails
+		where OP_EM_HP_MARK=1 and OUT_MED_INS=1
+		and  rcd_dt <![CDATA[>= ]]> #{startTime}+0
+		and  rcd_dt <![CDATA[< ]]> #{endTime}+0
+	</select>
 
 </mapper>

@@ -10,4 +10,6 @@ public interface CostDetailMapper {
 	double getProduceCost(Map<String, Object> params);
 	//手术费用
 	double getOperationCost(Map<String, Object> params);
+	//门诊医保费用
+	double getOutpatientCost(Map<String, Object> params);
 }

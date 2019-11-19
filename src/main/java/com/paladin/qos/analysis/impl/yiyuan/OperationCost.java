@@ -33,7 +33,6 @@ public class OperationCost extends YiyuanDataProcessor {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("startTime", startTime);
 		params.put("endTime", endTime);
-		params.put("unitId", unitId);
 		sqlSessionContainer.setCurrentDataSource(getDataSourceByUnit(unitId));
 		double cost=sqlSessionContainer.getSqlSessionTemplate().getMapper(CostDetailMapper.class).getTotalCost(params)*100;
 		return (long)cost;
@@ -44,7 +43,6 @@ public class OperationCost extends YiyuanDataProcessor {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("startTime", startTime);
 		params.put("endTime", endTime);
-		params.put("unitId", unitId);
 		sqlSessionContainer.setCurrentDataSource(getDataSourceByUnit(unitId));
 		double cost=sqlSessionContainer.getSqlSessionTemplate().getMapper(CostDetailMapper.class).getOperationCost(params)*100;
 		return (long)cost;

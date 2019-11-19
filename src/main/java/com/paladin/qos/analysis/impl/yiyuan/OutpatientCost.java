@@ -2,7 +2,6 @@ package com.paladin.qos.analysis.impl.yiyuan;
 
 import com.paladin.data.dynamic.SqlSessionContainer;
 import com.paladin.qos.dynamic.mapper.yiyuan.CostDetailMapper;
-import com.paladin.qos.dynamic.mapper.yiyuan.KeyOperationBrainSurgeryMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,12 +16,12 @@ import java.util.Map;
  *
  */
 @Component
-public class ProduceCost extends YiyuanDataProcessor {
+public class OutpatientCost extends YiyuanDataProcessor {
 
 	@Autowired
 	private SqlSessionContainer sqlSessionContainer;
 
-	public static final String EVENT_ID = "42001";
+	public static final String EVENT_ID = "42003";
 
 	@Override
 	public String getEventId() {
@@ -35,17 +34,13 @@ public class ProduceCost extends YiyuanDataProcessor {
 		params.put("startTime", startTime);
 		params.put("endTime", endTime);
 		sqlSessionContainer.setCurrentDataSource(getDataSourceByUnit(unitId));
-		double cost=sqlSessionContainer.getSqlSessionTemplate().getMapper(CostDetailMapper.class).getTotalCost(params)*100;
+		double cost=sqlSessionContainer.getSqlSessionTemplate().getMapper(CostDetailMapper.class).getOutpatientCost(params)*100;
 		return (long)cost;
 	}
 
 	@Override
 	public long getEventNum(Date startTime, Date endTime, String unitId) {
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("startTime", startTime);
-		params.put("endTime", endTime);
-		sqlSessionContainer.setCurrentDataSource(getDataSourceByUnit(unitId));
-		double cost=sqlSessionContainer.getSqlSessionTemplate().getMapper(CostDetailMapper.class).getProduceCost(params)*100;
-		return (long)cost;
+
+		return 0;
 	}
 }
