@@ -5,32 +5,32 @@
 
     <select id="getTownEmployeeTotalNum" resultType="long">
     select	count(1)   from  WM_PrescriptionDetails  left join  CostRecord  on  WM_PrescriptionDetails.OP_EM_HP_NO  = CostRecord.OP_EM_HP_NO
-    where  PAY_MODE = '01'  AND  WM_PrescriptionDetails.RX_DT >=  #{startTime}  AND   WM_PrescriptionDetails.RX_DT <![CDATA[< ]]> #{endTime}
+    where WM_PrescriptionDetails.IF_BASE_DRUG = '1' AND PAY_MODE = '01'  AND  WM_PrescriptionDetails.RX_DT >=  #{startTime}  AND   WM_PrescriptionDetails.RX_DT <![CDATA[< ]]> #{endTime}
     </select>
 
     <select id="getCitizensTotalNum" resultType="long">
         select	count(1)   from  WM_PrescriptionDetails  left join  CostRecord  on  WM_PrescriptionDetails.OP_EM_HP_NO  = CostRecord.OP_EM_HP_NO
-        where  PAY_MODE = '02'  AND  WM_PrescriptionDetails.RX_DT >=  #{startTime}  AND   WM_PrescriptionDetails.RX_DT <![CDATA[< ]]> #{endTime}
+        where WM_PrescriptionDetails.IF_BASE_DRUG = '1' AND  PAY_MODE = '02'  AND  WM_PrescriptionDetails.RX_DT >=  #{startTime}  AND   WM_PrescriptionDetails.RX_DT <![CDATA[< ]]> #{endTime}
     </select>
 
     <select id="getNcmsTotalNum" resultType="long">
         select	count(1)   from  WM_PrescriptionDetails  left join  CostRecord  on  WM_PrescriptionDetails.OP_EM_HP_NO  = CostRecord.OP_EM_HP_NO
-        where  PAY_MODE = '03'  AND  WM_PrescriptionDetails.RX_DT >=  #{startTime}  AND   WM_PrescriptionDetails.RX_DT <![CDATA[< ]]> #{endTime}
+        where WM_PrescriptionDetails.IF_BASE_DRUG = '1' AND  PAY_MODE = '03'  AND  WM_PrescriptionDetails.RX_DT >=  #{startTime}  AND   WM_PrescriptionDetails.RX_DT <![CDATA[< ]]> #{endTime}
     </select>
 
     <select id="getBusinessInsuranceTotalNum" resultType="long">
         select	count(1)   from  WM_PrescriptionDetails  left join  CostRecord  on  WM_PrescriptionDetails.OP_EM_HP_NO  = CostRecord.OP_EM_HP_NO
-        where  PAY_MODE = '05'  AND  WM_PrescriptionDetails.RX_DT >=  #{startTime}  AND   WM_PrescriptionDetails.RX_DT <![CDATA[< ]]> #{endTime}
+        where  WM_PrescriptionDetails.IF_BASE_DRUG = '1'  AND  PAY_MODE = '05'  AND  WM_PrescriptionDetails.RX_DT >=  #{startTime}  AND   WM_PrescriptionDetails.RX_DT <![CDATA[< ]]> #{endTime}
     </select>
 
     <select id="getSelfFeeTotalNum" resultType="long">
         select	count(1)   from  WM_PrescriptionDetails  left join  CostRecord  on  WM_PrescriptionDetails.OP_EM_HP_NO  = CostRecord.OP_EM_HP_NO
-        where  PAY_MODE = '07'  AND  WM_PrescriptionDetails.RX_DT >=  #{startTime}  AND   WM_PrescriptionDetails.RX_DT <![CDATA[< ]]> #{endTime}
+        where WM_PrescriptionDetails.IF_BASE_DRUG = '1' AND   PAY_MODE = '07'  AND  WM_PrescriptionDetails.RX_DT >=  #{startTime}  AND   WM_PrescriptionDetails.RX_DT <![CDATA[< ]]> #{endTime}
     </select>
 
     <select id="getOtherTotalNum" resultType="long">
         select	count(1)   from  WM_PrescriptionDetails  left join  CostRecord  on  WM_PrescriptionDetails.OP_EM_HP_NO  = CostRecord.OP_EM_HP_NO
-        where  PAY_MODE = '99'  AND  WM_PrescriptionDetails.RX_DT >=  #{startTime}  AND   WM_PrescriptionDetails.RX_DT <![CDATA[< ]]> #{endTime}
+        where WM_PrescriptionDetails.IF_BASE_DRUG = '1' AND  PAY_MODE = '99'  AND  WM_PrescriptionDetails.RX_DT >=  #{startTime}  AND   WM_PrescriptionDetails.RX_DT <![CDATA[< ]]> #{endTime}
     </select>
 
 </mapper>
