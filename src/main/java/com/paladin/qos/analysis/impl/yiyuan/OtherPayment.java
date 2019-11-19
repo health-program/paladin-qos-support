@@ -1,24 +1,24 @@
 package com.paladin.qos.analysis.impl.yiyuan;
 
 import com.paladin.data.dynamic.SqlSessionContainer;
-import com.paladin.qos.dynamic.mapper.yiyuan.EssentialDrugAnalysisMapper;
+import com.paladin.qos.dynamic.mapper.yiyuan.PaymentAnalysisMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 /**
- * <基本药物分析>
+ * <其他>
  *
  * @author Huangguochen
- * @create 2019/11/18 17:13
+ * @create 2019/11/19 10:51
  */
 @Component
-public class EssentialDrugAnalysis extends YiyuanDataProcessor{
+public class OtherPayment extends YiyuanDataProcessor{
     @Autowired
     private SqlSessionContainer sqlSessionContainer;
 
-    public static final String EVENT_ID = "42004";
+    public static final String EVENT_ID = "42010";
 
     @Override
     public String getEventId() {
@@ -28,12 +28,11 @@ public class EssentialDrugAnalysis extends YiyuanDataProcessor{
     @Override
     public long getTotalNum(Date startTime, Date endTime, String unitId) {
         sqlSessionContainer.setCurrentDataSource(getDataSourceByUnit(unitId));
-        return sqlSessionContainer.getSqlSessionTemplate().getMapper(EssentialDrugAnalysisMapper.class).getTotalNum(startTime,endTime,unitId);
+        return sqlSessionContainer.getSqlSessionTemplate().getMapper(PaymentAnalysisMapper.class).getOtherTotalNum(startTime,endTime,unitId);
     }
 
     @Override
     public long getEventNum(Date startTime, Date endTime, String unitId) {
-        sqlSessionContainer.setCurrentDataSource(getDataSourceByUnit(unitId));
-        return sqlSessionContainer.getSqlSessionTemplate().getMapper(EssentialDrugAnalysisMapper.class).getEventNum(startTime,endTime,unitId);
+        return 0;
     }
 }
