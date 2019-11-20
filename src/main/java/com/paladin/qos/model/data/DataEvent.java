@@ -10,6 +10,14 @@ public class DataEvent extends DataTaskConfiguration {
 
 	public static final int EVENT_TYPE_RATE = 1;
 	public static final int EVENT_TYPE_COUNT = 2;
+	public static final int EVENT_TYPE_MAX = 3;
+	public static final int EVENT_TYPE_MIN = 4;
+	public static final int EVENT_TYPE_TEXT = 5;
+
+	public static final int GRANULARITY_ALL = 1;
+	public static final int GRANULARITY_DAY = 2;
+	public static final int GRANULARITY_MONTH = 3;
+	public static final int GRANULARITY_YEAR = 4;
 
 	public static final int TARGET_TYPE_ALL = 1;
 	public static final int TARGET_TYPE_HOSPITAL = 2;
@@ -21,6 +29,9 @@ public class DataEvent extends DataTaskConfiguration {
 
 	// 事件名称
 	private String name;
+
+	// 处理分析粒度
+	//private Integer granularity;
 
 	// 事件类型，概率 or 总数
 	private Integer eventType;
