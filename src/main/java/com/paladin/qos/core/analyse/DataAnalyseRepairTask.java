@@ -1,4 +1,4 @@
-package com.paladin.qos.analysis;
+package com.paladin.qos.core.analyse;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.paladin.qos.analysis.DataProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package com.paladin.qos.analysis;
+package com.paladin.qos.core.analyse;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

@@ -268,7 +268,7 @@ public class TimeUtil {
 	public static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public static void main(String[] args) throws Exception {
-		
+		System.out.println(format.format(getTodayBefore(1)));
 	}
 
 }

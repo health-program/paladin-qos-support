@@ -1,4 +1,4 @@
-package com.paladin.qos.analysis;
+package com.paladin.qos.core.analyse;
 
 import java.util.Date;
 import java.util.List;

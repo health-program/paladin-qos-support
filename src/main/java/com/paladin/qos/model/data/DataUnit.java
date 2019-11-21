@@ -8,7 +8,7 @@ public class DataUnit {
 	public final static int TYPE_HOSPITAL = 1;
 	/** 社区 */
 	public final static int TYPE_COMMUNITY = 2;
-	
+
 	// 
 	@Id
 	private String id;
@@ -33,17 +33,6 @@ public class DataUnit {
 	
 	// 数据库CODE
 	private String dbCode;
-
-	//床位数量
-	private Integer bedNumber;
-
-	public Integer getBedNumber() {
-		return bedNumber;
-	}
-
-	public void setBedNumber(Integer bedNumber) {
-		this.bedNumber = bedNumber;
-	}
 
 	public String getId() {
 		return id;

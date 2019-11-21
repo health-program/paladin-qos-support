@@ -31,7 +31,7 @@ public class DataEvent extends DataTaskConfiguration {
 	private String name;
 
 	// 处理分析粒度
-	//private Integer granularity;
+	private Integer granularity;
 
 	// 事件类型，概率 or 总数
 	private Integer eventType;
@@ -48,11 +48,8 @@ public class DataEvent extends DataTaskConfiguration {
 	// 处理开始时间
 	private Date processStartDate;
 
-	// 最大迁移条数
+	// 最大处理条数
 	private Integer maximumProcess;
-
-	// 是否单独处理线程
-	private Integer separateProcessThread;
 
 	public String getId() {
 		return id;
@@ -108,14 +105,6 @@ public class DataEvent extends DataTaskConfiguration {
 
 	public void setProcessStartDate(Date processStartDate) {
 		this.processStartDate = processStartDate;
-	}
-
-	public Integer getSeparateProcessThread() {
-		return separateProcessThread;
-	}
-
-	public void setSeparateProcessThread(Integer separateProcessThread) {
-		this.separateProcessThread = separateProcessThread;
 	}
 
 	public Integer getMaximumProcess() {

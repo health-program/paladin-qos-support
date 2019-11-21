@@ -16,7 +16,7 @@ public class BusinessInsurancePayment extends YiyuanDataProcessor{
     @Autowired
     private SqlSessionContainer sqlSessionContainer;
 
-    public static final String EVENT_ID = "42008";
+    public static final String EVENT_ID = "";
 
     @Override
     public String getEventId() {
