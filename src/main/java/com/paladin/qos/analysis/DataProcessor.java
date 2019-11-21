@@ -71,7 +71,6 @@ public abstract class DataProcessor {
 	 * 处理数据，开始结束时间应当已经处理过（按照timeType），例如开始时间2019-8-13 00:00:00，结束时间为2019-8-14
 	 * 00:00:00，不能带时分秒
 	 * 
-	 * @param timeType
 	 * @param startTime
 	 * @param endTime
 	 * @param unitId

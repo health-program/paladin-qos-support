@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.paladin.qos.dynamic.DSConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +65,15 @@ public class DataProcessContainer implements SpringContainer {
 				units = DataConstantContainer.getCommunityList();
 			}
 
-			processor.setTargetUnits(units);
+			if(dataEvent.getDataSource().equals(DSConstant.DS_YIYUAN)) {
+				// 因为医院数据库分开，打乱执行医院顺序从而实现一定的负载均衡；
+				List<DataUnit> randomUnits = new ArrayList<>(units);
+				Collections.shuffle(randomUnits);
+				processor.setTargetUnits(randomUnits);
+			} else {
+				processor.setTargetUnits(units);
+			}
+
 			processor.setDataEvent(dataEvent);
 
 			if (processorMap.containsKey(eventId)) {
