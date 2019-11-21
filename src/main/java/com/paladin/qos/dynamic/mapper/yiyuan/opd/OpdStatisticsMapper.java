@@ -34,6 +34,8 @@ public interface OpdStatisticsMapper {
 
     /**住院人次*/
     public long HospitalizationNumber(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+    /**出院人次*/
+    public long outHospitalNumber(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
     
     /**住院患者使用药品数*/
     public long HospitalizationDrugTotal(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
