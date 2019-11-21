@@ -3,6 +3,7 @@ package com.paladin.qos.analysis.impl.yiyuan;
 import com.paladin.data.dynamic.SqlSessionContainer;
 import com.paladin.qos.dynamic.mapper.yiyuan.PaymentAnalysisMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
@@ -12,6 +13,7 @@ import java.util.Date;
  * @author Huangguochen
  * @create 2019/11/19 10:48
  */
+@Component
 public class BusinessInsurancePayment extends YiyuanDataProcessor{
     @Autowired
     private SqlSessionContainer sqlSessionContainer;
