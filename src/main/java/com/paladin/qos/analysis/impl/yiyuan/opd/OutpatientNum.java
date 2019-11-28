@@ -31,7 +31,7 @@ public class OutpatientNum extends YiyuanDataProcessor{
 	public long getTotalNum(Date startTime, Date endTime, String unitId) {
 		sqlSessionContainer.setCurrentDataSource(getDataSourceByUnit(unitId));
 		if(unitId.equals("320583467170249")||unitId.equals("320583467170257")||unitId.equals("320583467170513")||unitId.equals("320583467170265")){
-		    if(startTime.getTime()>= StatisticsConstant.TABLE_MEDICALRECORD_BF_START_TIME){
+		    if(startTime.getTime()<= StatisticsConstant.TABLE_MEDICALRECORD_BF_START_TIME){
 			return sqlSessionContainer.getSqlSessionTemplate().getMapper(OpdStatisticsMapper.class).outpatientNum(startTime, endTime);
 		    }else{
 			return sqlSessionContainer.getSqlSessionTemplate().getMapper(OpdStatisticsMapper.class).outpatientNumFour(startTime, endTime);
