@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.paladin.qos.dynamic.mapper.yiyuan.performance.PerformanceMapper">
+
+	<!-- 门诊医保费用60001 -->
+	<select id="getOutpatientMedicare" resultType="long">
+   select coalesce(sum(TOTAL_FEE -IND_PAY),0) from CostRecord 
+     where OP_EM_HP_MARK in ('1','2','4') 
+     and CHARGE_REFUND = '1' 
+     and RCD_DT &gt;= #{startTime}+0 
+     and RCD_DT &lt; #{endTime}+0 
+	</select>
+	
+	<!-- 门诊总费用60002 -->
+	<select id="getOutpatientFee" resultType="long">
+   select coalesce(sum(TOTAL_FEE),0) from CostRecord 
+     where OP_EM_HP_MARK in ('1','2','4') 
+     and CHARGE_REFUND = '1' 
+     and RCD_DT &gt;= #{startTime}+0 
+     and RCD_DT &lt; #{endTime}+0 
+	</select>
+	
+	<!-- 住院医保费用60003 -->
+	<select id="getInhospitableMedicare" resultType="long">
+	select coalesce(sum(TOTAL_FEE-IND_PAY),0) from CostRecord 
+	   where OP_EM_HP_MARK  = '3'
+	   and CHARGE_REFUND = '1' 
+	   and RCD_DT &gt;= #{startTime}+0 
+	   and RCD_DT &lt; #{endTime}+0 
+   </select>
+   
+   <!-- 住院总费用60004 -->
+	<select id="getInhospitableFee" resultType="long">
+	select coalesce(sum(TOTAL_FEE),0) from CostRecord 
+	   where OP_EM_HP_MARK  = '3'
+	   and CHARGE_REFUND = '1' 
+	   and RCD_DT &gt;= #{startTime}+0 
+	   and RCD_DT &lt; #{endTime}+0 
+   </select>
+   
+   <!-- 总收入60005 -->
+	<select id="getTotalFee" resultType="long">
+	select coalesce(sum(TOTAL_FEE),0) from CostRecord 
+	   where  CHARGE_REFUND = '1' 
+	   and RCD_DT &gt;= #{startTime}+0 
+	   and RCD_DT &lt; #{endTime}+0 
+   </select>
+   
+   <!-- 医疗服务收入60006 -->
+	<select id="getMedicalServiceFee" resultType="long">
+	SELECT coalesce(sum(PROJ_MON),0) from COSTDETAILS a
+	   where FIN_CAT_CODE not in ('0400','0500','0900','1000','1001','1002','1003')
+	   and CHARGE_REFUND = '1' 
+	   and RCD_DT &gt;= #{startTime}+0 
+	   and RCD_DT &lt; #{endTime}+0 
+   </select>
+   
+   <!-- 药品收入60007 -->
+	<select id="getDrugFee" resultType="long">
+	select coalesce(sum(PROJ_MON),0) from CostDetails 
+	  where CHARGE_REFUND = '1'
+      and FIN_CAT_CODE in ('1001','1002','1003')
+      and RCD_DT &gt;= #{startTime}+0 
+      and RCD_DT &lt; #{endTime}+0 
+   </select>
+   
+   <!--  基药费用60008 
+	<select id="getDrugFee" resultType="long">
+	select coalesce(sum(PROJ_MON),0) from CostDetails 
+	  where CHARGE_REFUND = '1'
+      and FIN_CAT_CODE in ('1001','1002','1003')
+      and RCD_DT &gt;= #{startTime}+0 
+      and RCD_DT &lt; #{endTime}+0 
+   </select> -->
+   
+   <!-- 辅药收入60009 -->
+	<select id="getAssistDrug" resultType="long">
+	select coalesce(sum(PROJ_MON),0)  from costdetails c left join WM_PrescriptionDetails  w on c.OP_EM_HP_NO = w.OP_EM_HP_NO 
+        where w.IF_BASE_DRUG='0' and c.CHARGE_REFUND = '1'
+        AND w.OP_EM_HP_NO != '9999999999'
+        and c.FIN_CAT_CODE in ('1001','1002','1003')
+        and c.RCD_DT &gt;= #{startTime}+0 and c.RCD_DT &lt; #{endTime}+0 
+   </select>
+   
+   <!-- 门诊人次60011 -->
+	<select id="getPatientNum" resultType="long">
+	select count(1) from RegisterRecord   
+     where  VISIT_DATE &gt;= #{startTime}+0
+     and VISIT_DATE &lt; #{endTime}+0
+   </select>
+   
+   <!-- 出院患者关联的药品总费用60014 -->
+	<select id="getInhospitableDrugFee" resultType="long">
+	SELECT coalesce(sum(PROJ_MON),0) from COSTDETAILS cc
+	    where CC.FIN_CAT_CODE  in ('1000','1001','1002','1003') 
+        and CC.OP_EM_HP_NO in ( SELECT DISTINCT OC.HP_S_NO  from OUTHOSPITALRECORD oc )
+        and RCD_DT &gt;= #{startTime}+0 
+        and RCD_DT &lt; #{endTime}+0
+   </select>
+   
+   <!-- 出院患者关联的住院总费用60015 -->
+	<select id="getOuthospitableTotalFee" resultType="long">
+	SELECT coalesce(sum(PROJ_MON),0) from COSTDETAILS cc
+	    where cc.CHARGE_REFUND = '1'
+        and cc.OP_EM_HP_NO in ( SELECT DISTINCT OC.HP_S_NO  from OUTHOSPITALRECORD oc )
+        and RCD_DT &gt;= #{startTime}+0 
+        and RCD_DT &lt; #{endTime}+0
+   </select>
+   
+   <!-- 总床日数60016 -->
+	<select id="getTotalBedDay" resultType="long">
+	SELECT coalesce(sum(P_OC_BED),0) from IN_WORKLOAD  a
+     where RCD_DT &gt;= #{startTime}+0 
+     and RCD_DT &lt; #{endTime}+0
+   </select>
+</mapper>

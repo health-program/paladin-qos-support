@@ -1,4 +1,4 @@
-package com.paladin.qos.analysis.impl.yiyuan.registration;
+package com.paladin.qos.analysis.impl.yiyuan.performance;
 
 import java.util.Date;
 
@@ -7,35 +7,33 @@ import org.springframework.stereotype.Component;
 
 import com.paladin.data.dynamic.SqlSessionContainer;
 import com.paladin.qos.analysis.impl.yiyuan.YiyuanDataProcessor;
-import com.paladin.qos.dynamic.mapper.yiyuan.opd.OpdStatisticsMapper;
+import com.paladin.qos.dynamic.mapper.yiyuan.performance.PerformanceMapper;
 
-/**医院平均住院日
+/**住院总费用
  * @author MyKite
  * @version 2019年9月27日 上午9:43:09 
  */
 @Component
-public class HospitalAvgDays extends YiyuanDataProcessor{
+public class InhospitableFee extends YiyuanDataProcessor{
 
 	@Autowired
 	private SqlSessionContainer sqlSessionContainer;
 
-	public static final String EVENT_ID = "60001";
+	public static final String EVENT_ID = "60004";
 
 	@Override
 	public String getEventId() {
 		return EVENT_ID;
 	}
 
-	//天数
 	@Override
 	public long getTotalNum(Date startTime, Date endTime, String unitId) {
 		sqlSessionContainer.setCurrentDataSource(getDataSourceByUnit(unitId));
-		return sqlSessionContainer.getSqlSessionTemplate().getMapper(OpdStatisticsMapper.class).getTotaldays(startTime, endTime);
+		return sqlSessionContainer.getSqlSessionTemplate().getMapper(PerformanceMapper.class).getInhospitableFee(startTime, endTime);
 	}
-    //人次
+
 	@Override
 	public long getEventNum(Date startTime, Date endTime, String unitId) {
-		sqlSessionContainer.setCurrentDataSource(getDataSourceByUnit(unitId));
-		return sqlSessionContainer.getSqlSessionTemplate().getMapper(OpdStatisticsMapper.class).getTotalPeople(startTime, endTime);
+		return 0;
 	}
 }

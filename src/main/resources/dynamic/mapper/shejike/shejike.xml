@@ -187,13 +187,16 @@
         and a.ORGCODE = #{unitId}
     </select>
     <!-- 在院人数 ^ -->
+    
     <select id="getOnhospitalNumber" resultType="Long">
         select count(INSTATE) from phis_webhis.V_IPR_INPATIENTINFO a
-        where a.INSTATE in ('R','I')
+        where a.out_date is  null 
         and a.INDATE &gt;= #{startTime}+0
         and a.INDATE &lt; #{endTime}+0
         and a.ORGCODE = #{unitId}
-    </select>
+</select>
+    
+    
     <!-- 额定床位 ^ -->
     <select id="getRatedBedNumber" resultType="Long">
         select count(*) from phis_webhis.V_COM_BEDINFO a
