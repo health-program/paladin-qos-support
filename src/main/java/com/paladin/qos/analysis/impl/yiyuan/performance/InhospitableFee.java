@@ -29,7 +29,7 @@ public class InhospitableFee extends YiyuanDataProcessor{
 	@Override
 	public long getTotalNum(Date startTime, Date endTime, String unitId) {
 		sqlSessionContainer.setCurrentDataSource(getDataSourceByUnit(unitId));
-		return sqlSessionContainer.getSqlSessionTemplate().getMapper(PerformanceMapper.class).getInhospitableFee(startTime, endTime);
+		return (long)(sqlSessionContainer.getSqlSessionTemplate().getMapper(PerformanceMapper.class).getInhospitableFee(startTime, endTime)*100);
 	}
 
 	@Override

@@ -385,11 +385,11 @@
     </select>
     <!-- 其他收入 !! -->
     <select id="getOtherMoney" resultType="double">
-        select nvl(SUM(TOTCOST),'0') as drugMoney from phis_webhis.V_OPB_FEEDETAIL a
-        where ITEMSTATUS = '0' and ISDRUG not in ('0','1')
-        and a.feedate &gt;= #{startTime}+0
-        and a.feedate &lt; #{endTime}+0
-        and a.ORGCODE = #{unitId}
+        select nvl(SUM(OWNCOST),'0') as drugMoney from phis_webhis.v_opb_invoicedetail a
+        where  a.invocode='801'
+        and a.opertime &gt;= #{startTime}+0
+        and a.opertime &lt; #{endTime}+0
+        and a.ORGCODE = #{unitId};
     </select>
     <!-- 处方数量 ^ -->
     <select id="getPrescriptionNumber" resultType="long">
