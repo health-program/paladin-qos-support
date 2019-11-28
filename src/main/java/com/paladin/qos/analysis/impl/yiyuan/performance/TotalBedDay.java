@@ -19,7 +19,7 @@ public class TotalBedDay extends YiyuanDataProcessor{
 	@Autowired
 	private SqlSessionContainer sqlSessionContainer;
 
-	public static final String EVENT_ID = "60015";
+	public static final String EVENT_ID = "60016";
 
 	@Override
 	public String getEventId() {
