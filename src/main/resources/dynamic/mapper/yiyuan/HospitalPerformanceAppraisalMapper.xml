@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+        namespace="com.paladin.qos.dynamic.mapper.yiyuan.HospitalPerformanceAppraisalMapper">
+
+   <!-- 门诊出院-门诊人次-->
+    <select id="getOutpatientVisitsTotalNum" resultType="long">
+        select count(1) from RegisterRecord
+        where OP_EM_MARK = '1'  AND  back_mark  = 0  AND  visit_date >= #{startTime}   AND   visit_date  <![CDATA[<]]> #{endTime}
+    </select>
+
+    <!-- 转诊人次-->
+    <select id="getReferralsTotalNum" resultType="long">
+        SELECT sum(total)
+        FROM
+        (SELECT count(1) AS total
+        FROM FirstPageMedicalRecord
+        WHERE DISCHAWAYCODE  in ('2','3')   AND  OUT_HP_DT >= #{startTime}  AND   OUT_HP_DT  <![CDATA[<]]> #{endTime}
+        UNION ALL
+        SELECT count(1) AS total
+        FROM ED_CMEDICAL_HOME_PAGE_RECORD
+        WHERE DISCHAWAYCODE  in ('2','3')  AND  OUT_HP_DT >= #{startTime}  AND   OUT_HP_DT  <![CDATA[<]]> #{endTime} )
+    </select>
+
+    <!-- 手术患者数-->
+    <select id="getOperationsTotalNum" resultType="long">
+        SELECT sum(total)
+        FROM
+        (SELECT count(DISTINCT(a.CARDNO)) AS total
+        FROM outhospitalrecord a
+        LEFT JOIN firstpagemedicalrecord b
+        ON a.HP_S_NO = b.HP_S_NO
+        LEFT JOIN  MR_OperationRecord c
+        ON b.HP_S_NO = c.HP_S_NO
+        WHERE a.OHREC_DREC = '1'
+        AND b.IF_OPREA = '1'
+        AND a.OUT_HP_DT >= #{startTime}
+        AND a.OUT_HP_DT <![CDATA[<]]> #{endTime}
+        UNION ALL
+        SELECT count(DISTINCT(a.CARDNO)) AS total
+        FROM outhospitalrecord a
+        LEFT JOIN ed_cmedical_home_page_record c
+        ON a.HP_S_NO = c.HP_S_NO
+        LEFT JOIN  ED_CMED_HOME_PAGE_OPE_RECORD d
+        ON d.HP_S_NO = c.HP_S_NO
+        WHERE a.OHREC_DREC = '1'
+        AND c.IF_OPREA = '1'
+        AND a.OUT_HP_DT >= #{startTime}
+        AND a.OUT_HP_DT <![CDATA[<]]> #{endTime})
+    </select>
+
+    <!-- 三四级手术-->
+    <select id="get34OperationsTotalNum" resultType="long">
+        SELECT sum(total)
+        FROM
+        (SELECT count(1) AS total
+        FROM outhospitalrecord a
+        LEFT JOIN MR_OperationRecord b
+        ON a.HP_S_NO = b.HP_S_NO
+        WHERE a.OHREC_DREC = '1'
+        AND b.NNIS in ('3','4')
+        AND a.OUT_HP_DT >= #{startTime}
+        AND a.OUT_HP_DT <![CDATA[<]]> #{endTime}
+        UNION ALL
+        SELECT count(1) AS total
+        FROM outhospitalrecord a
+        LEFT JOIN ED_CMED_HOME_PAGE_OPE_RECORD c
+        ON a.HP_S_NO = c.HP_S_NO
+        WHERE a.OHREC_DREC = '1'
+        AND c.NNIS in ('3','4')
+        AND a.OUT_HP_DT >= #{startTime}
+        AND a.OUT_HP_DT <![CDATA[<]]> #{endTime})
+    </select>
+
+
+    <!-- Ⅰ类切口手术  手术台数(东软)-->
+    <select id="getOperationsTablesTotalNum" resultType="long">
+select  sum(ssts) ssts from (
+select count(1) ssts
+          from MR_OperationRecord mor, outhospitalrecord ohr
+         where 1 = 1
+           and mor.wound_grade = 1
+           and mor.hp_s_no = ohr.hp_s_no -- 住院号
+           and mor.mr_no = ohr.mr_no -- 病案号
+           and MOR.OPER_CODE in (SELECT TT.OPERATION_CODE  from JS_OPERATION_MENU tt  )
+           and mor.oper_date >= #{startTime} and mor.oper_date   <![CDATA[<]]> #{endTime}
+           and ohr.out_hp_dt >= #{startTime}  and  ohr.out_hp_dt   <![CDATA[<]]> #{endTime}
+
+         union all
+
+         select count(1) ssts
+          from ED_CMED_HOME_PAGE_OPE_RECORD mor, outhospitalrecord ohr
+         where 1 = 1
+           and mor.wound_grade = 1
+           and mor.hp_s_no = ohr.hp_s_no -- 住院号
+           and mor.mr_no = ohr.mr_no -- 病案号
+           and MOR.OPER_CODE in (SELECT TT.OPERATION_CODE  from JS_OPERATION_MENU tt  )
+           and mor.oper_date  >=  #{startTime}  and mor.oper_date  <![CDATA[<]]> #{endTime}
+           and ohr.out_hp_dt >= #{startTime}  and  ohr.out_hp_dt   <![CDATA[<]]> #{endTime}
+
+         )
+    </select>
+
+
+    <!-- Ⅰ类切口手术  感染人次数)-->
+    <select id="getOperationsInfectionTotalNum" resultType="long">
+        SELECT sum(total)
+        FROM
+        (SELECT count(1) AS total
+        FROM MR_OperationRecord
+        WHERE WOUND_GRADE = '1'
+        AND WOUND_TYPE = '3'  AND RCD_DT >= #{startTime}  AND RCD_DT <![CDATA[<]]> #{endTime}
+        UNION ALL
+        SELECT count(1) AS total
+        FROM ED_CMED_HOME_PAGE_OPE_RECORD
+        WHERE WOUND_GRADE = '1'
+        AND WOUND_TYPE = '3'  AND RCD_DT >= #{startTime}  AND RCD_DT <![CDATA[<]]> #{endTime} )
+    </select>
+
+    <!-- 临床路径管理-入组数-->
+    <select id="getEnrollmentTotalNum" resultType="long">
+        SELECT sum(total)
+        FROM
+        (SELECT count(1) AS total
+        FROM FirstPageMedicalRecord
+        WHERE CPW_MANA_CODE = '1'  AND OUT_HP_DT >= #{startTime}  AND OUT_HP_DT <![CDATA[<]]> #{endTime}
+        UNION ALL
+        SELECT count(1) AS total
+        FROM ED_CMEDICAL_HOME_PAGE_RECORD
+        WHERE CPW_MANA_CODE = '1'  AND OUT_HP_DT >= #{startTime}  AND OUT_HP_DT <![CDATA[<]]> #{endTime} )
+    </select>
+
+
+</mapper>
