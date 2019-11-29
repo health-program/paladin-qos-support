@@ -75,13 +75,13 @@
 
     <!-- Ⅰ类切口手术  手术台数(东软)-->
     <select id="getOperationsTablesTotalNum" resultType="long">
-select  sum(ssts) ssts from (
+<!--select  sum(ssts) ssts from (
 select count(1) ssts
           from MR_OperationRecord mor, outhospitalrecord ohr
          where 1 = 1
            and mor.wound_grade = 1
-           and mor.hp_s_no = ohr.hp_s_no -- 住院号
-           and mor.mr_no = ohr.mr_no -- 病案号
+           and mor.hp_s_no = ohr.hp_s_no &#45;&#45; 住院号
+           and mor.mr_no = ohr.mr_no &#45;&#45; 病案号
            and MOR.OPER_CODE in (SELECT TT.OPERATION_CODE  from JS_OPERATION_MENU tt  )
            and mor.oper_date >= #{startTime} and mor.oper_date   <![CDATA[<]]> #{endTime}
            and ohr.out_hp_dt >= #{startTime}  and  ohr.out_hp_dt   <![CDATA[<]]> #{endTime}
@@ -92,13 +92,32 @@ select count(1) ssts
           from ED_CMED_HOME_PAGE_OPE_RECORD mor, outhospitalrecord ohr
          where 1 = 1
            and mor.wound_grade = 1
-           and mor.hp_s_no = ohr.hp_s_no -- 住院号
-           and mor.mr_no = ohr.mr_no -- 病案号
+           and mor.hp_s_no = ohr.hp_s_no &#45;&#45; 住院号
+           and mor.mr_no = ohr.mr_no &#45;&#45; 病案号
            and MOR.OPER_CODE in (SELECT TT.OPERATION_CODE  from JS_OPERATION_MENU tt  )
            and mor.oper_date  >=  #{startTime}  and mor.oper_date  <![CDATA[<]]> #{endTime}
            and ohr.out_hp_dt >= #{startTime}  and  ohr.out_hp_dt   <![CDATA[<]]> #{endTime}
 
-         )
+         )-->
+        SELECT sum(total)
+        FROM
+        (SELECT count(1) AS total
+        FROM outhospitalrecord a
+        LEFT JOIN MR_OperationRecord b
+        ON a.HP_S_NO = b.HP_S_NO
+        WHERE a.OHREC_DREC = '1'
+        AND b.WOUND_GRADE = '1'
+        AND a.OUT_HP_DT >= #{startTime}
+        AND a.OUT_HP_DT <![CDATA[<]]> #{endTime}
+        UNION ALL
+        SELECT count(1) AS total
+        FROM outhospitalrecord a
+        LEFT JOIN ED_CMED_HOME_PAGE_OPE_RECORD c
+        ON a.HP_S_NO = c.HP_S_NO
+        WHERE a.OHREC_DREC = '1'
+        AND c.WOUND_GRADE = '1'
+        AND a.OUT_HP_DT >= #{startTime}
+        AND a.OUT_HP_DT <![CDATA[<]]> #{endTime})
     </select>
 
 
