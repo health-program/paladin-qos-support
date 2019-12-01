@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.paladin.qos.dynamic.mapper.yiyuan.yibao.YiBaoMapper">
+	<!--诊察-->
+	<select id="getZhenChaCost"  resultType="java.lang.Double">
+		select COALESCE (SUM(proj_mon) ,0)
+		from  CostDetails
+		where  OP_EM_HP_MARK ='1' and OUT_MED_INS='1' and FIN_CAT_CODE ='0300'
+		and  rcd_dt <![CDATA[>= ]]> #{startTime}+0
+		and  rcd_dt <![CDATA[< ]]> #{endTime}+0
+	</select>
+
+	<!--检查-->
+	<select id="getJianChaCost"  resultType="java.lang.Double">
+		select COALESCE (SUM(proj_mon) ,0)
+		from  CostDetails
+		where  OP_EM_HP_MARK ='1' and OUT_MED_INS='1' and FIN_CAT_CODE ='0400'
+		and  rcd_dt <![CDATA[>= ]]> #{startTime}+0
+		and  rcd_dt <![CDATA[< ]]> #{endTime}+0
+	</select>
+
+	<!--化验-->
+	<select id="getHuaYanCost"  resultType="java.lang.Double">
+		select COALESCE (SUM(proj_mon) ,0)
+		from  CostDetails
+		where  OP_EM_HP_MARK ='1' and OUT_MED_INS='1' and FIN_CAT_CODE ='0500'
+		and  rcd_dt <![CDATA[>= ]]> #{startTime}+0
+		and  rcd_dt <![CDATA[< ]]> #{endTime}+0
+	</select>
+
+	<!--治疗-->
+	<select id="getZhiLiaoCost"  resultType="java.lang.Double">
+		select COALESCE (SUM(proj_mon) ,0)
+		from  CostDetails
+		where OP_EM_HP_MARK ='1' and OUT_MED_INS='1' and FIN_CAT_CODE ='0600'
+		and  rcd_dt <![CDATA[>= ]]> #{startTime}+0
+		and  rcd_dt <![CDATA[< ]]> #{endTime}+0
+	</select>
+
+	<!--手术-->
+	<select id="getShouShuCost"  resultType="java.lang.Double">
+		select COALESCE (SUM(proj_mon) ,0)
+		from  CostDetails
+		where OP_EM_HP_MARK ='1' and OUT_MED_INS='1' and FIN_CAT_CODE ='0700'
+		and  rcd_dt <![CDATA[>= ]]> #{startTime}+0
+		and  rcd_dt <![CDATA[< ]]> #{endTime}+0
+	</select>
+
+	<!--材料-->
+	<select id="getCaiLiaoCost"  resultType="java.lang.Double">
+		select COALESCE (SUM(proj_mon) ,0)
+		from  CostDetails
+		where OP_EM_HP_MARK ='1' and OUT_MED_INS='1' and FIN_CAT_CODE ='0900'
+		and  rcd_dt <![CDATA[>= ]]> #{startTime}+0
+		and  rcd_dt <![CDATA[< ]]> #{endTime}+0
+	</select>
+
+	<!--西药-->
+	<select id="getXiYaoCost"  resultType="java.lang.Double">
+		select COALESCE (SUM(proj_mon) ,0)
+		from  CostDetails
+		where OP_EM_HP_MARK ='1' and OUT_MED_INS='1' and FIN_CAT_CODE ='1001'
+		and  rcd_dt <![CDATA[>= ]]> #{startTime}+0
+		and  rcd_dt <![CDATA[< ]]> #{endTime}+0
+	</select>
+
+	<!--中成药-->
+	<select id="getZhongChengYaoCost"  resultType="java.lang.Double">
+		select COALESCE (SUM(proj_mon) ,0)
+		from  CostDetails
+		where OP_EM_HP_MARK ='1' and OUT_MED_INS='1' and FIN_CAT_CODE ='1002'
+		and  rcd_dt <![CDATA[>= ]]> #{startTime}+0
+		and  rcd_dt <![CDATA[< ]]> #{endTime}+0
+	</select>
+
+	<!--中草药-->
+	<select id="getZhongCaoYaoCost"  resultType="java.lang.Double">
+		select COALESCE (SUM(proj_mon) ,0)
+		from  CostDetails
+		where OP_EM_HP_MARK ='1' and OUT_MED_INS='1' and FIN_CAT_CODE ='1003'
+		and  rcd_dt <![CDATA[>= ]]> #{startTime}+0
+		and  rcd_dt <![CDATA[< ]]> #{endTime}+0
+	</select>
+
+	<!--服务-->
+	<select id="getFuWuCost"  resultType="java.lang.Double">
+		select COALESCE (SUM(proj_mon) ,0)
+		from  CostDetails
+		where OP_EM_HP_MARK ='1' and OUT_MED_INS='1' and FIN_CAT_CODE ='1100'
+		and  rcd_dt <![CDATA[>= ]]> #{startTime}+0
+		and  rcd_dt <![CDATA[< ]]> #{endTime}+0
+	</select>
+
+	<!--其他-->
+	<select id="getQiTaCost"  resultType="java.lang.Double">
+		select COALESCE (SUM(proj_mon) ,0)
+		from  CostDetails
+		where OP_EM_HP_MARK ='1' and OUT_MED_INS='1' and FIN_CAT_CODE ='9900'
+		and  rcd_dt <![CDATA[>= ]]> #{startTime}+0
+		and  rcd_dt <![CDATA[< ]]> #{endTime}+0
+	</select>
+
+	<!--药品-->
+	<select id="getYaoPinCost"  resultType="java.lang.Double">
+		select COALESCE (SUM(proj_mon) ,0)
+		from  CostDetails
+		where OP_EM_HP_MARK ='1' and OUT_MED_INS='1' and  FIN_CAT_CODE in('1001','1002','1003')
+		and  rcd_dt <![CDATA[>= ]]> #{startTime}+0
+		and  rcd_dt <![CDATA[< ]]> #{endTime}+0
+	</select>
+
+
+	<!--门诊医保个人负担金额-->
+	<select id="getPersonalCost"  resultType="java.lang.Double">
+		select COALESCE (SUM(IND_PAY) ,0)
+		from  CostDetails
+		where OUT_MED_INS ='1' and OP_EM_HP_MARK='1'
+		and  rcd_dt <![CDATA[>= ]]> #{startTime}+0
+		and  rcd_dt <![CDATA[< ]]> #{endTime}+0
+	</select>
+</mapper>
