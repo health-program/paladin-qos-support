@@ -31,7 +31,9 @@ public class HospitalizationNumber extends YiyuanDataProcessor {
 	@Override
 	public long getTotalNum(Date startTime, Date endTime, String unitId) {
 		sqlSessionContainer.setCurrentDataSource(getDataSourceByUnit(unitId));
-		return sqlSessionContainer.getSqlSessionTemplate().getMapper(OpdStatisticsMapper.class).HospitalizationNumber(startTime, endTime, unitId);
+		long xy = sqlSessionContainer.getSqlSessionTemplate().getMapper(OpdStatisticsMapper.class).HospitalizationNumber(startTime, endTime, unitId);
+		long zy = sqlSessionContainer.getSqlSessionTemplate().getMapper(OpdStatisticsMapper.class).HospitalizationNumber2(startTime, endTime, unitId);
+		return xy+zy;
 	}
 
 	@Override

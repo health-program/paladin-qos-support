@@ -32,8 +32,11 @@ public interface OpdStatisticsMapper {
     /**门急诊药品总费用(元)*/
     public long OPDMoneyTotal(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
 
-    /**住院人次*/
+    /**中医住院人次*/
     public long HospitalizationNumber(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+    /**西医住院人次*/
+    public long HospitalizationNumber2(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("unitId") String unitId);
+    
     /**出院人次*/
     public long outHospitalNumber(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
     

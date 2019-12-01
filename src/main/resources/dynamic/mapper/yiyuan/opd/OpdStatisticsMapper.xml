@@ -51,14 +51,21 @@
 	<!-- 门急诊药品总费用(元) -->
 	<select id="OPDMoneyTotal" resultType="long">
 		select coalesce(sum(PROJ_MON),0) from CostDetails where OP_EM_HP_MARK in ('1','2') and CHARGE_REFUND = '1'
-        and FIN_CAT_CODE in ('1001','1002','1003')
+        and FIN_CAT_CODE in ('1000','1001','1002','1003')
         and RCD_DT &gt;= #{startTime}+0 and RCD_DT &lt; #{endTime}+0 
 	</select>
 	
 	<!-- 住院人次 -->
 	<select id="HospitalizationNumber" resultType="long">
-		select count(1) from inhospitalrecord 
-		where HP_DATE &gt;= #{startTime}+0 and HP_DATE &lt; #{endTime}+0 
+	    select count(1) from FirstPageMedicalRecord 
+	    where OUT_HP_DT &gt;= #{startTime}+0 
+	    and OUT_HP_DT <&lt; #{endTime}+0 
+	</select>
+	
+	<select id="HospitalizationNumber2" resultType="long">
+	    select count(1) from ED_CMEDICAL_HOME_PAGE_RECORD 
+	    where OUT_HP_DT &gt;= #{startTime}+0 
+	    and OUT_HP_DT <&lt; #{endTime}+0 
 	</select>
 	
 	<!-- 出院人次 -->
@@ -76,7 +83,7 @@
 	<!-- 住院药品总费用(元) -->
 	<select id="HospitalizationMoneyTotal" resultType="long">
 		select coalesce(sum(PROJ_MON),0) from CostDetails where OP_EM_HP_MARK ='3' and CHARGE_REFUND = '1'
-         and FIN_CAT_CODE in ('1001','1002','1003')
+         and FIN_CAT_CODE in ('1000','1001','1002','1003')
          and RCD_DT &gt;= #{startTime}+0 and RCD_DT &lt; #{endTime}+0 
 	</select>
 
