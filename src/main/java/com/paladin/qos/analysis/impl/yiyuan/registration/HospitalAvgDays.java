@@ -19,7 +19,7 @@ public class HospitalAvgDays extends YiyuanDataProcessor{
 	@Autowired
 	private SqlSessionContainer sqlSessionContainer;
 
-	public static final String EVENT_ID = "60001";
+	public static final String EVENT_ID = "41005";
 
 	@Override
 	public String getEventId() {
