@@ -48,6 +48,9 @@ public class DataEvent extends DataTaskConfiguration {
 	// 处理开始时间
 	private Date processStartDate;
 
+	// 强制处理时间
+	private Date forceProcessDate;
+
 	// 最大迁移条数
 	private Integer maximumProcess;
 
@@ -126,4 +129,11 @@ public class DataEvent extends DataTaskConfiguration {
 		this.maximumProcess = maximumProcess;
 	}
 
+	public Date getForceProcessDate() {
+		return forceProcessDate;
+	}
+
+	public void setForceProcessDate(Date forceProcessDate) {
+		this.forceProcessDate = forceProcessDate;
+	}
 }

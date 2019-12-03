@@ -78,10 +78,8 @@ public interface AnalysisMapper {
 
 	Integer getMaxSerialNumByEventAndUnit(@Param("eventId") String eventId, @Param("unitId") String unitId);
 
-	int removeDataOfDay(@Param("serialNumber") int serialNumber, @Param("eventId") String eventId);
-
 	long getTotalNumOfEvent(@Param("eventId") String eventId, @Param("start") int start, @Param("end") int end);
 
-	List<DataCountUnit> getLastCountByUnit(@Param("eventId") String eventId, @Param("unitType") int unitType);
+	Integer getMonthMaxSerialNumByEventAndUnit(@Param("eventId") String eventId, @Param("unitId") String unitId);
 
 }

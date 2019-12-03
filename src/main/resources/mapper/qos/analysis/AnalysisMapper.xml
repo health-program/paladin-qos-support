@@ -306,24 +306,12 @@
 		AND event_id=#{eventId}
 	</select>
 
-	<delete id="removeDataOfDay">
-		DELETE FROM data_processed_day
-		WHERE serial_number=#{serialNumber}
+
+	<select id="getMonthMaxSerialNumByEventAndUnit" resultType="Integer">
+		SELECT MAX(serial_number)
+		FROM data_processed_month
+		WHERE unit_id=#{unitId}
 		AND event_id=#{eventId}
-	</delete>
-
-
-   <select id="getLastCountByUnit" resultType="com.paladin.qos.service.analysis.data.DataCountUnit">
-		SELECT unit_id AS unitId,
-       		total_num AS COUNT
-		FROM data_processed_day
-		WHERE event_id=#{eventId}
-		  AND serial_number =
-		    (SELECT MAX(serial_number)
-		     FROM data_processed_day
-		     WHERE event_id=#{eventId})
-		<if test="unitType != 0">
-		  AND unit_type=#{unitType}
-        </if>
 	</select>
+
 </mapper>

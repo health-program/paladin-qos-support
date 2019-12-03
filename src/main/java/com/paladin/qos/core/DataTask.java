@@ -126,9 +126,9 @@ public abstract class DataTask implements Runnable {
 		} else if (filingStrategy == DataTaskConfiguration.FILING_STRATEGY_UNTIL_DAY) {
 			return TimeUtil.getTodayBefore(configuration.getFilingStrategyParam1());
 		} else if (filingStrategy == DataTaskConfiguration.FILING_STRATEGY_UNTIL_MONTH) {
-			return TimeUtil.getTodayBeforeMonth(configuration.getFilingStrategyParam1());
+			return TimeUtil.getDateBeforeMonth(new Date(), configuration.getFilingStrategyParam1(), true);
 		} else if (filingStrategy == DataTaskConfiguration.FILING_STRATEGY_UNTIL_YEAR) {
-			return TimeUtil.getTodayBeforeYear(configuration.getFilingStrategyParam1());
+			return TimeUtil.getDateBeforeYear(new Date(), configuration.getFilingStrategyParam1(), true);
 		} else if (filingStrategy == DataTaskConfiguration.FILING_STRATEGY_FIXED_DAY_OF_MONTH) {
 			int day = configuration.getFilingStrategyParam1();
 			Calendar c = Calendar.getInstance();

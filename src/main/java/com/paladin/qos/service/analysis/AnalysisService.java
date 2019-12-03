@@ -211,8 +211,8 @@ public class AnalysisService {
 	 * 获取某事件在时间段内所有单位的年统计数据集合（按年统计的数据集合，可用于按天统计的热力图、柱状图）
 	 * 
 	 * @param eventId
-	 * @param startDate
-	 * @param endDate
+	 * @param startYear
+	 * @param endYear
 	 * @return
 	 */
 	public DataResult<DataPointYear> getDataSetOfYear(String eventId, int startYear, int endYear) {
@@ -225,8 +225,8 @@ public class AnalysisService {
 	 * 
 	 * @param eventId
 	 * @param unitType
-	 * @param startDate
-	 * @param endDate
+	 * @param startYear
+	 * @param endYear
 	 * @return
 	 */
 	public DataResult<DataPointYear> getDataSetOfYear(String eventId, int unitType, int startYear, int endYear) {
@@ -340,8 +340,8 @@ public class AnalysisService {
 	 * 按年分组获取时间段内所有单位某事件的发生概率
 	 * 
 	 * @param eventId
-	 * @param startDate
-	 * @param endDate
+	 * @param startYear
+	 * @param endYear
 	 * @return
 	 */
 	public List<DataPointYear> getAnalysisResultByYear(String eventId, int startYear, int endYear) {
@@ -353,8 +353,8 @@ public class AnalysisService {
 	 * 
 	 * @param eventId
 	 * @param unitType
-	 * @param startDate
-	 * @param endDate
+	 * @param startYear
+	 * @param endYear
 	 * @return
 	 */
 	public List<DataPointYear> getAnalysisResultByYear(String eventId, int unitType, int startYear, int endYear) {
@@ -527,8 +527,8 @@ public class AnalysisService {
 	 * 按年获取时间段内某事件的总数
 	 * 
 	 * @param eventId
-	 * @param startDate
-	 * @param endDate
+	 * @param startYear
+	 * @param endYear
 	 * @return
 	 */
 	public List<DataCountYear> countTotalNumByYear(String eventId, int startYear, int endYear) {
@@ -540,8 +540,8 @@ public class AnalysisService {
 	 * 
 	 * @param eventId
 	 * @param unitType
-	 * @param startDate
-	 * @param endDate
+	 * @param startYear
+	 * @param endYear
 	 * @return
 	 */
 	public List<DataCountYear> countTotalNumByYear(String eventId, int unitType, int startYear, int endYear) {
@@ -552,8 +552,8 @@ public class AnalysisService {
 	 * 按年获取时间段内某事件的事件总数
 	 * 
 	 * @param eventId
-	 * @param startDate
-	 * @param endDate
+	 * @param startYear
+	 * @param endYear
 	 * @return
 	 */
 	public List<DataCountYear> countEventNumByYear(String eventId, int startYear, int endYear) {
@@ -565,8 +565,8 @@ public class AnalysisService {
 	 * 
 	 * @param eventId
 	 * @param unitType
-	 * @param startDate
-	 * @param endDate
+	 * @param startYear
+	 * @param endYear
 	 * @return
 	 */
 	public List<DataCountYear> countEventNumByYear(String eventId, int unitType, int startYear, int endYear) {
@@ -610,28 +610,15 @@ public class AnalysisService {
 		return analysisMapper.getMaxSerialNumByEventAndUnit(eventId, unitId);
 	}
 
-	/**
-	 * 删除某天某事件数据
-	 * 
-	 * @param serialNumber
-	 * @param eventId
-	 * @return
-	 */
-	public int removeDataOfDay(int serialNumber, String eventId) {
-		return analysisMapper.removeDataOfDay(serialNumber, eventId);
-	}
 
 	/**
-	 * 按单位获取最近一次数据
-	 * 
+	 * 获取事件、单位当前处理到的日期
+	 *
 	 * @param eventId
-	 * @param unitType
 	 * @return
 	 */
-	public List<DataCountUnit> getLastCountByUnit(String eventId, int unitType) {
-		List<DataCountUnit> result = analysisMapper.getLastCountByUnit(eventId, unitType);
-		orderByUnit(result);
-		return result;
+	public Integer getCurrentMonthOfEventAndUnit(String eventId, String unitId) {
+		return analysisMapper.getMonthMaxSerialNumByEventAndUnit(eventId, unitId);
 	}
 
 	/**
@@ -832,7 +819,7 @@ public class AnalysisService {
 		return false;
 	}
 
-	private void saveProcessedDataForDay(Metadata rateMetadata, boolean confirmed) {
+	public void saveProcessedDataForDay(Metadata rateMetadata, boolean confirmed) {
 
 		// 根据日期与事件创建唯一ID
 		int year = rateMetadata.getYear();

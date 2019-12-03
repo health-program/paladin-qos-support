@@ -1,51 +1,58 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:include="/qos/header" />
+<head th:include="/qos/header"/>
 
 <body>
-    <tt:constant enumcode="data-event-type,data-unit-type" />
-    <section class="content-header">
-        <h1>数据处理管理</h1>
-    </section>
-    <section class="content">
-        <div id="processForm">
+<tt:constant enumcode="data-event-type,data-unit-type,analysis-data-type"/>
+<section class="content-header">
+    <h1>数据处理管理</h1>
+</section>
+<section class="content">
+    <div id="processForm">
+    </div>
+    <div class="box box-widget">
+        <div class="box-header no-border">
+            <h3 class="box-title">数据处理进度</h3>
+            <div class="box-tools pull-right">
+                <button type="button" onclick="getProgess()" class="btn btn-box-tool"><i class="fa fa-refresh"></i>
+                </button>
+            </div>
         </div>
-        <div class="box box-widget">
-            <div class="box-header no-border">
-                <h3 class="box-title">数据处理进度</h3>
-                <div class="box-tools pull-right">
-                    <button type="button" onclick="getProgess()" class="btn btn-box-tool"><i class="fa fa-refresh"></i></button>
+        <div class="box-body">
+            <div class="progress-group">
+                <span id="progressText" class="progress-text"></span>
+                <span id="progressNumber" class="progress-number"></span>
+                <div class="progress">
+                    <div id="progressBar" class="progress-bar progress-bar-aqua" style="width: 0%"></div>
                 </div>
             </div>
-            <div class="box-body">
-                <div class="progress-group">
-                    <span id="progressText" class="progress-text"></span>
-                    <span id="progressNumber" class="progress-number"></span>
-                    <div class="progress">
-                        <div id="progressBar" class="progress-bar progress-bar-aqua" style="width: 0%"></div>
-                    </div>
-                </div>
+        </div>
+    </div>
+    <div id="processValidate">
+    </div>
+    <div id="processValidateResult">
+    </div>
+
+    <div id="processImport">
+    </div>
+
+    <div class="box box-widget">
+        <div class="box-header no-border">
+            <h3 class="box-title">测试数据预处理代码</h3>
+            <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+                <button type="button" onclick="testProcessor()" class="btn btn-box-tool"><i
+                        class="fa fa-stethoscope"></i></button>
             </div>
         </div>
-        <div id="processValidate">
+        <div class="box-body" id="testResultDiv">
         </div>
-        <div id="processValidateResult">
-        </div>
-        <div class="box box-widget">
-            <div class="box-header no-border">
-                <h3 class="box-title">测试数据预处理代码</h3>
-                <div class="box-tools pull-right">
-                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                    <button type="button" onclick="testProcessor()" class="btn btn-box-tool"><i class="fa fa-stethoscope"></i></button>
-                </div>
-            </div>
-            <div class="box-body" id="testResultDiv">
-            </div>
-        </div>
-    </section>
-    <div th:include="/qos/footer" />
-    <script type="text/javascript">
+    </div>
+</section>
+<div th:include="/qos/footer"/>
+<script type="text/javascript">
     var options = {
         id: "model",
         cancelBtn: false,
@@ -53,12 +60,12 @@
         name: "数据处理",
         url: "/qos/analysis/data/process",
         columns: [
-            { title: "事件", name: "eventIds", inputType: "SELECT", multiple: true, enum: "data-event-type" },
-            { title: "医院", name: "unitIds", inputType: "SELECT", multiple: true, enum: "data-unit-type" },
-            { title: "事件输入", name: "eventIdInput", inputType: "TEXTAREA" },
-            { title: "医院输入", name: "unitIdInput", inputType: "TEXTAREA" },
-            { title: "开始时间", name: "startTime", inputType: "DATE", required: "required" },
-            { title: "结束时间", name: "endTime", inputType: "DATE" }
+            {title: "事件", name: "eventIds", inputType: "SELECT", multiple: true, enum: "data-event-type"},
+            {title: "医院", name: "unitIds", inputType: "SELECT", multiple: true, enum: "data-unit-type"},
+            {title: "事件输入", name: "eventIdInput", inputType: "TEXTAREA"},
+            {title: "医院输入", name: "unitIdInput", inputType: "TEXTAREA"},
+            {title: "开始时间", name: "startTime", inputType: "DATE", required: "required"},
+            {title: "结束时间", name: "endTime", inputType: "DATE"}
         ]
     }
 
@@ -69,25 +76,46 @@
         name: "数据校验",
         url: "/qos/analysis/data/validate",
         columns: [
-            { title: "开始时间", name: "startTime", inputType: "DATE", required: "required" },
-            { title: "结束时间", name: "endTime", inputType: "DATE" }
+            {title: "开始时间", name: "startTime", inputType: "DATE", required: "required"},
+            {title: "结束时间", name: "endTime", inputType: "DATE"}
         ]
     }
 
-    $(function() {
+    var options_import = {
+        id: "importModel",
+        cancelBtn: false,
+        submitBtnName: '数据导入',
+        name: "数据导入",
+        url: "/qos/data/import",
+        columns: [
+            {title: "单位ID", name: "unitId", inputType: "TEXT", required: "required"},
+            {title: "事件ID", name: "eventId", inputType: "TEXT", required: "required"},
+            {title: "类型", name: "type", inputType: "SELECT", enum: "analysis-data-type", required: "required"},
+            {
+                title: "文件",
+                name: "import",
+                inputType: "ATTACHMENT",
+                fileName: "importFile",
+                maxFileCount: 1,
+                allowedFileExtensions: ["xlsx", "xls"]
+            }
+        ]
+    }
+
+    $(function () {
         var html = generateEditHtml(options);
         $("#processForm").html(html);
         $.initComponment($("#processForm"));
 
         var model = new tonto.Model("model", options.columns, {
             pattern: "edit",
-            beforeSubmit: function(formData) {
+            beforeSubmit: function (formData) {
                 var es = $('[name="eventIdInput"]').val();
                 var us = $('[name="unitIdInput"]').val();
 
                 if (es) {
                     es = es.split(",");
-                    es.forEach(function(a) {
+                    es.forEach(function (a) {
                         formData.push({
                             name: "eventIds",
                             value: a,
@@ -99,7 +127,7 @@
 
                 if (us) {
                     us = us.split(",");
-                    us.forEach(function(a) {
+                    us.forEach(function (a) {
                         formData.push({
                             name: "unitIds",
                             value: a,
@@ -110,8 +138,8 @@
                 }
 
             },
-            successCallback: function() {
-                $.successAlert("数据开始处理", function() {
+            successCallback: function () {
+                $.successAlert("数据开始处理", function () {
                     getProgess();
                 });
             }
@@ -125,17 +153,32 @@
 
         var validate = new tonto.Model("validate", options_validate.columns, {
             pattern: "edit",
-            successCallback: function(result) {
-                $.successAlert("数据校验结束", function() {
+            successCallback: function (result) {
+                $.successAlert("数据校验结束", function () {
                     viewValidate(result);
                 });
             }
         });
         validate.setData(null);
+
+        html = generateEditHtml(options_import);
+        $("#processImport").html(html);
+        $.initComponment($("#processImport"));
+
+        var importModel = new tonto.Model("importModel", options_import.columns, {
+            pattern: "edit",
+            successCallback: function (result) {
+                $.successAlert("数据导入结束", function () {
+                    console.log(result);
+                });
+            }
+        });
+        importModel.setData(null);
+
     });
 
     function getProgess() {
-        $.getAjax("/qos/analysis/data/process/status", function(result) {
+        $.getAjax("/qos/analysis/data/process/status", function (result) {
             var status = result.status,
                 progressBar = $("#progressBar"),
                 progressNumber = $("#progressNumber"),
@@ -203,7 +246,7 @@
             }
 
             if (lostNum > 0) {
-                ulHtml += '<li ' + (i == 0 ? 'class="active"' : '') + '><a href="#' + id + '" data-toggle="tab" aria-expanded="true" style="color:red">' + re.eventName + '(' + lostNum/rus.length + ')</a></li>';
+                ulHtml += '<li ' + (i == 0 ? 'class="active"' : '') + '><a href="#' + id + '" data-toggle="tab" aria-expanded="true" style="color:red">' + re.eventName + '(' + lostNum / rus.length + ')</a></li>';
             } else {
                 ulHtml += '<li ' + (i == 0 ? 'class="active"' : '') + '><a href="#' + id + '" data-toggle="tab" aria-expanded="true">' + re.eventName + '</a></li>';
             }
@@ -245,7 +288,7 @@
     }
 
     function testProcessor() {
-        $.postAjax("/qos/analysis/data/test", function(rs) {
+        $.postAjax("/qos/analysis/data/test", function (rs) {
             testResult = rs;
             var html = '<table class="table table-hover table-striped"><tbody>';
             for (var i = 0; i < rs.length; i++) {
@@ -272,7 +315,7 @@
             $("#testResultDiv").html(html);
         });
     }
-    </script>
+</script>
 </body>
 
 </html>
