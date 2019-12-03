@@ -144,9 +144,6 @@ public class ManualWorkController {
             }
 
             model.setSerialNumber(serialNumber);
-
-            amountStr = amountStr.replaceAll("\\.", "");
-            amountStr = amountStr.substring(0, Math.min(amountStr.length(), 8));
             Long amount = Long.valueOf(amountStr);
 
             DataProcessedDay oldData = dataProcessedDayService.get(id);
