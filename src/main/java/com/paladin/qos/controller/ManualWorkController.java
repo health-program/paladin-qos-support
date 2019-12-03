@@ -9,6 +9,7 @@ import com.paladin.qos.analysis.DataConstantContainer;
 import com.paladin.qos.model.data.DataProcessedDay;
 import com.paladin.qos.model.data.DataUnit;
 import com.paladin.qos.service.data.DataProcessedDayService;
+import com.paladin.qos.util.TimeUtil;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,10 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author TontoZhou
@@ -51,6 +49,16 @@ public class ManualWorkController {
         String eventId = importRequest.getEventId();
         String unitId = importRequest.getUnitId();
         String type = importRequest.getType();
+        Date startTime = importRequest.getStartTime();
+        Date endTime = importRequest.getEndTime();
+
+        int lastSN = TimeUtil.getSerialNumberByDay(endTime);
+
+        List<Integer> serialNumbers = TimeUtil.getSerialNumberByDay(startTime, endTime);
+        Map<Integer, Integer> finishedMap = new HashMap<>();
+        for (Integer sn : serialNumbers) {
+            finishedMap.put(sn, 0);
+        }
 
         ExcelReader<ExcelModel> reader = new ExcelReader<>(ExcelModel.class, dataImportColumns, new DefaultSheet(workbook.getSheetAt(0)), 0);
         List<ExcelImportResult.ExcelImportError> errors = new ArrayList<>();
@@ -67,7 +75,7 @@ public class ManualWorkController {
         model.setUnitType(unit.getType());
         model.setConfirmed(1);
 
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
 
         int i = 0;
 
@@ -85,12 +93,16 @@ public class ManualWorkController {
                 continue;
             }
 
+            if (excelData == null) {
+                break;
+            }
+
             String amountStr = excelData.getAmount();
             String dayStr = excelData.getDay();
 
             Date dayTime = null;
             try {
-                dayTime = format.parse(dayStr);
+                dayTime = format1.parse(dayStr);
             } catch (ParseException e) {
                 errors.add(new ExcelImportResult.ExcelImportError(i, e));
                 continue;
@@ -127,6 +139,10 @@ public class ManualWorkController {
             model.setWeekYear(weekYear);
 
             int serialNumber = year * 10000 + month * 100 + day;
+            if (lastSN < serialNumber) {
+                continue;
+            }
+
             model.setSerialNumber(serialNumber);
 
             amountStr = amountStr.replaceAll("\\.", "");
@@ -136,7 +152,6 @@ public class ManualWorkController {
             DataProcessedDay oldData = dataProcessedDayService.get(id);
 
             if (oldData != null) {
-
                 if ("totalNum".equals(type)) {
                     oldData.setTotalNum(amount);
                 } else {
@@ -145,7 +160,7 @@ public class ManualWorkController {
 
                 oldData.setUpdateTime(new Date());
                 dataProcessedDayService.update(oldData);
-
+                finishedMap.put(oldData.getSerialNumber(), 2);
             } else {
                 if ("totalNum".equals(type)) {
                     model.setTotalNum(amount);
@@ -157,6 +172,72 @@ public class ManualWorkController {
 
                 model.setUpdateTime(new Date());
                 dataProcessedDayService.save(model);
+                finishedMap.put(model.getSerialNumber(), 1);
+            }
+        }
+
+        SimpleDateFormat format2 = new SimpleDateFormat("yyyyMMdd");
+
+        for (Map.Entry<Integer, Integer> entry : finishedMap.entrySet()) {
+            int sn = entry.getKey();
+            int status = entry.getValue();
+
+            if (status == 0) {
+                Date dayTime = null;
+                try {
+                    dayTime = format2.parse(String.valueOf(sn));
+                } catch (ParseException e) {
+
+                }
+
+                Calendar c = Calendar.getInstance();
+                c.setTime(dayTime);
+
+                int year = c.get(Calendar.YEAR);
+                int month = c.get(Calendar.MONTH) + 1;
+                int day = c.get(Calendar.DAY_OF_MONTH);
+                int weekYear = c.get(Calendar.WEEK_OF_YEAR);
+                int weekMonth = c.get(Calendar.WEEK_OF_MONTH);
+
+                StringBuilder sb = new StringBuilder(eventId);
+                sb.append('_').append(unitId).append('_');
+                sb.append(year);
+                if (month < 10) {
+                    sb.append('0');
+                }
+                sb.append(month);
+                if (day < 10) {
+                    sb.append('0');
+                }
+                sb.append(day);
+                String id = sb.toString();
+
+                model.setId(id);
+                model.setEventId(eventId);
+                model.setDay(day);
+                model.setMonth(month);
+                model.setYear(year);
+                model.setWeekMonth(weekMonth);
+                model.setWeekYear(weekYear);
+
+                model.setSerialNumber(sn);
+
+                DataProcessedDay oldData = dataProcessedDayService.get(id);
+
+                if (oldData == null) {
+                    model.setTotalNum(0L);
+                    model.setEventNum(0L);
+                    model.setUpdateTime(new Date());
+                    dataProcessedDayService.save(model);
+                } else {
+                    if ("totalNum".equals(type)) {
+                        oldData.setTotalNum(0L);
+                    } else {
+                        oldData.setEventNum(0L);
+                    }
+                    oldData.setUpdateTime(new Date());
+                    dataProcessedDayService.update(oldData);
+                }
             }
         }
 
@@ -168,6 +249,8 @@ public class ManualWorkController {
         private String unitId;
         private String eventId;
         private String type;
+        private Date startTime;
+        private Date endTime;
         private MultipartFile importFile;
 
         public String getUnitId() {
@@ -200,6 +283,22 @@ public class ManualWorkController {
 
         public void setImportFile(MultipartFile importFile) {
             this.importFile = importFile;
+        }
+
+        public Date getStartTime() {
+            return startTime;
+        }
+
+        public void setStartTime(Date startTime) {
+            this.startTime = startTime;
+        }
+
+        public Date getEndTime() {
+            return endTime;
+        }
+
+        public void setEndTime(Date endTime) {
+            this.endTime = endTime;
         }
     }
 
