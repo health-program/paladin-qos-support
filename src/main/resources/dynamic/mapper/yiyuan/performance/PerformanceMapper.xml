@@ -93,6 +93,7 @@
 	<select id="getInhospitableDrugFee" resultType="double">
 	SELECT coalesce(sum(PROJ_MON),0) from COSTDETAILS cc
 	    where CC.FIN_CAT_CODE  in ('1000','1001','1002','1003') 
+	    cc.CHARGE_REFUND = '1'
         and CC.OP_EM_HP_NO in ( SELECT DISTINCT OC.HP_S_NO  from OUTHOSPITALRECORD oc )
         and RCD_DT &gt;= #{startTime}+0 
         and RCD_DT &lt; #{endTime}+0
