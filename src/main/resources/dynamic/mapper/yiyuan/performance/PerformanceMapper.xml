@@ -46,7 +46,6 @@
 	<select id="getMedicalServiceFee" resultType="double">
 	SELECT coalesce(sum(PROJ_MON),0) from COSTDETAILS a
 	   where FIN_CAT_CODE not in ('0400','0500','0900','1000','1001','1002','1003')
-	    
 	   and RCD_DT &gt;= #{startTime}+0 
 	   and RCD_DT &lt; #{endTime}+0 
    </select>
@@ -54,9 +53,9 @@
    <!-- 药品收入60007 -->
 	<select id="getDrugFee" resultType="double">
 	select coalesce(sum(PROJ_MON),0) from CostDetails 
-	  where  FIN_CAT_CODE in ('1000',1001','1002','1003')
+	  where  FIN_CAT_CODE in ('1000','1001','1002','1003')
       and RCD_DT &gt;= #{startTime}+0 
-      and RCD_DT &lt; #{endTime}+0 
+	   and RCD_DT &lt; #{endTime}+0  
    </select>
    
    <!--  基药费用60008 
