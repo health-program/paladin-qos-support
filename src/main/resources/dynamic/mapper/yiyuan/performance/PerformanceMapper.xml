@@ -6,7 +6,6 @@
 	<select id="getOutpatientMedicare" resultType="double">
    select coalesce(sum(TOTAL_FEE -IND_PAY),0) from CostRecord 
      where OP_EM_HP_MARK in ('1','2','4') 
-     and CHARGE_REFUND = '1' 
      and RCD_DT &gt;= #{startTime}+0 
      and RCD_DT &lt; #{endTime}+0 
 	</select>
@@ -15,7 +14,6 @@
 	<select id="getOutpatientFee" resultType="double">
    select coalesce(sum(TOTAL_FEE),0) from CostRecord 
      where OP_EM_HP_MARK in ('1','2','4') 
-     and CHARGE_REFUND = '1' 
      and RCD_DT &gt;= #{startTime}+0 
      and RCD_DT &lt; #{endTime}+0 
 	</select>
@@ -24,7 +22,6 @@
 	<select id="getInhospitableMedicare" resultType="double">
 	select coalesce(sum(TOTAL_FEE-IND_PAY),0) from CostRecord 
 	   where OP_EM_HP_MARK  = '3'
-	   and CHARGE_REFUND = '1' 
 	   and RCD_DT &gt;= #{startTime}+0 
 	   and RCD_DT &lt; #{endTime}+0 
    </select>
@@ -33,7 +30,6 @@
 	<select id="getInhospitableFee" resultType="double">
 	select coalesce(sum(TOTAL_FEE),0) from CostRecord 
 	   where OP_EM_HP_MARK  = '3'
-	   and CHARGE_REFUND = '1' 
 	   and RCD_DT &gt;= #{startTime}+0 
 	   and RCD_DT &lt; #{endTime}+0 
    </select>
@@ -41,8 +37,8 @@
    <!-- 总收入60005 -->
 	<select id="getTotalFee" resultType="double">
 	select coalesce(sum(TOTAL_FEE),0) from CostRecord 
-	   where  CHARGE_REFUND = '1' 
-	   and RCD_DT &gt;= #{startTime}+0 
+	   where   
+	    RCD_DT &gt;= #{startTime}+0 
 	   and RCD_DT &lt; #{endTime}+0 
    </select>
    
@@ -50,7 +46,7 @@
 	<select id="getMedicalServiceFee" resultType="double">
 	SELECT coalesce(sum(PROJ_MON),0) from COSTDETAILS a
 	   where FIN_CAT_CODE not in ('0400','0500','0900','1000','1001','1002','1003')
-	   and CHARGE_REFUND = '1' 
+	    
 	   and RCD_DT &gt;= #{startTime}+0 
 	   and RCD_DT &lt; #{endTime}+0 
    </select>
@@ -58,8 +54,7 @@
    <!-- 药品收入60007 -->
 	<select id="getDrugFee" resultType="double">
 	select coalesce(sum(PROJ_MON),0) from CostDetails 
-	  where CHARGE_REFUND = '1'
-      and FIN_CAT_CODE in ('1000',1001','1002','1003')
+	  where  FIN_CAT_CODE in ('1000',1001','1002','1003')
       and RCD_DT &gt;= #{startTime}+0 
       and RCD_DT &lt; #{endTime}+0 
    </select>
@@ -76,7 +71,7 @@
    <!-- 辅药收入60009 -->
 	<select id="getAssistDrug" resultType="double">
 	select coalesce(sum(PROJ_MON),0)  from costdetails c left join WM_PrescriptionDetails  w on c.OP_EM_HP_NO = w.OP_EM_HP_NO 
-        where w.IF_BASE_DRUG='0' and c.CHARGE_REFUND = '1'
+        where w.IF_BASE_DRUG='0' 
         AND w.OP_EM_HP_NO != '9999999999'
         and c.FIN_CAT_CODE in ('1000','1001','1002','1003')
         and c.RCD_DT &gt;= #{startTime}+0 and c.RCD_DT &lt; #{endTime}+0 
@@ -93,7 +88,6 @@
 	<select id="getInhospitableDrugFee" resultType="double">
 	SELECT coalesce(sum(PROJ_MON),0) from COSTDETAILS cc
 	    where CC.FIN_CAT_CODE  in ('1000','1001','1002','1003') 
-	    cc.CHARGE_REFUND = '1'
         and CC.OP_EM_HP_NO in ( SELECT DISTINCT OC.HP_S_NO  from OUTHOSPITALRECORD oc )
         and RCD_DT &gt;= #{startTime}+0 
         and RCD_DT &lt; #{endTime}+0
@@ -102,8 +96,7 @@
    <!-- 出院患者关联的住院总费用60015 -->
 	<select id="getOuthospitableTotalFee" resultType="double">
 	SELECT coalesce(sum(PROJ_MON),0) from COSTDETAILS cc
-	    where cc.CHARGE_REFUND = '1'
-        and cc.OP_EM_HP_NO in ( SELECT DISTINCT OC.HP_S_NO  from OUTHOSPITALRECORD oc )
+	    where  cc.OP_EM_HP_NO in ( SELECT DISTINCT OC.HP_S_NO  from OUTHOSPITALRECORD oc )
         and RCD_DT &gt;= #{startTime}+0 
         and RCD_DT &lt; #{endTime}+0
    </select>
