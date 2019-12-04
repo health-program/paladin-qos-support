@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -144,7 +145,8 @@ public class ManualWorkController {
             }
 
             model.setSerialNumber(serialNumber);
-            Long amount = Long.valueOf(amountStr);
+            BigDecimal bigDecimal= new BigDecimal(amountStr);
+            Long amount = bigDecimal.longValue();
 
             DataProcessedDay oldData = dataProcessedDayService.get(id);
 
