@@ -59,7 +59,7 @@
 	<select id="getDrugFee" resultType="double">
 	select coalesce(sum(PROJ_MON),0) from CostDetails 
 	  where CHARGE_REFUND = '1'
-      and FIN_CAT_CODE in ('1001','1002','1003')
+      and FIN_CAT_CODE in ('1000',1001','1002','1003')
       and RCD_DT &gt;= #{startTime}+0 
       and RCD_DT &lt; #{endTime}+0 
    </select>
@@ -78,7 +78,7 @@
 	select coalesce(sum(PROJ_MON),0)  from costdetails c left join WM_PrescriptionDetails  w on c.OP_EM_HP_NO = w.OP_EM_HP_NO 
         where w.IF_BASE_DRUG='0' and c.CHARGE_REFUND = '1'
         AND w.OP_EM_HP_NO != '9999999999'
-        and c.FIN_CAT_CODE in ('1001','1002','1003')
+        and c.FIN_CAT_CODE in ('1000','1001','1002','1003')
         and c.RCD_DT &gt;= #{startTime}+0 and c.RCD_DT &lt; #{endTime}+0 
    </select>
    
