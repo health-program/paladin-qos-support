@@ -37,17 +37,18 @@
     <div id="processImport">
     </div>
 
+    <div id="processRead">
+    </div>
     <div class="box box-widget">
         <div class="box-header no-border">
-            <h3 class="box-title">测试数据预处理代码</h3>
+            <h3 class="box-title">数据读取状态</h3>
             <div class="box-tools pull-right">
-                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                <button type="button" onclick="getReadStatus()" class="btn btn-box-tool"><i class="fa fa-refresh"></i>
                 </button>
-                <button type="button" onclick="testProcessor()" class="btn btn-box-tool"><i
-                        class="fa fa-stethoscope"></i></button>
             </div>
         </div>
-        <div class="box-body" id="testResultDiv">
+        <div class="box-body" id="readStatusDiv">
+
         </div>
     </div>
 </section>
@@ -101,6 +102,21 @@
                 maxFileCount: 1,
                 allowedFileExtensions: ["xlsx", "xls"]
             }
+        ]
+    }
+
+    var options_read = {
+        id: "readModel",
+        cancelBtn: false,
+        submitBtnName: '数据读取',
+        name: "数据读取",
+        url: "/qos/data/read",
+        columns: [
+            {title: "事件ID", name: "eventId", inputType: "TEXT", required: "required"},
+            {title: "开始时间", name: "startTime", inputType: "DATE", required: "required"},
+            {title: "结束时间", name: "endTime", inputType: "DATE", required: "required"},
+            {title: "类型", name: "type", inputType: "SELECT", enum: "analysis-data-type", required: "required"},
+            {title: "SQL", name: "sql", inputType: "TEXTAREA", required: "required"}
         ]
     }
 
@@ -176,6 +192,21 @@
             }
         });
         importModel.setData(null);
+
+
+        html = generateEditHtml(options_read);
+        $("#processRead").html(html);
+        $.initComponment($("#processRead"));
+
+        var readModel = new tonto.Model("readModel", options_import.columns, {
+            pattern: "edit",
+            successCallback: function (result) {
+                $.successAlert("数据已开始读取", function () {
+
+                });
+            }
+        });
+        readModel.setData(null);
 
     });
 
@@ -283,40 +314,66 @@
         $.successAlert("修复功能还未开发");
     }
 
-    var testResult;
+    function getReadStatus() {
+        $.getAjax("/qos/data/read/status", function (datas) {
 
-    function showException(i) {
-        $.infoAlert(testResult[i].exception);
-    }
+            var html = "";
+            if (datas && datas.length > 0) {
+                html = '<table class="table table-hover">' +
+                    '    <thead>' +
+                    '        <tr>' +
+                    '            <th style="text-align: center; vertical-align: middle; ">' +
+                    '                <div class="th-inner ">事件</div>' +
+                    '                <div class="fht-cell"></div>' +
+                    '            </th>' +
+                    '            <th style="text-align: center; vertical-align: middle; ">' +
+                    '                <div class="th-inner ">是否完成</div>' +
+                    '                <div class="fht-cell"></div>' +
+                    '            </th>' +
+                    '            <th style="text-align: center; vertical-align: middle; ">' +
+                    '                <div class="th-inner ">开始时间</div>' +
+                    '                <div class="fht-cell"></div>' +
+                    '            </th>' +
+                    '            <th style="text-align: center; vertical-align: middle; ">' +
+                    '                <div class="th-inner ">结束时间</div>' +
+                    '                <div class="fht-cell"></div>' +
+                    '            </th>' +
+                    '            <th style="text-align: center; vertical-align: middle; ">' +
+                    '                <div class="th-inner ">SQL语句</div>' +
+                    '                <div class="fht-cell"></div>' +
+                    '            </th>' +
+                    '        </tr>' +
+                    '    </thead>' +
+                    '    <tbody>';
 
-    function testProcessor() {
-        $.postAjax("/qos/analysis/data/test", function (rs) {
-            testResult = rs;
-            var html = '<table class="table table-hover table-striped"><tbody>';
-            for (var i = 0; i < rs.length; i++) {
-                var r = rs[i];
-                html += '<tr>';
-                if (r.isSuccess) {
-                    html += '<td>' + r.eventName + '</td>';
-                    html += '<td><span class="label label-success">success</span></td>';
-                    html += '<td>执行<b>' + r.processTimes + '</b>次共消耗<b>' + r.castTime + '</b>ms</td>';
-                } else {
-                    html += '<td>' + r.eventName + '</td>';
-                    html += '<td><span class="label label-danger">error</span></td>';
+                datas.forEach(function (data) {
+                    html += '<tr data-index="1">' +
+                        '            <td style="text-align: center; vertical-align: middle; ">' + data.readEvent.eventId + '</td>' +
+                        '            <td style="text-align: center; vertical-align: middle; ">' + formatDate(data.startTime) + '</td>' +
+                        '            <td style="text-align: center; vertical-align: middle; ">' + formatDate(data.endTime) + '</td>' +
+                        '            <td style="text-align: center; vertical-align: middle; ">' + (data.finished ? '完成' : '运行中') + '</td>' +
+                        '            <td style="text-align: center; vertical-align: middle; ">' + data.sql + '</td>' +
+                        '        </tr>';
+                });
 
-                    var exception = r.exception || '处理异常';
-                    if (exception.length > 50) {
-                        exception = exception.substring(0, 50);
-                    }
-
-                    html += '<td><a href="javascript:showException(' + i + ')">' + exception + '</a></td>';
-                }
-                html += '</tr>';
+                html += '</tbody>' +
+                    '</table>';
             }
-            html += '</tbody></table>';
-            $("#testResultDiv").html(html);
+
+            $("#readStatusDiv").html(html);
         });
     }
+
+    function formatDate(value) {
+        if (value) {
+            if (!isNaN(value)) {
+                return $.formatDate(new Date(value), "yyyy-MM-dd");
+            }
+            return value;
+        }
+        return "";
+    }
+
 </script>
 </body>
 
