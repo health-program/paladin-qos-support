@@ -389,7 +389,7 @@
         where  a.invocode='801'
         and a.opertime &gt;= #{startTime}+0
         and a.opertime &lt; #{endTime}+0
-        and a.ORGCODE = #{unitId};
+        and a.ORGCODE = #{unitId}
     </select>
     <!-- 处方数量 ^ -->
     <select id="getPrescriptionNumber" resultType="long">
