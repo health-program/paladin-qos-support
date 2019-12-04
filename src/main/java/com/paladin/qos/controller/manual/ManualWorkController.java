@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -88,7 +89,7 @@ public class ManualWorkController {
             }
 
             ReadHospitalData data = new ReadHospitalData();
-            data.setAmount(Long.valueOf(amountStr));
+            data.setAmount(new BigDecimal(amountStr).longValue());
             data.setDayTime(dayTime);
 
             datas.add(data);
