@@ -28,7 +28,7 @@ import java.util.List;
  * @since 2019/12/3
  */
 @Controller
-@RequestMapping("/qos")
+@RequestMapping("/qos/manual")
 public class ManualWorkController {
 
     @Autowired

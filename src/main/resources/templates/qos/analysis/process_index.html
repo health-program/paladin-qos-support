@@ -87,7 +87,7 @@
         cancelBtn: false,
         submitBtnName: '数据导入',
         name: "数据导入",
-        url: "/qos/data/import",
+        url: "/qos/manual/data/import",
         columns: [
             {title: "单位ID", name: "unitId", inputType: "TEXT", required: "required"},
             {title: "事件ID", name: "eventId", inputType: "TEXT", required: "required"},
@@ -110,7 +110,7 @@
         cancelBtn: false,
         submitBtnName: '数据读取',
         name: "数据读取",
-        url: "/qos/data/read",
+        url: "/qos/manual/data/read",
         columns: [
             {title: "事件ID", name: "eventId", inputType: "TEXT", required: "required"},
             {title: "开始时间", name: "startTime", inputType: "DATE", required: "required"},
@@ -315,7 +315,7 @@
     }
 
     function getReadStatus() {
-        $.getAjax("/qos/data/read/status", function (datas) {
+        $.getAjax("/qos/manual/data/read/status", function (datas) {
 
             var html = "";
             if (datas && datas.length > 0) {
