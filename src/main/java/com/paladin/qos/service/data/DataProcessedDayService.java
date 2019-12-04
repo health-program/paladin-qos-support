@@ -1,6 +1,8 @@
 package com.paladin.qos.service.data;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paladin.data.dynamic.SqlSessionContainer;
 import com.paladin.framework.core.ServiceSupport;
 import com.paladin.framework.core.exception.BusinessException;
@@ -17,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -215,8 +218,8 @@ public class DataProcessedDayService extends ServiceSupport<DataProcessedDay> {
 
         List<ReadHospitalData> datas = new ArrayList<>(mapResult.size());
         for (Map<String, Object> dataMap : mapResult) {
-            Object dayTimeObj = dataMap.get("dayTime");
-            Object amountObj = dataMap.get("amount");
+            Object dayTimeObj = dataMap.get("DAYTIME");
+            Object amountObj = dataMap.get("AMOUNT");
 
             Date dayTime = null;
             if (dayTimeObj instanceof Date) {
@@ -233,7 +236,7 @@ public class DataProcessedDayService extends ServiceSupport<DataProcessedDay> {
             if (amountObj instanceof Number) {
                 amount = ((Number) amountObj).longValue();
             } else {
-                amount = Long.valueOf(amountObj.toString());
+                amount = new BigDecimal(amountObj.toString()).longValue();
             }
 
             ReadHospitalData data = new ReadHospitalData();

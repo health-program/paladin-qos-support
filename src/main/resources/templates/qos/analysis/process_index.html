@@ -349,9 +349,9 @@
                 datas.forEach(function (data) {
                     html += '<tr data-index="1">' +
                         '            <td style="text-align: center; vertical-align: middle; ">' + data.readEvent.eventId + '</td>' +
+                        '            <td style="text-align: center; vertical-align: middle; ">' + (data.finished ? '完成' : '运行中') + '</td>' +
                         '            <td style="text-align: center; vertical-align: middle; ">' + formatDate(data.startTime) + '</td>' +
                         '            <td style="text-align: center; vertical-align: middle; ">' + formatDate(data.endTime) + '</td>' +
-                        '            <td style="text-align: center; vertical-align: middle; ">' + (data.finished ? '完成' : '运行中') + '</td>' +
                         '            <td style="text-align: center; vertical-align: middle; ">' + data.sql + '</td>' +
                         '        </tr>';
                 });
