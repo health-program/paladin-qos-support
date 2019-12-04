@@ -5,14 +5,14 @@
 
 
     <select id="getTotalNum" resultType="long">
-        select COALESCE(sum(TOTAL_FEE),0) from WM_PrescriptionDetails  left join  CostRecord  on  WM_PrescriptionDetails.OP_EM_HP_NO  = CostRecord.OP_EM_HP_NO AND WM_PrescriptionDetails.OP_EM_HP_NO != '9999999999'
+        select COALESCE(sum(TOTAL_FEE),0) from WM_PrescriptionDetails  left join  CostRecord  on  WM_PrescriptionDetails.OP_EM_HP_NO  = CostRecord.OP_EM_HP_NO AND CostRecord.OP_EM_HP_NO != '9999999999'
         where   WM_PrescriptionDetails.RX_DT >=  #{startTime}  AND   WM_PrescriptionDetails.RX_DT <![CDATA[< ]]> #{endTime}
     </select>
 
 
 
     <select id="getEventNum" resultType="long">
-        select COALESCE(sum(TOTAL_FEE),0) from WM_PrescriptionDetails  left join  CostRecord  on  WM_PrescriptionDetails.OP_EM_HP_NO  = CostRecord.OP_EM_HP_NO  AND WM_PrescriptionDetails.OP_EM_HP_NO != '9999999999'
+        select COALESCE(sum(TOTAL_FEE),0) from WM_PrescriptionDetails  left join  CostRecord  on  WM_PrescriptionDetails.OP_EM_HP_NO  = CostRecord.OP_EM_HP_NO  AND CostRecord.OP_EM_HP_NO != '9999999999'
         where  WM_PrescriptionDetails.IF_BASE_DRUG = '1' AND WM_PrescriptionDetails.RX_DT >=  #{startTime}  AND   WM_PrescriptionDetails.RX_DT <![CDATA[< ]]> #{endTime}
     </select>
 
