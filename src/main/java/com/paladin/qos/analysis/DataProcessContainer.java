@@ -1,142 +1,142 @@
 package com.paladin.qos.analysis;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import com.paladin.qos.dynamic.DSConstant;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.paladin.framework.spring.SpringBeanHelper;
 import com.paladin.framework.spring.SpringContainer;
 import com.paladin.qos.core.DataTask;
 import com.paladin.qos.core.DataTaskManager;
+import com.paladin.qos.dynamic.DSConstant;
 import com.paladin.qos.model.data.DataEvent;
 import com.paladin.qos.model.data.DataUnit;
 import com.paladin.qos.service.analysis.AnalysisService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 @Component
 public class DataProcessContainer implements SpringContainer {
 
-	private static Logger logger = LoggerFactory.getLogger(DataProcessContainer.class);
+    private static Logger logger = LoggerFactory.getLogger(DataProcessContainer.class);
 
-	private Map<String, DataProcessor> processorMap = new HashMap<>();
+    private Map<String, DataProcessor> processorMap = new HashMap<>();
 
-	@Autowired
-	private AnalysisService analysisService;
+    @Value("${qos.start-repair-thread}")
+    private boolean startRepairThread = false;
 
-	@Autowired
-	private DataTaskManager dataTaskManager;
+    @Autowired
+    private AnalysisService analysisService;
 
-	@Override
-	public boolean initialize() {
+    @Autowired
+    private DataTaskManager dataTaskManager;
 
-		Map<String, DataProcessor> processorSpringMap = SpringBeanHelper.getBeansByType(DataProcessor.class);
-		Map<String, DataProcessor> processorMap = new HashMap<>();
+    @Override
+    public boolean initialize() {
 
-		for (Entry<String, DataProcessor> entry : processorSpringMap.entrySet()) {
+        Map<String, DataProcessor> processorSpringMap = SpringBeanHelper.getBeansByType(DataProcessor.class);
+        Map<String, DataProcessor> processorMap = new HashMap<>();
 
-			DataProcessor processor = entry.getValue();
+        for (Entry<String, DataProcessor> entry : processorSpringMap.entrySet()) {
 
-			String eventId = processor.getEventId();
+            DataProcessor processor = entry.getValue();
 
-			DataEvent dataEvent = DataConstantContainer.getEvent(eventId);
+            String eventId = processor.getEventId();
 
-			if (dataEvent == null) {
-				logger.error("找不到处理器对应事件：" + eventId);
-				continue;
-			}
+            DataEvent dataEvent = DataConstantContainer.getEvent(eventId);
 
-			List<DataUnit> units = null;
-			int targetType = dataEvent.getTargetType();
+            if (dataEvent == null) {
+                logger.error("找不到处理器对应事件：" + eventId);
+                continue;
+            }
 
-			if (targetType == DataEvent.TARGET_TYPE_ALL) {
-				units = DataConstantContainer.getUnitList();
-			} else if (targetType == DataEvent.TARGET_TYPE_HOSPITAL) {
-				units = DataConstantContainer.getHospitalList();
-			} else if (targetType == DataEvent.TARGET_TYPE_COMMUNITY) {
-				units = DataConstantContainer.getCommunityList();
-			}
+            List<DataUnit> units = null;
+            int targetType = dataEvent.getTargetType();
 
-			if(dataEvent.getDataSource().equals(DSConstant.DS_YIYUAN)) {
-				// 因为医院数据库分开，打乱执行医院顺序从而实现一定的负载均衡；
-				List<DataUnit> randomUnits = new ArrayList<>(units);
-				Collections.shuffle(randomUnits);
-				processor.setTargetUnits(randomUnits);
-			} else {
-				processor.setTargetUnits(units);
-			}
+            if (targetType == DataEvent.TARGET_TYPE_ALL) {
+                units = DataConstantContainer.getUnitList();
+            } else if (targetType == DataEvent.TARGET_TYPE_HOSPITAL) {
+                units = DataConstantContainer.getHospitalList();
+            } else if (targetType == DataEvent.TARGET_TYPE_COMMUNITY) {
+                units = DataConstantContainer.getCommunityList();
+            }
 
-			processor.setDataEvent(dataEvent);
+            if (dataEvent.getDataSource().equals(DSConstant.DS_YIYUAN)) {
+                // 因为医院数据库分开，打乱执行医院顺序从而实现一定的负载均衡；
+                List<DataUnit> randomUnits = new ArrayList<>(units);
+                Collections.shuffle(randomUnits);
+                processor.setTargetUnits(randomUnits);
+            } else {
+                processor.setTargetUnits(units);
+            }
 
-			if (processorMap.containsKey(eventId)) {
-				logger.warn("===>已经存在数据预处理器[EVENT_ID:" + eventId + "]，该处理器会被忽略");
-				continue;
-			}
+            processor.setDataEvent(dataEvent);
 
-			processorMap.put(eventId, processor);
-		}
+            if (processorMap.containsKey(eventId)) {
+                logger.warn("===>已经存在数据预处理器[EVENT_ID:" + eventId + "]，该处理器会被忽略");
+                continue;
+            }
 
-		this.processorMap = Collections.unmodifiableMap(processorMap);
+            processorMap.put(eventId, processor);
+        }
 
-		registerTask();
+        this.processorMap = Collections.unmodifiableMap(processorMap);
 
-		return true;
-	}
+        registerTask();
 
-	private void registerTask() {
+        return true;
+    }
 
-		List<DataTask> realTimeTasks = new ArrayList<>();
-		List<DataTask> nightTasks = new ArrayList<>();
+    private void registerTask() {
 
-		for (DataProcessor processor : processorMap.values()) {
+        List<DataTask> realTimeTasks = new ArrayList<>();
+        List<DataTask> nightTasks = new ArrayList<>();
 
-			DataEvent dataEvent = processor.getDataEvent();
-			DataProcessTask task = new DataProcessTask(processor, analysisService);
+        for (DataProcessor processor : processorMap.values()) {
 
-			if (dataEvent.getRealTimeEnabled() == 1) {
-				realTimeTasks.add(task);
-			} else {
-				nightTasks.add(task);
-			}
+            DataEvent dataEvent = processor.getDataEvent();
+            DataProcessTask task = new DataProcessTask(processor, analysisService);
 
-			// 注册修复任务
-			DataProcessRepairTask repairTask = new DataProcessRepairTask(processor, analysisService);
-			nightTasks.add(repairTask);
-		}
+            if (dataEvent.getRealTimeEnabled() == 1) {
+                realTimeTasks.add(task);
+            } else {
+                nightTasks.add(task);
+            }
 
-		dataTaskManager.registerTaskSchedule(nightTasks);
-		dataTaskManager.registerTaskRealTime(realTimeTasks);
-	}
+            // 注册修复任务
+            if (startRepairThread) {
+                DataProcessRepairTask repairTask = new DataProcessRepairTask(processor, analysisService);
+                nightTasks.add(repairTask);
+            }
+        }
 
-	/**
-	 * 获取数据处理器
-	 * 
-	 * @param eventId
-	 * @return
-	 */
-	public DataProcessor getDataProcessor(String eventId) {
-		return processorMap.get(eventId);
-	}
+        dataTaskManager.registerTaskSchedule(nightTasks);
+        dataTaskManager.registerTaskRealTime(realTimeTasks);
+    }
 
-	/**
-	 * 获取数据处理器集合
-	 * 
-	 * @return
-	 */
-	public Collection<DataProcessor> getDataProcessors() {
-		return processorMap.values();
-	}
+    /**
+     * 获取数据处理器
+     *
+     * @param eventId
+     * @return
+     */
+    public DataProcessor getDataProcessor(String eventId) {
+        return processorMap.get(eventId);
+    }
 
-	public int order() {
-		return 1;
-	}
+    /**
+     * 获取数据处理器集合
+     *
+     * @return
+     */
+    public Collection<DataProcessor> getDataProcessors() {
+        return processorMap.values();
+    }
+
+    public int order() {
+        return 1;
+    }
 
 }
