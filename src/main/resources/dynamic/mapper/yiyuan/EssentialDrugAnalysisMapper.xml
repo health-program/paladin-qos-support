@@ -6,9 +6,8 @@
 
     <select id="getTotalNum" resultType="long">
         select COALESCE(sum(a.PROJ_MON*100),0) from costdetails a
-        left join WM_PrescriptionDetails w on a.OP_EM_HP_NO = w.OP_EM_HP_NO
-        AND a.OP_EM_HP_NO != '9999999999'
-        AND a.RCD_DT >= #{startTime}
+        left join WM_PrescriptionDetails w on a.OP_EM_HP_NO = w.OP_EM_HP_NO AND a.OP_EM_HP_NO != '9999999999'
+        WHERE a.RCD_DT >= #{startTime}
         AND   a.RCD_DT <![CDATA[< ]]> #{endTime}
     </select>
 
@@ -16,9 +15,8 @@
 
     <select id="getEventNum" resultType="long">
         select COALESCE(sum(a.PROJ_MON*100),0) from costdetails a
-        left join WM_PrescriptionDetails w on a.OP_EM_HP_NO = w.OP_EM_HP_NO
-        AND a.OP_EM_HP_NO != '9999999999'
-        AND w.IF_BASE_DRUG = '1'
+        left join WM_PrescriptionDetails w on a.OP_EM_HP_NO = w.OP_EM_HP_NO AND a.OP_EM_HP_NO != '9999999999'
+        WHERE w.IF_BASE_DRUG = '1'
         AND a.RCD_DT >= #{startTime}
         AND   a.RCD_DT <![CDATA[< ]]> #{endTime}
     </select>
