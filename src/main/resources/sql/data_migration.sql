@@ -1,16 +1,16 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : localhost_3306
+Source Server         : 10.9.1.42
 Source Server Version : 50537
-Source Host           : localhost:3306
+Source Host           : 10.9.1.42:3306
 Source Database       : qos
 
 Target Server Type    : MYSQL
 Target Server Version : 50537
 File Encoding         : 65001
 
-Date: 2019-11-05 21:04:36
+Date: 2019-12-11 09:59:07
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -56,18 +56,18 @@ CREATE TABLE `data_migration` (
 -- ----------------------------
 -- Records of data_migration
 -- ----------------------------
-INSERT INTO `data_migration` VALUES ('M200001', '高血压', '11', 'gongwei', 'oracle', 'phis_chss.v_report_year_blood', 'local', 'report_year_blood', '500', '10000', 'REPORTYEAR', 'ID', '*', null, '0', '2015-01-01', '1', null, null, '3', null, '2/10,2/20,3/1,3/10', '19', '10', '0', '5', '0', '0', '高血压上报', '1');
-INSERT INTO `data_migration` VALUES ('M200002', '糖尿病', '11', 'gongwei', 'oracle', 'phis_chss.v_report_year_diabetes', 'local', 'report_year_diabetes', '500', '10000', 'REPORTYEAR', 'ID', '*', null, '0', '2015-01-01', '1', null, null, '3', null, '2/10,2/20,3/1,3/10', '19', '10', '0', '5', '0', '0', '糖尿病上报', '1');
-INSERT INTO `data_migration` VALUES ('M200010', '家庭医生签约主表', '10', 'gongwei', 'oracle', 'phis_chss.v_fha_person_sign_main', 'local', 'g_fha_person_sign_main', '500', '10000', 'OPERTIME', 'CHID', '*', 'CREATEDTIME', '1', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '1', '10', '0', '1', '', '1');
-INSERT INTO `data_migration` VALUES ('M200011', '家庭医生签约档案主表', '10', 'gongwei', 'oracle', 'phis_chss.v_fha_person_sign_main_org', 'local', 'g_fha_person_sign_main_org', '500', '10000', 'OPERTIME', 'CHID', '*', 'CREATEDTIME', '1', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '1', '10', '0', '1', '', '1');
-INSERT INTO `data_migration` VALUES ('M200012', '家庭医生随访表', '10', 'gongwei', 'oracle', 'phis_chss.v_fha_person_sign_visit', 'local', 'g_fha_person_sign_visit', '500', '10000', 'OPERTIME', 'CHID', '*', 'CREATEDTIME', '1', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '1', '10', '0', '1', '', '1');
-INSERT INTO `data_migration` VALUES ('M200013', '家庭医生随访临时表', '10', 'gongwei', 'oracle', 'phis_chss.v_fha_person_sign_visit_temp', 'local', 'g_fha_person_sign_visit_temp', '500', '10000', 'OPERTIME', 'CHID', '*', '', '0', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '1', '10', '0', '1', '', '1');
-INSERT INTO `data_migration` VALUES ('M200014', '家庭医生检副本1', '10', 'gongwei', 'oracle', 'phis_chss.v_fhc_check_attach1', 'local', 'g_fhc_check_attach1', '500', '10000', 'OPERTIME', 'CHID', '*', '', '0', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '1', '10', '0', '1', '', '1');
-INSERT INTO `data_migration` VALUES ('M200015', '家庭医生体检主表', '10', 'gongwei', 'oracle', 'phis_chss.v_fhc_check_main', 'local', 'g_fhc_check_main', '500', '10000', 'OPERTIME', 'CHID', '*', '', '0', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '1', '12', '0', '1', '', '1');
-INSERT INTO `data_migration` VALUES ('M200016', '家庭医生糖尿病随访表', '10', 'gongwei', 'oracle', 'phis_chss.v_fhd_diabetes_visit', 'local', 'g_fhd_diabetes_visit', '500', '10000', 'OPERTIME', 'CHID', '*', '', '0', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '1', '12', '0', '1', '', '1');
-INSERT INTO `data_migration` VALUES ('M200017', '家庭医生老年人自理评估表', '10', 'gongwei', 'oracle', 'phis_chss.v_fhr_elder_self_care', 'local', 'g_fhr_elder_self_care', '500', '10000', 'OPERTIME', 'CHID', '*', 'CREATEDTIME', '1', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '1', '12', '0', '1', '', '1');
-INSERT INTO `data_migration` VALUES ('M200018', '家庭医生老年人中医评估表', '10', 'gongwei', 'oracle', 'phis_chss.v_fhr_elder_tcm_item', 'local', 'g_fhr_elder_tcm_item', '500', '10000', 'OPERTIME', 'CHID', '*', '', '0', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '1', '12', '0', '1', '', '1');
-INSERT INTO `data_migration` VALUES ('M200019', '家庭医生老年人中医体质评估表', '10', 'gongwei', 'oracle', 'phis_chss.v_fhr_elder_tcm_physique', 'local', 'g_fhr_elder_tcm_physique', '500', '10000', 'OPERTIME', 'CHID', '*', '', '0', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '1', '12', '0', '1', '', '1');
-INSERT INTO `data_migration` VALUES ('M200020', '家庭医生建档人员表', '10', 'gongwei', 'oracle', 'phis_chss.v_fha_person_main', 'local', 'g_fha_person_main', '500', '10000', 'OPERTIME', 'CHID', '*', '', '0', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '1', '10', '0', '1', '', '1');
-INSERT INTO `data_migration` VALUES ('M200021', '脑卒中评估', '10', 'gongwei', 'oracle', 'phis_chss.v_fha_pre_scale_assess', 'local', 'g_fha_pre_scale_assess', '500', '10000', 'OPERTIME', 'CHID', '*', 'CREATEDTIME', '1', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '1', '10', '0', '1', '', '1');
-INSERT INTO `data_migration` VALUES ('M300001', '门诊挂号表', '10', 'jcyl', 'oracle', 'phis_webhis.v_opr_register', 'local', 'j_opr_register', '500', '10000', 'REGDATE', 'REGID', '*', null, '0', '2019-10-20', '1', null, null, '1', null, null, '19', '10', '1', '5', '0', '0', null, '1');
+INSERT INTO `data_migration` VALUES ('M200001', '高血压', '11', 'gongwei', 'oracle', 'phis_chss.v_report_year_blood', 'local', 'report_year_blood', '500', '10000', 'REPORTYEAR', 'ID', '*', null, '0', '2015-01-01', '1', null, null, '3', null, '2/10,2/20,3/1,3/10', '19', '10', '0', '5', '0', '0', '高血压上报', '0');
+INSERT INTO `data_migration` VALUES ('M200002', '糖尿病', '11', 'gongwei', 'oracle', 'phis_chss.v_report_year_diabetes', 'local', 'report_year_diabetes', '500', '10000', 'REPORTYEAR', 'ID', '*', null, '0', '2015-01-01', '1', null, null, '3', null, '2/10,2/20,3/1,3/10', '19', '10', '0', '5', '0', '0', '糖尿病上报', '0');
+INSERT INTO `data_migration` VALUES ('M200010', '家庭医生签约主表', '10', 'gongwei', 'oracle', 'phis_chss.v_fha_person_sign_main', 'local', 'g_fha_person_sign_main', '500', '10000', 'OPERTIME', 'CHID', '*', 'CREATEDTIME', '1', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '0', '10', '0', '1', '', '0');
+INSERT INTO `data_migration` VALUES ('M200011', '家庭医生签约档案主表', '10', 'gongwei', 'oracle', 'phis_chss.v_fha_person_sign_main_org', 'local', 'g_fha_person_sign_main_org', '500', '10000', 'OPERTIME', 'CHID', '*', 'CREATEDTIME', '1', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '0', '10', '0', '1', '', '0');
+INSERT INTO `data_migration` VALUES ('M200012', '家庭医生随访表', '10', 'gongwei', 'oracle', 'phis_chss.v_fha_person_sign_visit', 'local', 'g_fha_person_sign_visit', '500', '10000', 'OPERTIME', 'CHID', '*', 'CREATEDTIME', '1', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '0', '10', '0', '1', '', '0');
+INSERT INTO `data_migration` VALUES ('M200013', '家庭医生随访临时表', '10', 'gongwei', 'oracle', 'phis_chss.v_fha_person_sign_visit_temp', 'local', 'g_fha_person_sign_visit_temp', '500', '10000', 'OPERTIME', 'CHID', '*', '', '0', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '0', '10', '0', '1', '', '0');
+INSERT INTO `data_migration` VALUES ('M200014', '家庭医生检副本1', '10', 'gongwei', 'oracle', 'phis_chss.v_fhc_check_attach1', 'local', 'g_fhc_check_attach1', '500', '10000', 'OPERTIME', 'CHID', '*', '', '0', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '0', '10', '0', '1', '', '0');
+INSERT INTO `data_migration` VALUES ('M200015', '家庭医生体检主表', '10', 'gongwei', 'oracle', 'phis_chss.v_fhc_check_main', 'local', 'g_fhc_check_main', '500', '10000', 'OPERTIME', 'CHID', '*', '', '0', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '0', '12', '0', '1', '', '0');
+INSERT INTO `data_migration` VALUES ('M200016', '家庭医生糖尿病随访表', '10', 'gongwei', 'oracle', 'phis_chss.v_fhd_diabetes_visit', 'local', 'g_fhd_diabetes_visit', '500', '10000', 'OPERTIME', 'CHID', '*', '', '0', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '0', '12', '0', '1', '', '0');
+INSERT INTO `data_migration` VALUES ('M200017', '家庭医生老年人自理评估表', '10', 'gongwei', 'oracle', 'phis_chss.v_fhr_elder_self_care', 'local', 'g_fhr_elder_self_care', '500', '10000', 'OPERTIME', 'CHID', '*', 'CREATEDTIME', '1', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '0', '12', '0', '1', '', '0');
+INSERT INTO `data_migration` VALUES ('M200018', '家庭医生老年人中医评估表', '10', 'gongwei', 'oracle', 'phis_chss.v_fhr_elder_tcm_item', 'local', 'g_fhr_elder_tcm_item', '500', '10000', 'OPERTIME', 'CHID', '*', '', '0', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '0', '12', '0', '1', '', '0');
+INSERT INTO `data_migration` VALUES ('M200019', '家庭医生老年人中医体质评估表', '10', 'gongwei', 'oracle', 'phis_chss.v_fhr_elder_tcm_physique', 'local', 'g_fhr_elder_tcm_physique', '500', '10000', 'OPERTIME', 'CHID', '*', '', '0', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '0', '12', '0', '1', '', '0');
+INSERT INTO `data_migration` VALUES ('M200020', '家庭医生建档人员表', '10', 'gongwei', 'oracle', 'phis_chss.v_fha_person_main', 'local', 'g_fha_person_main', '500', '10000', 'OPERTIME', 'CHID', '*', '', '0', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '0', '10', '0', '1', '', '0');
+INSERT INTO `data_migration` VALUES ('M200021', '脑卒中评估', '10', 'gongwei', 'oracle', 'phis_chss.v_fha_pre_scale_assess', 'local', 'g_fha_pre_scale_assess', '500', '10000', 'OPERTIME', 'CHID', '*', 'CREATEDTIME', '1', '2015-01-01', '1', null, null, '1', null, null, '19', '10', '0', '10', '0', '1', '', '0');
+INSERT INTO `data_migration` VALUES ('M300001', '门诊挂号表', '10', 'jcyl', 'oracle', 'phis_webhis.v_opr_register', 'local', 'j_opr_register', '500', '10000', 'REGDATE', 'REGID', '*', null, '0', '2019-10-20', '1', null, null, '1', null, null, '19', '10', '1', '5', '0', '0', null, '0');
