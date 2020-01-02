@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+        namespace="com.paladin.qos.dynamic.mapper.yiyuan.score.guanlianxing.GuanlianxingMapper">
+
+    <select id="getCMprescriptionsTotalNum" resultType="long">
+       select count(1) from cm_prescriptions
+        WHERE RX_DT >= #{startTime}
+        AND RX_DT  <![CDATA[<]]>  #{endTime}
+    </select>
+    
+    <select id="getCMprescriptionsEventNum" resultType="long">
+        select count(1) from cm_prescriptions
+        WHERE RX_DT >= #{startTime}
+        AND RX_DT  <![CDATA[<]]>  #{endTime}
+        and OP_EM_HP_NO in 
+        (select distinct(OP_EM_NO) from MedicalRecord where SEE_DOC_DT >= #{startTime} and SEE_DOC_DT<![CDATA[<]]>  #{endTime})
+    </select>
+    
+    <select id="getWMprescriptionsTotalNum" resultType="long">
+       select count(1) from wm_prescriptions
+        WHERE RX_DT >= #{startTime}
+        AND RX_DT  <![CDATA[<]]>  #{endTime}
+    </select>
+    
+    <select id="getWMprescriptionsEventNum" resultType="long">
+        select count(1) from wm_prescriptions
+        WHERE RX_DT >= #{startTime}
+        AND RX_DT  <![CDATA[<]]>  #{endTime}
+        and OP_EM_HP_NO in 
+        (select distinct(OP_EM_NO) from MedicalRecord where SEE_DOC_DT >= #{startTime} and SEE_DOC_DT<![CDATA[<]]>  #{endTime})
+    </select>
+    
+    
+    <select id="getExaminationRecordTotalNum" resultType="long">
+       select count(1) from examinationrecord
+        WHERE APPLY_DT >= #{startTime}
+        AND APPLY_DT  <![CDATA[<]]>  #{endTime}
+    </select>
+    
+    <select id="getExaminationRecordEventNum" resultType="long">
+        select count(1) from examinationrecord
+        WHERE APPLY_DT >= #{startTime}
+        AND APPLY_DT  <![CDATA[<]]>  #{endTime}
+        and OP_EM_HP_EX_NO in 
+        (select distinct(OP_EM_NO) from MedicalRecord where SEE_DOC_DT >= #{startTime} and SEE_DOC_DT<![CDATA[<]]>  #{endTime})
+    </select>
+    
+    <select id="getTestrecordTotalNum" resultType="long">
+       select count(1) from testrecord
+        WHERE APPLY_DT >= #{startTime}
+        AND APPLY_DT  <![CDATA[<]]>  #{endTime}
+    </select>
+    
+    <select id="getTestrecordEventNum" resultType="long">
+        select count(1) from testrecord
+        WHERE APPLY_DT >= #{startTime}
+        AND APPLY_DT  <![CDATA[<]]>  #{endTime}
+        and OP_EM_HP_EX_NO in 
+        (select distinct(OP_EM_NO) from MedicalRecord where SEE_DOC_DT >= #{startTime} and SEE_DOC_DT<![CDATA[<]]>  #{endTime})
+    </select>
+    
+    
+    <select id="getCostrecordTotalNum" resultType="long">
+       select count(1) from costrecord
+        WHERE RCD_DT >= #{startTime}
+        AND RCD_DT  <![CDATA[<]]>  #{endTime}
+    </select>
+    
+    <select id="getCostrecordEventNum" resultType="long">
+        select count(1) from costrecord
+        WHERE RCD_DT >= #{startTime}
+        AND RCD_DT  <![CDATA[<]]>  #{endTime}
+        and OP_EM_HP_NO in 
+        (select distinct(OP_EM_NO) from MedicalRecord where SEE_DOC_DT >= #{startTime} and SEE_DOC_DT<![CDATA[<]]>  #{endTime})
+    </select>
+</mapper>
