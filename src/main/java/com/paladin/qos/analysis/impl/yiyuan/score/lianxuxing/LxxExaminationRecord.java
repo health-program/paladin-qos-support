@@ -15,7 +15,7 @@ import java.util.Date;
  * @create 2020/1/3 14:12
  */
 @Component
-public class ExaminationRecord extends YiyuanDataProcessor {
+public class LxxExaminationRecord extends YiyuanDataProcessor {
     @Autowired
     private SqlSessionContainer sqlSessionContainer;
 

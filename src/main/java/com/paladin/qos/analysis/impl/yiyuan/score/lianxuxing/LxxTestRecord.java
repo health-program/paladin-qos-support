@@ -9,17 +9,17 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 /**
- * <收费表连续性得分>
+ * <检验表连续性得分>
  *
  * @author Huangguochen
  * @create 2020/1/3 14:12
  */
 @Component
-public class CostRecord extends YiyuanDataProcessor {
+public class LxxTestRecord extends YiyuanDataProcessor {
     @Autowired
     private SqlSessionContainer sqlSessionContainer;
 
-    public static final String EVENT_ID = "91006";
+    public static final String EVENT_ID = "91005";
 
     @Override
     public String getEventId() {
@@ -29,7 +29,7 @@ public class CostRecord extends YiyuanDataProcessor {
     @Override
     public long getTotalNum(Date startTime, Date endTime, String unitId) {
         sqlSessionContainer.setCurrentDataSource(getDataSourceByUnit(unitId));
-        return sqlSessionContainer.getSqlSessionTemplate().getMapper(HospitalContinuityScoreMapper.class).getCostrecordTotalNum(startTime,endTime,unitId);
+        return sqlSessionContainer.getSqlSessionTemplate().getMapper(HospitalContinuityScoreMapper.class).getTestrecordTotalNum(startTime,endTime,unitId);
     }
 
     @Override
