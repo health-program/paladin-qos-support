@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+        namespace="com.paladin.qos.dynamic.mapper.yiyuan.score.lianxuxing.HospitalContinuityScoreMapper">
+
+    <select id="getMedicalRecordTotalNum" resultType="long">
+        SELECT
+        CASE WHEN count(1) > 0 THEN 1 ELSE 0 END AS total
+        FROM firstpagemedicalrecord
+        WHERE IN_HP_DT >= #{startTime}
+        AND IN_HP_DT  <![CDATA[<]]>  #{endTime}
+    </select>
+
+    <select id="getRegisterRecordTotalNum" resultType="long">
+        SELECT
+        CASE WHEN count(1) > 0 THEN 1 ELSE 0 END AS total
+        FROM registerrecord
+        WHERE VISIT_DATE >= #{startTime}
+        AND VISIT_DATE  <![CDATA[<]]>  #{endTime}
+    </select>
+
+    <select id="getTcmPrescriptionTotalNum" resultType="long">
+        SELECT
+        CASE WHEN count(1) > 0 THEN 1 ELSE 0 END AS total
+        FROM cm_prescriptions
+        WHERE rx_dt >= #{startTime}
+        AND rx_dt  <![CDATA[<]]>  #{endTime}
+    </select>
+
+    <select id="getWesternPrescriptionTotalNum" resultType="long">
+        SELECT
+        CASE WHEN count(1) > 0 THEN 1 ELSE 0 END AS total
+        FROM wm_prescriptions
+        WHERE rx_dt >= #{startTime}
+        AND rx_dt  <![CDATA[<]]>  #{endTime}
+    </select>
+
+    <select id="getExaminationrecordTotalNum" resultType="long">
+        SELECT
+        CASE WHEN count(1) > 0 THEN 1 ELSE 0 END AS total
+        FROM examinationrecord
+        WHERE APPLY_DT >= #{startTime}
+        AND APPLY_DT  <![CDATA[<]]>  #{endTime}
+    </select>
+
+
+    <select id="getTestrecordTotalNum" resultType="long">
+        SELECT
+        CASE WHEN count(1) > 0 THEN 1 ELSE 0 END AS total
+        FROM testrecord
+        WHERE APPLY_DT >= #{startTime}
+        AND APPLY_DT  <![CDATA[<]]>  #{endTime}
+    </select>
+
+    <select id="getCostrecordTotalNum" resultType="long">
+        SELECT
+        CASE WHEN count(1) > 0 THEN 1 ELSE 0 END AS total
+        FROM costrecord
+        WHERE RCD_DT >= #{startTime}
+        AND RCD_DT  <![CDATA[<]]>  #{endTime}
+    </select>
+
+
+</mapper>
