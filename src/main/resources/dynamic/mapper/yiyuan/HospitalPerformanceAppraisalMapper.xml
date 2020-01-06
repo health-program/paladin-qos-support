@@ -26,7 +26,7 @@
     <select id="getOperationsTotalNum" resultType="long">
         SELECT sum(total)
         FROM
-        (SELECT count(DISTINCT(a.CARDNO)) AS total
+        (SELECT count(DISTINCT(a.HP_S_NO)) AS total
         FROM outhospitalrecord a
         LEFT JOIN firstpagemedicalrecord b
         ON a.HP_S_NO = b.HP_S_NO
@@ -37,7 +37,7 @@
         AND a.OUT_HP_DT >= #{startTime}
         AND a.OUT_HP_DT <![CDATA[<]]> #{endTime}
         UNION ALL
-        SELECT count(DISTINCT(a.CARDNO)) AS total
+        SELECT count(DISTINCT(a.HP_S_NO)) AS total
         FROM outhospitalrecord a
         LEFT JOIN ed_cmedical_home_page_record c
         ON a.HP_S_NO = c.HP_S_NO
@@ -118,11 +118,11 @@
         FROM
         (SELECT count(1) AS total
         FROM FirstPageMedicalRecord
-        WHERE CPW_MANA_CODE = '1'  AND OUT_HP_DT >= #{startTime}  AND OUT_HP_DT <![CDATA[<]]> #{endTime}
+        WHERE CPW_MANA_CODE in ('1','3')  AND OUT_HP_DT >= #{startTime}  AND OUT_HP_DT <![CDATA[<]]> #{endTime}
         UNION ALL
         SELECT count(1) AS total
         FROM ED_CMEDICAL_HOME_PAGE_RECORD
-        WHERE CPW_MANA_CODE = '1'  AND OUT_HP_DT >= #{startTime}  AND OUT_HP_DT <![CDATA[<]]> #{endTime} )
+        WHERE CPW_MANA_CODE in ('1','3')  AND OUT_HP_DT >= #{startTime}  AND OUT_HP_DT <![CDATA[<]]> #{endTime} )
     </select>
 
 
