@@ -58,7 +58,7 @@
         LEFT JOIN MR_OperationRecord b
         ON a.HP_S_NO = b.HP_S_NO
         WHERE a.OHREC_DREC = '1'
-        AND b.NNIS in ('3','4')
+        AND b.OPER_CODE in (SELECT TT.OPERATION_CODE  from JS_OPERATION_MENU tt  where tt.OPERATION_LEVEL='三级' or tt.OPERATION_LEVEL='四级' )
         AND a.OUT_HP_DT >= #{startTime}
         AND a.OUT_HP_DT <![CDATA[<]]> #{endTime}
         UNION ALL
@@ -67,7 +67,7 @@
         LEFT JOIN ED_CMED_HOME_PAGE_OPE_RECORD c
         ON a.HP_S_NO = c.HP_S_NO
         WHERE a.OHREC_DREC = '1'
-        AND c.NNIS in ('3','4')
+        AND c.OPER_CODE in (SELECT TT.OPERATION_CODE  from JS_OPERATION_MENU tt  where tt.OPERATION_LEVEL='三级' or tt.OPERATION_LEVEL='四级' )
         AND a.OUT_HP_DT >= #{startTime}
         AND a.OUT_HP_DT <![CDATA[<]]> #{endTime})
     </select>
