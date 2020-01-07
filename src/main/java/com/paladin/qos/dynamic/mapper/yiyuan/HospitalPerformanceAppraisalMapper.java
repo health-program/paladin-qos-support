@@ -26,4 +26,9 @@ public interface HospitalPerformanceAppraisalMapper {
 
     long getEnrollmentTotalNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("code") String code);
 
+    //中医科室中医处方占比
+	long getCMprescriptionsTotalNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("code") String code);
+
+	long getCMprescriptionsEventNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("code") String code);
+
 }
