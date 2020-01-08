@@ -31,4 +31,6 @@ public interface HospitalPerformanceAppraisalMapper {
 
 	long getCMprescriptionsEventNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("code") String code);
 
+	long getOperationsPeoplesTotalNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("code") String code);
+
 }

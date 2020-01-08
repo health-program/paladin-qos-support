@@ -30,8 +30,6 @@
         FROM outhospitalrecord a
         LEFT JOIN firstpagemedicalrecord b
         ON a.HP_S_NO = b.HP_S_NO
-        LEFT JOIN  MR_OperationRecord c
-        ON b.HP_S_NO = c.HP_S_NO
         WHERE a.OHREC_DREC = '1'
         AND b.IF_OPREA = '1'
         AND a.OUT_HP_DT >= #{startTime}
@@ -41,8 +39,6 @@
         FROM outhospitalrecord a
         LEFT JOIN ed_cmedical_home_page_record c
         ON a.HP_S_NO = c.HP_S_NO
-        LEFT JOIN  ED_CMED_HOME_PAGE_OPE_RECORD d
-        ON d.HP_S_NO = c.HP_S_NO
         WHERE a.OHREC_DREC = '1'
         AND c.IF_OPREA = '1'
         AND a.OUT_HP_DT >= #{startTime}
@@ -148,4 +144,30 @@
 			 AND a.RX_DT >= #{startTime}
              AND a.RX_DT <![CDATA[<]]> #{endTime}
     </select>
+
+    <!-- 出院者手术例数-->
+    <select id="getOperationsPeoplesTotalNum" resultType="long">
+        SELECT sum(total)
+        FROM
+        (SELECT  count(1) AS total
+        FROM outhospitalrecord a
+        LEFT JOIN firstpagemedicalrecord b
+        ON a.HP_S_NO = b.HP_S_NO
+        LEFT JOIN MR_OperationRecord d
+        ON b.HP_S_NO = d.HP_S_NO
+        WHERE a.OHREC_DREC = '1'
+        AND b.IF_OPREA = '1'
+        AND a.OUT_HP_DT  >= #{startTime} AND  a.OUT_HP_DT  <![CDATA[<]]> #{endTime}
+        UNION ALL
+        SELECT  count(1) AS total
+        FROM outhospitalrecord a
+        LEFT JOIN ed_cmedical_home_page_record c
+        ON a.HP_S_NO = c.HP_S_NO
+        LEFT JOIN ED_CMED_HOME_PAGE_OPE_RECORD e
+        ON c.HP_S_NO = e.HP_S_NO
+        WHERE a.OHREC_DREC = '1'
+        AND c.IF_OPREA = '1'
+        AND a.OUT_HP_DT >= #{startTime}  AND  a.OUT_HP_DT  <![CDATA[<]]> #{endTime})
+    </select>
+
 </mapper>
