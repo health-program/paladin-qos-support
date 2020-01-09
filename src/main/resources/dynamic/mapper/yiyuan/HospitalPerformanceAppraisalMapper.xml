@@ -139,10 +139,18 @@
     </select>
 
     <select id="getCMprescriptionsEventNum" resultType="long">
+        select sum(total) from
+        (
         select count(1) as total from CM_Prescriptions a
 	    where a.OP_EM_HP_MARK = '1' and a.DPT_CODE like '%A50'
 			 AND a.RX_DT >= #{startTime}
              AND a.RX_DT <![CDATA[<]]> #{endTime}
+        union all
+        select count(1) as total from WM_Prescriptions b
+        where b.OP_EM_HP_MARK = '1' and b.RX_NOTE = '2'
+        AND b.RX_DT >= #{startTime}
+        AND b.RX_DT <![CDATA[<]]> #{endTime}
+        )
     </select>
 
     <!-- 出院者手术例数-->
