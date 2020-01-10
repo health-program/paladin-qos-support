@@ -178,4 +178,11 @@
         AND a.OUT_HP_DT >= #{startTime}  AND  a.OUT_HP_DT  <![CDATA[<]]> #{endTime})
     </select>
 
+    <!-- 出院者占用总床日-->
+    <select id="getOutHospitalBedDayTotalNum" resultType="long">
+        SELECT  coalesce(sum(L_H_BR),0) from IN_WORKLOAD
+        where RCD_DT  >= #{startTime}
+        and RCD_DT <![CDATA[<]]> #{endTime}
+    </select>
+
 </mapper>
