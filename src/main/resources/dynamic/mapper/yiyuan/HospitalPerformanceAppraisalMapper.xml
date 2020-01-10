@@ -147,7 +147,7 @@
              AND a.RX_DT <![CDATA[<]]> #{endTime}
         union all
         select count(1) as total from WM_Prescriptions b
-        where b.OP_EM_HP_MARK = '1' and b.RX_NOTE = '2'
+        where b.OP_EM_HP_MARK = '1' and b.RX_NOTE = '2' and b.DPT_CODE like '%A50'
         AND b.RX_DT >= #{startTime}
         AND b.RX_DT <![CDATA[<]]> #{endTime}
         )
