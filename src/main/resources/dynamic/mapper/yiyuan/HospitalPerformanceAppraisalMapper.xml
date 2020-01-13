@@ -51,18 +51,22 @@
         FROM
         (SELECT count(1) AS total
         FROM outhospitalrecord a
+        LEFT JOIN firstpagemedicalrecord d
+        ON d.HP_S_NO = a.HP_S_NO
         LEFT JOIN MR_OperationRecord b
-        ON a.HP_S_NO = b.HP_S_NO
-        WHERE a.OHREC_DREC = '1'
+        ON d.HP_S_NO = b.HP_S_NO
+        WHERE a.OHREC_DREC = '1'  and  d.IF_OPREA = '1'
         AND b.OPER_CODE in (SELECT TT.OPERATION_CODE  from JS_OPERATION_MENU tt  where tt.OPERATION_LEVEL='三级' or tt.OPERATION_LEVEL='四级' )
         AND a.OUT_HP_DT >= #{startTime}
         AND a.OUT_HP_DT <![CDATA[<]]> #{endTime}
         UNION ALL
         SELECT count(1) AS total
         FROM outhospitalrecord a
+        LEFT JOIN ed_cmedical_home_page_record e
+        ON a.HP_S_NO = e.HP_S_NO
         LEFT JOIN ED_CMED_HOME_PAGE_OPE_RECORD c
-        ON a.HP_S_NO = c.HP_S_NO
-        WHERE a.OHREC_DREC = '1'
+        ON e.HP_S_NO = c.HP_S_NO
+        WHERE a.OHREC_DREC = '1'  and e.IF_OPREA = '1'
         AND c.OPER_CODE in (SELECT TT.OPERATION_CODE  from JS_OPERATION_MENU tt  where tt.OPERATION_LEVEL='三级' or tt.OPERATION_LEVEL='四级' )
         AND a.OUT_HP_DT >= #{startTime}
         AND a.OUT_HP_DT <![CDATA[<]]> #{endTime})
@@ -181,8 +185,8 @@
     <!-- 出院者占用总床日-->
     <select id="getOutHospitalBedDayTotalNum" resultType="long">
         SELECT  coalesce(sum(L_H_BR),0) from IN_WORKLOAD
-        where RCD_DT  >= #{startTime}
-        and RCD_DT <![CDATA[<]]> #{endTime}
+        where RCD_DT  >= ADD_MONTHS(#{startTime} , -1)
+        and RCD_DT <![CDATA[<]]> ADD_MONTHS(#{endTime}, -1)
     </select>
 
 </mapper>
